@@ -1,0 +1,11 @@
+# Environment files
+.env*
+
+# Build output
+bin
+
+# Log files
+*.log
+
+# IDE & editor files
+.vscode
