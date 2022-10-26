@@ -1,21 +1,17 @@
 package main
 
 import (
+	"log"
 	"nobincloud/pkg/server"
-	"nobincloud/pkg/utils"
-	"os"
-	"strconv"
 )
 
 func main() {
-	port, err := strconv.Atoi(os.Getenv("GO_PORT"))
+	s, err := server.NewServer()
 	if err != nil {
-		port = 5000
+		log.Fatal(err)
+		return
 	}
-	secret, err := utils.ReadBase64Env("GO_SESSION_SECRET")
-	if err != nil {
-		panic(err)
+	if err := s.Start(); err != nil {
+		log.Fatal(err)
 	}
-	s := server.NewServer(secret)
-	s.Start(port, os.Getenv("GO_MODE") != "production")
 }

@@ -6,6 +6,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type FilesDB interface {
+}
+
 type FilesRouter struct {
 }
 

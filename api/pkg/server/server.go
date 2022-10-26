@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"nobincloud/pkg/filesdb"
 	"nobincloud/pkg/server/loginhandler"
 	"time"
 
@@ -10,36 +12,35 @@ import (
 )
 
 type Server struct {
-	router *mux.Router
-	auth   *loginhandler.AuthRouter
+	config  ServerConfig
+	router  *mux.Router
+	filesDB *filesdb.FilesDB
+	auth    *loginhandler.AuthRouter
 }
 
-func (s *Server) Start(port int, debugMode bool) {
-	hostname := ""
-	if debugMode {
-		hostname = "localhost"
-	}
-	addr := fmt.Sprintf("%s:%d", hostname, port)
+func (s *Server) Start() error {
+	addr := fmt.Sprintf("%s:%d", s.config.HostName, s.config.Port)
 	httpServer := http.Server{
 		Handler:           s.router,
 		Addr:              addr,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	fmt.Println("server listening at", addr)
-	if err := httpServer.ListenAndServe(); err != nil {
-		panic(err)
-	}
+	log.Println("server listening at", addr)
+	return httpServer.ListenAndServe()
 }
 
-func NewServer(secret []byte) *Server {
+func NewServer() (*Server, error) {
+	var s Server
+	if err := s.loadConfig(); err != nil {
+		return nil, err
+	}
+	s.setupDataStore()
+
 	root := mux.NewRouter()
 	api := root.PathPrefix("/api")
 
-	authRouter := loginhandler.NewRouter(secret)
-	authRouter.RegisterRoutes(api.PathPrefix("/auth").Subrouter())
+	s.auth = loginhandler.NewRouter(s.config.Secret)
+	s.auth.RegisterRoutes(api.PathPrefix("/auth").Subrouter())
 
-	return &Server{
-		router: root,
-		auth:   authRouter,
-	}
+	return &s, nil
 }
