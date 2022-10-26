@@ -6,6 +6,9 @@ all: build
 build:
 	go build -o ${BUILD_PATH} main.go
 
+run:
+	godotenv -f .env ${BUILD_PATH}
+
 lint:
 	golangci-lint run
 
