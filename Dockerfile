@@ -16,6 +16,10 @@ FROM golang:1.17-alpine AS backend_builder
 
 WORKDIR /opt/api
 RUN apk add make
+
+COPY ./api/go.mod ./api/go.sum ./
+RUN go mod download
+
 COPY ./api .
 RUN make clean && make build
 

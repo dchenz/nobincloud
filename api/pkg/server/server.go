@@ -2,20 +2,17 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"nobincloud/pkg/filesdb"
-	"nobincloud/pkg/server/loginhandler"
+	"nobincloud/pkg/logging"
+	"nobincloud/pkg/server/cloudrouter"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
 type Server struct {
-	config  ServerConfig
-	router  *mux.Router
-	filesDB *filesdb.FilesDB
-	auth    *loginhandler.AuthRouter
+	config ServerConfig
+	router *mux.Router
 }
 
 func (s *Server) Start() error {
@@ -25,22 +22,28 @@ func (s *Server) Start() error {
 		Addr:              addr,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	log.Println("server listening at", addr)
+	logging.Log("server listening at %s", addr)
 	return httpServer.ListenAndServe()
 }
 
 func NewServer() (*Server, error) {
-	var s Server
+	s := Server{
+		router: mux.NewRouter(),
+	}
 	if err := s.loadConfig(); err != nil {
 		return nil, err
 	}
-	s.setupDataStore()
-
-	root := mux.NewRouter()
-	api := root.PathPrefix("/api")
-
-	s.auth = loginhandler.NewRouter(s.config.Secret)
-	s.auth.RegisterRoutes(api.PathPrefix("/auth").Subrouter())
-
+	ds, err := s.setupDataStore()
+	if err != nil {
+		return nil, err
+	}
+	api := s.router.PathPrefix("/api").Subrouter()
+	cr := cloudrouter.CloudRouter{
+		FilesDB:           ds.Files,
+		AccountsDB:        ds.Accounts,
+		SessionStore:      ds.Sessions,
+		SessionCookieName: "session_token",
+	}
+	cr.RegisterRoutes(api)
 	return &s, nil
 }

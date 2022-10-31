@@ -4,7 +4,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"time"
 )
+
+func TimeNow() time.Time {
+	return time.Now().UTC()
+}
 
 func ReadBase64Env(name string) ([]byte, error) {
 	value, exists := os.LookupEnv(name)
