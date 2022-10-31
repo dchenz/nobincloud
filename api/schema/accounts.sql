@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS user_accounts (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(256) UNIQUE NOT NULL,
-    sha512_password BINARY(64) NOT NULL
+    hashed_password BINARY(64) NOT NULL
 );
