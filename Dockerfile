@@ -4,7 +4,7 @@ FROM node:17.9.0-slim AS frontend_builder
 
 WORKDIR /opt/web-client
 
-COPY ./web-client/package.json .
+COPY ./web-client/package.json ./web-client/yarn.loc[k] .
 RUN yarn install
 
 COPY ./web-client .
