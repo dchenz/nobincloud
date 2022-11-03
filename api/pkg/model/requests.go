@@ -5,14 +5,16 @@ type Response struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
+// WrappedKey is an AES256 key encrypted with AES-GCM,
+// which has the same length as a SHA256 digest.
 type NewUserRequest struct {
-	FirstName            string `json:"first_name" validate:"required"`
-	LastName             string `json:"last_name" validate:"required"`
-	Email                string `json:"email" validate:"required,email"`
-	ClientHashedPassword string `json:"password_hash" validate:"required,sha512"`
+	Email        string `json:"email" validate:"required,email"`
+	Nickname     string `json:"nickname" validate:"required"`
+	PasswordHash string `json:"password_hash" validate:"required,sha512"`
+	WrappedKey   string `json:"wrapped_key" validate:"required,hexadecimal"`
 }
 
 type LoginRequest struct {
-	Email                string `json:"email" validate:"required"`
-	ClientHashedPassword string `json:"password_hash" validate:"required,sha512"`
+	Email        string `json:"email" validate:"required"`
+	PasswordHash string `json:"password_hash" validate:"required,sha512"`
 }

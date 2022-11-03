@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"nobincloud/pkg/model"
 	"nobincloud/pkg/model/dbmodel"
+	"nobincloud/pkg/utils"
 
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -23,34 +24,39 @@ func (a *AccountsDB) CreateUserAccount(user model.NewUserRequest) error {
 	if exists {
 		return ErrDuplicateEmail
 	}
+	salt, err := utils.RandomBytes(16)
+	if err != nil {
+		return err
+	}
 	storedPassword, err := deriveStoredPassword(
-		user.ClientHashedPassword,
-		[]byte(user.Email),
+		user.PasswordHash,
+		salt,
 	)
 	if err != nil {
 		return err
 	}
+	storedEncryptionKey, err := hex.DecodeString(user.WrappedKey)
+	if err != nil {
+		return err
+	}
 	return a.createUserAccount(dbmodel.UserAccount{
-		FirstName:      user.FirstName,
-		LastName:       user.LastName,
-		Email:          user.Email,
-		HashedPassword: storedPassword,
+		Email:        user.Email,
+		Nickname:     user.Nickname,
+		PasswordHash: storedPassword,
+		PasswordSalt: salt,
+		WrappedKey:   storedEncryptionKey,
 	})
 }
 
 func (a *AccountsDB) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
 	storedPassword, err := deriveStoredPassword(
-		creds.ClientHashedPassword,
+		creds.PasswordHash,
 		[]byte(creds.Email),
 	)
 	if err != nil {
 		return false, err
 	}
 	return a.userAccountPasswordMatches(creds.Email, storedPassword)
-}
-
-func (a *AccountsDB) GetUserAccount(email string) (*model.UserAccount, error) {
-	return a.userAccountInfo(email)
 }
 
 func deriveStoredPassword(password string, salt []byte) ([]byte, error) {
