@@ -22,10 +22,10 @@ CREATE TABLE IF NOT EXISTS user_accounts (
     -- Must be updated when user changes their email or password.
     password_hash BINARY(64) NOT NULL,
 
-    -- An AES256 key encrypted using AES256-CBC on the client
+    -- An AES256 key encrypted using AES256-GCM on the client
     -- using their password-derived key (Scrypt).
     --
     -- Must be updated when user changes their email or password.
-    wrapped_encryption_key BINARY(96) NOT NULL
+    wrapped_encryption_key BINARY(60) NOT NULL
 
 );

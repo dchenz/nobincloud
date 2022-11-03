@@ -49,14 +49,26 @@ func (a *AccountsDB) CreateUserAccount(user model.NewUserRequest) error {
 }
 
 func (a *AccountsDB) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
+	passwordSalt, err := a.getAccountPasswordSalt(creds.Email)
+	if err != nil {
+		return false, err
+	}
 	storedPassword, err := deriveStoredPassword(
 		creds.PasswordHash,
-		[]byte(creds.Email),
+		passwordSalt,
 	)
 	if err != nil {
 		return false, err
 	}
 	return a.userAccountPasswordMatches(creds.Email, storedPassword)
+}
+
+func (a *AccountsDB) GetWrappedKey(email string) (string, error) {
+	key, err := a.getAccountWrappedKey(email)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(key), nil
 }
 
 func deriveStoredPassword(password string, salt []byte) ([]byte, error) {

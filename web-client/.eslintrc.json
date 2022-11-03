@@ -37,6 +37,13 @@
             "warn",
             100
         ],
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            {
+                "argsIgnorePattern": "^_$",
+                "varsIgnorePattern": "^_$"
+            }
+        ],
         "array-callback-return": "warn",
         "arrow-body-style": "warn",
         "class-methods-use-this": "warn",
@@ -44,10 +51,10 @@
         "eqeqeq": "warn",
         "no-alert": "warn",
         "no-constant-condition": [
-          "warn",
-          {
-            "checkLoops": false
-          }
+            "warn",
+            {
+                "checkLoops": false
+            }
         ],
         "no-duplicate-imports": "warn",
         "no-empty-function": "warn",
@@ -70,22 +77,22 @@
         "no-throw-literal": "warn",
         "no-unmodified-loop-condition": "warn",
         "no-unneeded-ternary": [
-          "warn",
-          {
-            "defaultAssignment": false
-          }
+            "warn",
+            {
+                "defaultAssignment": false
+            }
         ],
         "no-unsafe-negation": "warn",
         "no-unused-expressions": [
-          "warn",
-          {
-            "allowTernary": true,
-            "allowShortCircuit": true
-          }
+            "warn",
+            {
+                "allowTernary": true,
+                "allowShortCircuit": true
+            }
         ],
         "no-use-before-define": [
-          "warn",
-          "nofunc"
+            "warn",
+            "nofunc"
         ],
         "no-useless-call": "warn",
         "no-useless-computed-key": "warn",

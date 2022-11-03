@@ -50,3 +50,27 @@ func (a *AccountsDB) userAccountPasswordMatches(email string, p []byte) (bool, e
 	}
 	return rows.Next(), nil
 }
+
+func (a *AccountsDB) getAccountPasswordSalt(email string) ([]byte, error) {
+	q := `SELECT password_salt
+		  FROM user_accounts
+		  WHERE email = ?;`
+	row := a.Conn.QueryRow(q, email)
+	var salt []byte
+	if err := row.Scan(&salt); err != nil {
+		return nil, err
+	}
+	return salt, nil
+}
+
+func (a *AccountsDB) getAccountWrappedKey(email string) ([]byte, error) {
+	q := `SELECT wrapped_encryption_key
+		  FROM user_accounts
+		  WHERE email = ?;`
+	row := a.Conn.QueryRow(q, email)
+	var key []byte
+	if err := row.Scan(&key); err != nil {
+		return nil, err
+	}
+	return key, nil
+}

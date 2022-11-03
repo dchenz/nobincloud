@@ -20,16 +20,10 @@ const scryptDefaultOptions = {
  * @param useCache Whether to cache in sessionStorage (testing purposes).
  * @returns Account master key
  */
-export function deriveMasterKey(password: string, salt: string, useCache?: boolean): ArrayBuffer {
-  if (useCache) {
-    const cachedKey = sessionStorage.getItem("master-key");
-    if (cachedKey) {
-      return Buffer.from(cachedKey, "base64");
-    }
-  }
+export function deriveMasterKey(password: string, salt: string): ArrayBuffer {
   // Master key is directly as an AES256 key to decrypt wrapped DEK,
   // so it's 32 bytes long.
-  const key = Buffer.from(ScryptJS.syncScrypt(
+  return Buffer.from(ScryptJS.syncScrypt(
     Buffer.from(password),
     Buffer.from(salt),
     scryptDefaultOptions.cpu,
@@ -37,10 +31,6 @@ export function deriveMasterKey(password: string, salt: string, useCache?: boole
     scryptDefaultOptions.threads,
     32,
   ));
-  if (useCache) {
-    sessionStorage.setItem("password-key", key.toString("base64"));
-  }
-  return key;
 }
 
 /**
