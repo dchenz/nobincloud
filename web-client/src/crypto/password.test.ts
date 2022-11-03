@@ -36,7 +36,7 @@ test("Derive main account key and upload hash to server", async () => {
     "hex"
   );
   // Master key
-  const masterKey = deriveMasterKey(PASSWORD, EMAIL, false);
+  const masterKey = deriveMasterKey(PASSWORD, EMAIL);
   expect(masterKey.byteLength)
     .toBe(32);
   expect(Buffer.from(masterKey).toString())
