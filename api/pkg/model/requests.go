@@ -15,6 +15,6 @@ type NewUserRequest struct {
 }
 
 type LoginRequest struct {
-	Email        string `json:"email" validate:"required"`
+	Email        string `json:"email" validate:"required,email"`
 	PasswordHash string `json:"password_hash" validate:"required,sha512"`
 }

@@ -23,14 +23,14 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !success {
-		utils.RespondFail(w, http.StatusUnauthorized, "login failed")
+		utils.RespondFail(w, http.StatusOK, "login failed")
 		return
 	}
-	// userInfo, err := a.AccountsDB.GetUserAccount(login.Email)
-	// if err != nil {
-	// 	utils.RespondError(w, err.Error())
-	// 	return
-	// }
+	wrappedKey, err := a.AccountsDB.GetWrappedKey(login.Email)
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
 	session, err := a.SessionStore.Get(r, a.SessionCookieName)
 	if err != nil {
 		utils.RespondError(w, err.Error())
@@ -42,7 +42,9 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	utils.ResponseSuccess(w, nil)
+	utils.ResponseSuccess(w, model.LoginResponse{
+		WrappedKey: wrappedKey,
+	})
 }
 
 func (a *CloudRouter) LogoutUserAccount(w http.ResponseWriter, r *http.Request) {
