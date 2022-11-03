@@ -1,4 +1,4 @@
-import { concatArrayBuffer } from "./utils";
+import { arrayBufferToString, concatArrayBuffer } from "./utils";
 
 test("Concat array buffer", () => {
   const text1 = "hello world";
@@ -41,4 +41,13 @@ test("Concat array buffer", () => {
 
   expect(concatToString())
     .toBe("");
+});
+
+test("Convert array buffer to string", () => {
+  expect(arrayBufferToString(Buffer.from("hello world")))
+    .toBe("hello world");
+  expect(arrayBufferToString(Buffer.from("hello world"), "hex"))
+    .toBe("68656c6c6f20776f726c64");
+  expect(arrayBufferToString(Buffer.from("hello world"), "utf-8"))
+    .toBe("hello world");
 });
