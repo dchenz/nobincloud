@@ -1,6 +1,6 @@
 # Build the React frontend
 
-FROM node:17.9.0-slim AS frontend_builder
+FROM node:18.7.0-slim AS frontend_builder
 
 WORKDIR /opt/web-client
 
