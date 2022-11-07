@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import { ServerRoutes } from "../const";
 import { derivePasswordKey, deriveServerPasswordHash } from "../crypto/password";
 import { arrayBufferToString } from "../crypto/utils";
 import { AccountLoginDetails, SuccessfulLoginResult } from "../types/Account";
@@ -16,7 +17,7 @@ export async function loginAccount(details: AccountLoginDetails):
   const passwordKey = derivePasswordKey(details.password, details.email);
   const passwordHash = await deriveServerPasswordHash(details.password, passwordKey);
 
-  const response = await jsonFetch("/api/user/login", {
+  const response = await jsonFetch(ServerRoutes.login, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

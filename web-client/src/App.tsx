@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import RedirectSignedIn from "./components/RedirectSignedIn";
 import RedirectSignedOut from "./components/RedirectSignedOut";
+import { PageRoutes } from "./const";
 import AuthContext, { initState } from "./context/AuthContext";
 import DashboardPage from "./pages/Dashboard";
 import MyFilesDashboard from "./pages/Dashboard/MyFiles";
@@ -17,26 +18,26 @@ export default function App(): JSX.Element {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/dashboard/*" element={null} />
+            <Route path={PageRoutes.dashboard + "*"} element={null} />
             <Route path="*" element={<Header />} />
           </Routes>
           <Routes>
-            <Route path="/login" element={
-              <RedirectSignedIn to="/dashboard">
+            <Route path={PageRoutes.login} element={
+              <RedirectSignedIn to={PageRoutes.dashboard}>
                 <LoginPage />
               </RedirectSignedIn>
             } />
-            <Route path="/register" element={
-              <RedirectSignedIn to="/dashboard">
+            <Route path={PageRoutes.register} element={
+              <RedirectSignedIn to={PageRoutes.dashboard}>
                 <RegisterPage />
               </RedirectSignedIn>
             } />
-            <Route path="/dashboard" element={
-              <RedirectSignedOut to="/login">
+            <Route path={PageRoutes.dashboard} element={
+              <RedirectSignedOut to={PageRoutes.login}>
                 <DashboardPage />
               </RedirectSignedOut>
             }>
-              <Route path="me" element={<MyFilesDashboard />} />
+              <Route index element={<MyFilesDashboard />} />
             </Route>
           </Routes>
         </BrowserRouter>

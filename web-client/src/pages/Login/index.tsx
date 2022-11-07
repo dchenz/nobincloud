@@ -12,6 +12,7 @@ import {
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAccount } from "../../api/loginAccount";
+import { PageRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
 import { decrypt } from "../../crypto/cipher";
 
@@ -39,7 +40,7 @@ export default function LoginPage(): JSX.Element {
           ctx.setAccountKey(decryptedAccountKey);
           ctx.setLoggedIn(true);
           // Redirect to personal dashboard.
-          navigate("/dashboard");
+          navigate(PageRoutes.dashboard);
         } else {
           setFailedLogin("Incorrect email or password.");
         }
