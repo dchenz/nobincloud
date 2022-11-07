@@ -8817,7 +8817,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.5.0, prop-types@^15.6.2, prop-types@^15.8.1:
+prop-types@^15.5.0, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -8919,6 +8919,13 @@ react-async-script@^1.1.1:
   dependencies:
     hoist-non-react-statics "^3.3.0"
     prop-types "^15.5.0"
+
+react-bootstrap-icons@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/react-bootstrap-icons/-/react-bootstrap-icons-1.9.1.tgz#d12b2e14a9f9c8b4d13c809c57c0e94aae6b1435"
+  integrity sha512-EOxEkiKt/ucn17cXHzUcxbVmH7YCFjV5ifrIB+aGkfxjXnGGJyBDfG5kRChoCDs1Y7vLRtgSauOq+whF751Yzg==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-clientside-effect@^1.2.6:
   version "1.2.6"

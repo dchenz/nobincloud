@@ -47,5 +47,15 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *CloudRouter) LogoutUserAccount(w http.ResponseWriter, r *http.Request) {
-
+	session, err := a.SessionStore.Get(r, a.SessionCookieName)
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	session.Options.MaxAge = -1
+	if err := session.Save(r, w); err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	utils.ResponseSuccess(w, nil)
 }
