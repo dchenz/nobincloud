@@ -2,20 +2,16 @@ import { createContext } from "react";
 
 export type AuthCtxType = {
   loggedIn: boolean
-  masterKey: ArrayBuffer | null
-  dataKey: ArrayBuffer | null
+  accountKey: ArrayBuffer | null
   setLoggedIn: (_: boolean) => void
-  setMasterKey: (_: ArrayBuffer | null) => void
-  setDataKey: (_: ArrayBuffer | null) => void
+  setAccountKey: (_: ArrayBuffer | null) => void
 }
 
 export const initState: AuthCtxType = {
   loggedIn: false,
-  masterKey: null,
-  dataKey: null,
+  accountKey: null,
   setLoggedIn: (_) => undefined,
-  setMasterKey: (_) => undefined,
-  setDataKey: (_) => undefined,
+  setAccountKey: (_) => undefined,
 };
 
 export default createContext<AuthCtxType>(initState);

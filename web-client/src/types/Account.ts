@@ -9,7 +9,7 @@ export type AccountLoginDetails = {
   password: string
 }
 
-export type LoggedInSetup = {
-  masterKey: ArrayBuffer
-  wrappedKey: ArrayBuffer
+export type SuccessfulLoginResult = {
+  passwordKey: ArrayBuffer
+  accountKey: ArrayBuffer
 }

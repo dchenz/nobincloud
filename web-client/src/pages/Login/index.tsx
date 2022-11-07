@@ -24,16 +24,18 @@ export default function LoginPage(): JSX.Element {
     loginAccount({ email, password })
       .then(async (result) => {
         if (result.success) {
-          const dataKey = await decrypt(result.data.wrappedKey, result.data.masterKey);
-          if (!dataKey) {
+          const decryptedAccountKey = await decrypt(
+            result.data.accountKey,
+            result.data.passwordKey
+          );
+          if (!decryptedAccountKey) {
             setFailedLogin("Could not retrieve your keys.");
             throw new Error("Could not retrieve your keys.");
           }
-          // Store the master key on successful login.
-          // And store the decrypted AES data key.
-          ctx.setMasterKey(result.data.masterKey);
-          ctx.setDataKey(dataKey);
-          ctx.setLoggedIn(ctx.masterKey !== null && ctx.dataKey !== null);
+          // Store the decrypted AES key on successful login
+          // as this will be used to encrypt/decrypt files.
+          ctx.setAccountKey(decryptedAccountKey);
+          ctx.setLoggedIn(true);
         } else {
           setFailedLogin("Incorrect email or password.");
         }

@@ -12,7 +12,7 @@ func (a *AccountsDB) createUserAccount(user dbmodel.UserAccount) error {
 			email,
 			password_salt,
 			password_hash,
-			wrapped_encryption_key
+			account_encryption_key
 		  ) VALUES(?, ?, ?, ?, ?, ?);`
 	_, err := a.Conn.Exec(
 		q,
@@ -21,7 +21,7 @@ func (a *AccountsDB) createUserAccount(user dbmodel.UserAccount) error {
 		user.Email,
 		user.PasswordSalt,
 		user.PasswordHash,
-		user.WrappedKey,
+		user.AccountEncryptionKey,
 	)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (a *AccountsDB) getAccountPasswordSalt(email string) ([]byte, error) {
 }
 
 func (a *AccountsDB) getAccountWrappedKey(email string) ([]byte, error) {
-	q := `SELECT wrapped_encryption_key
+	q := `SELECT account_encryption_key
 		  FROM user_accounts
 		  WHERE email = ?;`
 	row := a.Conn.QueryRow(q, email)

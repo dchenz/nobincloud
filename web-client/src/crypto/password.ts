@@ -13,15 +13,15 @@ const scryptDefaultOptions = {
 };
 
 /**
- * Derive the account master key from user's email and password.
+ * Derive the key from user's email and password.
  *
  * @param password Plaintext password
  * @param salt Unique value per user (email, must be dupe-checked beforehand)
  * @param useCache Whether to cache in sessionStorage (testing purposes).
- * @returns Account master key
+ * @returns AES key derived from password
  */
-export function deriveMasterKey(password: string, salt: string): ArrayBuffer {
-  // Master key is directly as an AES256 key to decrypt wrapped DEK,
+export function derivePasswordKey(password: string, salt: string): ArrayBuffer {
+  // Key is directly as an AES256 key to decrypt wrapped DEK,
   // so it's 32 bytes long.
   return Buffer.from(ScryptJS.syncScrypt(
     Buffer.from(password),
@@ -37,12 +37,13 @@ export function deriveMasterKey(password: string, salt: string): ArrayBuffer {
  * Derive the password hash received by the server during a login attempt.
  *
  * @param pw Plaintext password
- * @param masterKey Account master key
+ * @param passwordKey AES key derived from password
  * @returns Hash to be sent to server to prove identity
  */
-export function deriveServerPasswordHash(pw: string, masterKey: ArrayBuffer): Promise<ArrayBuffer> {
+export function deriveServerPasswordHash(pw: string, passwordKey: ArrayBuffer):
+  Promise<ArrayBuffer> {
   return window.crypto.subtle.digest("SHA-512",
-    Buffer.concat([masterKey as Buffer, Buffer.from(pw)])
+    Buffer.concat([passwordKey as Buffer, Buffer.from(pw)])
   );
 }
 
@@ -50,9 +51,9 @@ export function deriveServerPasswordHash(pw: string, masterKey: ArrayBuffer): Pr
  * Generate an encrypted AES256 key.
  * This is used during account creation and is stored on the server.
  *
- * @param masterKey Account master key
+ * @param passwordKey AES key derived from password
  * @returns Encrypted AES256 key
  */
-export function generateWrappedDataEncryptionKey(masterKey: ArrayBuffer): Promise<ArrayBuffer> {
-  return encrypt(window.crypto.getRandomValues(new Uint8Array(32)), masterKey);
+export function generateWrappedKey(passwordKey: ArrayBuffer): Promise<ArrayBuffer> {
+  return encrypt(window.crypto.getRandomValues(new Uint8Array(32)), passwordKey);
 }

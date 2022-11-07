@@ -26,6 +26,6 @@ CREATE TABLE IF NOT EXISTS user_accounts (
     -- using their password-derived key (Scrypt).
     --
     -- Must be updated when user changes their email or password.
-    wrapped_encryption_key BINARY(60) NOT NULL
+    account_encryption_key BINARY(60) NOT NULL
 
 );

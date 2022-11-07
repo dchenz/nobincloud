@@ -24,16 +24,13 @@ export default function App(): JSX.Element {
 
 function AuthProvider(props: { children: React.ReactNode }): JSX.Element {
   const [loggedIn, setLoggedIn] = useState<boolean>(initState.loggedIn);
-  const [masterKey, setMasterKey] = useState<ArrayBuffer | null>(initState.masterKey);
-  const [dataKey, setDataKey] = useState<ArrayBuffer | null>(initState.dataKey);
+  const [accountKey, setAccountKey] = useState<ArrayBuffer | null>(initState.accountKey);
   return (
     <AuthContext.Provider value={{
       loggedIn,
-      masterKey,
-      dataKey,
+      accountKey,
       setLoggedIn,
-      setMasterKey,
-      setDataKey
+      setAccountKey
     }}>
       {props.children}
     </AuthContext.Provider>

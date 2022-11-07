@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
-import { deriveMasterKey, deriveServerPasswordHash } from "../crypto/password";
+import { derivePasswordKey, deriveServerPasswordHash } from "../crypto/password";
 import { arrayBufferToString } from "../crypto/utils";
-import { AccountLoginDetails, LoggedInSetup } from "../types/Account";
+import { AccountLoginDetails, SuccessfulLoginResult } from "../types/Account";
 import { Response } from "../types/API";
 import { jsonFetch } from "./helpers";
 
@@ -9,11 +9,12 @@ import { jsonFetch } from "./helpers";
  * Send an API request to authenticate a login request.
  *
  * @param details Account details (email, password)
- * @returns Master key and decrypted AES data key
+ * @returns Account key and decrypted AES data key
  */
-export async function loginAccount(details: AccountLoginDetails): Promise<Response<LoggedInSetup>> {
-  const mainAccountKey = deriveMasterKey(details.password, details.email);
-  const passwordHash = await deriveServerPasswordHash(details.password, mainAccountKey);
+export async function loginAccount(details: AccountLoginDetails):
+  Promise<Response<SuccessfulLoginResult>> {
+  const passwordKey = derivePasswordKey(details.password, details.email);
+  const passwordHash = await deriveServerPasswordHash(details.password, passwordKey);
 
   const response = await jsonFetch("/api/user/login", {
     method: "POST",
@@ -26,9 +27,8 @@ export async function loginAccount(details: AccountLoginDetails): Promise<Respon
     })
   });
   if (response.success) {
-    response.data.wrappedKey = Buffer.from(response.data.wrapped_key, "hex");
-    delete response.data.wrapped_key;
-    response.data.masterKey = mainAccountKey;
+    response.data.accountKey = Buffer.from(response.data.account_key, "hex");
+    delete response.data.account_key;
   }
   return response;
 }

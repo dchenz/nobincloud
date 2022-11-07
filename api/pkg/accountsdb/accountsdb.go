@@ -35,16 +35,16 @@ func (a *AccountsDB) CreateUserAccount(user model.NewUserRequest) error {
 	if err != nil {
 		return err
 	}
-	storedEncryptionKey, err := hex.DecodeString(user.WrappedKey)
+	storedEncryptionKey, err := hex.DecodeString(user.AccountEncryptionKey)
 	if err != nil {
 		return err
 	}
 	return a.createUserAccount(dbmodel.UserAccount{
-		Email:        user.Email,
-		Nickname:     user.Nickname,
-		PasswordHash: storedPassword,
-		PasswordSalt: salt,
-		WrappedKey:   storedEncryptionKey,
+		Email:                user.Email,
+		Nickname:             user.Nickname,
+		PasswordHash:         storedPassword,
+		PasswordSalt:         salt,
+		AccountEncryptionKey: storedEncryptionKey,
 	})
 }
 
@@ -63,7 +63,7 @@ func (a *AccountsDB) CheckUserCredentials(creds model.LoginRequest) (bool, error
 	return a.userAccountPasswordMatches(creds.Email, storedPassword)
 }
 
-func (a *AccountsDB) GetWrappedKey(email string) (string, error) {
+func (a *AccountsDB) GetAccountEncryptionKey(email string) (string, error) {
 	key, err := a.getAccountWrappedKey(email)
 	if err != nil {
 		return "", err

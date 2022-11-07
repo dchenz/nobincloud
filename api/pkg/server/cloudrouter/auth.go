@@ -26,7 +26,7 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusOK, "login failed")
 		return
 	}
-	wrappedKey, err := a.AccountsDB.GetWrappedKey(login.Email)
+	key, err := a.AccountsDB.GetAccountEncryptionKey(login.Email)
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
@@ -43,7 +43,7 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.ResponseSuccess(w, model.LoginResponse{
-		WrappedKey: wrappedKey,
+		AccountEncryptionKey: key,
 	})
 }
 
