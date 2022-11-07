@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-export type AuthCtxType = {
+type AuthCtxType = {
   loggedIn: boolean
   accountKey: ArrayBuffer | null
   setLoggedIn: (_: boolean) => void

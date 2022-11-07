@@ -37,7 +37,6 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	session.Values["Expiry"] = time.Now().Add(time.Hour * 24).Unix()
-	// session.Values["User"] = userInfo
 	if err := session.Save(r, w); err != nil {
 		utils.RespondError(w, err.Error())
 		return

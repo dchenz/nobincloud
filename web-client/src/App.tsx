@@ -6,7 +6,7 @@ import Header from "./components/Header";
 import RedirectSignedIn from "./components/RedirectSignedIn";
 import RedirectSignedOut from "./components/RedirectSignedOut";
 import { PageRoutes } from "./const";
-import AuthContext, { initState } from "./context/AuthContext";
+import AuthContext from "./context/AuthContext";
 import DashboardPage from "./pages/Dashboard";
 import MyFilesDashboard from "./pages/Dashboard/MyFiles";
 import LoginPage from "./pages/Login";
@@ -48,8 +48,8 @@ export default function App(): JSX.Element {
 
 function AuthProvider(props: { children: React.ReactNode }): JSX.Element {
   const [cookies] = useCookies();
-  const [loggedIn, setLoggedIn] = useState<boolean>(!!cookies.session_token || initState.loggedIn);
-  const [accountKey, setAccountKey] = useState<ArrayBuffer | null>(initState.accountKey);
+  const [accountKey, setAccountKey] = useState<ArrayBuffer | null>(null);
+  const [loggedIn, setLoggedIn] = useState<boolean>(!!cookies.session_token && !!accountKey);
   return (
     <AuthContext.Provider value={{
       loggedIn,

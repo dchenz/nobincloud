@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
@@ -8,8 +8,14 @@ type RedirectSignedOutProps = {
 }
 
 export default function RedirectSignedOut(props: RedirectSignedOutProps): JSX.Element {
-  const { loggedIn } = useContext(AuthContext);
-  if (!loggedIn) {
+  const { loggedIn, accountKey, setLoggedIn, setAccountKey } = useContext(AuthContext);
+  useEffect(() => {
+    if (!loggedIn || !accountKey) {
+      setLoggedIn(false);
+      setAccountKey(null);
+    }
+  }, []);
+  if (!loggedIn || !accountKey) {
     return <Navigate to={props.to} />;
   }
   return <>{props.children}</>;

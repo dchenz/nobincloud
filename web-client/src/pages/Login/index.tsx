@@ -6,8 +6,8 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  Input,
-  Stack
+  Input, Stack,
+  Text
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +52,7 @@ export default function LoginPage(): JSX.Element {
       <Box width="50%">
         <Heading mb={10}>Login</Heading>
         <form onSubmit={onFormSubmit}>
-          <Stack gap={5}>
+          <Stack gap={8}>
             <FormControl>
               <FormLabel>Email</FormLabel>
               <Input
@@ -84,6 +84,17 @@ export default function LoginPage(): JSX.Element {
             }
           </Stack>
         </form>
+        <Box mt={12}>
+          <Text>
+            After logging in, do not refresh the page
+            or navigate via the address bar as you will
+            be forced to re-enter your password.
+
+            Currently, your encryption keys
+            are never put in browser storage (in-memory)
+            for security reasons.
+          </Text>
+        </Box>
       </Box>
     </Center>
   );

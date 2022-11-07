@@ -32,7 +32,11 @@ func (s *Server) setupDataStore() (*ServerDataStore, error) {
 }
 
 func createSessionStore(secret []byte) *sessions.CookieStore {
-	return sessions.NewCookieStore(secret)
+	cs := sessions.NewCookieStore(secret)
+	cs.Options.HttpOnly = true
+	cs.Options.Secure = true
+	cs.Options.MaxAge = 0
+	return cs
 }
 
 func connectFilesDB(dbString string) (*filesdb.FilesDB, error) {
