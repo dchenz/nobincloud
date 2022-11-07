@@ -10,12 +10,14 @@ import {
   Stack
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginAccount } from "../../api/loginAccount";
 import AuthContext from "../../context/AuthContext";
 import { decrypt } from "../../crypto/cipher";
 
 export default function LoginPage(): JSX.Element {
   const ctx = useContext(AuthContext);
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [failedLogin, setFailedLogin] = useState<string>("");
@@ -36,6 +38,8 @@ export default function LoginPage(): JSX.Element {
           // as this will be used to encrypt/decrypt files.
           ctx.setAccountKey(decryptedAccountKey);
           ctx.setLoggedIn(true);
+          // Redirect to personal dashboard.
+          navigate("/dashboard");
         } else {
           setFailedLogin("Incorrect email or password.");
         }
