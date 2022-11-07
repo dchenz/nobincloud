@@ -8,7 +8,7 @@ export default function Header(): JSX.Element {
     <Flex backgroundColor="#2f2f33" px={12} py={3} align="center">
       <Box>
         <Link to="/">
-          <Image src="/static/media/logo.png" height="32px" />
+          <Image src="/static/media/logo-white.png" height="32px" />
         </Link>
       </Box>
       <Spacer />

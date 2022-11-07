@@ -1,0 +1,22 @@
+.nav-drawer {
+    background-color: #f5f5f5;
+    width: 300px;
+    height: 100vh;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+
+    .nav-brand {
+        padding: 1em;
+        margin: 1.35em 0;
+        filter: hue-rotate(20deg);
+    }
+
+    .nav-list {
+        background-color: #f5f5f5;
+
+        .nav-list-item {
+            padding: 1em 1.5em;
+            background-color: #ffffff;
+        }
+    }
+}
+
