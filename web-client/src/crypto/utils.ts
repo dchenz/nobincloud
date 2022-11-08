@@ -17,3 +17,13 @@ export function concatArrayBuffer(...buffers: ArrayBuffer[]): ArrayBuffer {
 export function arrayBufferToString(buf: ArrayBuffer, encoding?: BufferEncoding): string {
   return Buffer.from(buf).toString(encoding);
 }
+
+/**
+ * Generate strong random bytes.
+ *
+ * @param n Number of bytes
+ * @returns Random bytes
+ */
+export function randomBytes(n: number): ArrayBuffer {
+  return window.crypto.getRandomValues(new Uint8Array(n));
+}

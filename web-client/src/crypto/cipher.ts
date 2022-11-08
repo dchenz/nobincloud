@@ -1,4 +1,4 @@
-import { concatArrayBuffer } from "./utils";
+import { concatArrayBuffer, randomBytes } from "./utils";
 
 /**
  * Encrypt data using AES-GCM mode.
@@ -9,7 +9,7 @@ import { concatArrayBuffer } from "./utils";
  * @returns Cipher text prepended with IV
  */
 export async function encrypt(plain: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const iv = randomBytes(12);
   const cipher = { name: "AES-GCM", iv };
   const _key = await window.crypto.subtle.importKey(
     "raw", key, { name: "AES-GCM" }, false, ["encrypt"]

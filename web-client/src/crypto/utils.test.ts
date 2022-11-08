@@ -1,4 +1,4 @@
-import { arrayBufferToString, concatArrayBuffer } from "./utils";
+import { arrayBufferToString, concatArrayBuffer, randomBytes } from "./utils";
 
 test("Concat array buffer", () => {
   const text1 = "hello world";
@@ -50,4 +50,9 @@ test("Convert array buffer to string", () => {
     .toBe("68656c6c6f20776f726c64");
   expect(arrayBufferToString(Buffer.from("hello world"), "utf-8"))
     .toBe("hello world");
+});
+
+test("Generate random bytes", () => {
+  expect(randomBytes(32).byteLength)
+    .toBe(32);
 });

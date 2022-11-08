@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import ScryptJS from "scrypt-js";
 import { encrypt } from "./cipher";
+import { randomBytes } from "./utils";
 
 /**
  * Default values in Python scrypt.
@@ -55,5 +56,5 @@ export function deriveServerPasswordHash(pw: string, passwordKey: ArrayBuffer):
  * @returns Encrypted AES256 key
  */
 export function generateWrappedKey(passwordKey: ArrayBuffer): Promise<ArrayBuffer> {
-  return encrypt(window.crypto.getRandomValues(new Uint8Array(32)), passwordKey);
+  return encrypt(randomBytes(32), passwordKey);
 }
