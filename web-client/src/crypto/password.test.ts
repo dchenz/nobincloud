@@ -48,9 +48,11 @@ test("Derive main account key and upload hash to server", async () => {
   expect(Buffer.from(hashedPasswordKey).toString())
     .toBe(expectedHashedPasswordKey.toString());
   // Encrypted encryption key uploaded to server
-  const wrappedKey = await generateWrappedKey(passwordKey);
+  const [wrappedKey, key] = await generateWrappedKey(passwordKey);
   // AES-GCM 12-byte IV + 32-byte encrypted AES key + 16-byte MAC
   expect(wrappedKey.byteLength)
     .toBe(12 + 32 + 16);
+  expect(key.byteLength)
+    .toBe(32);
 });
 

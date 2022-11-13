@@ -22,8 +22,7 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	u.Handle("/logout", http.HandlerFunc(a.LogoutUserAccount)).Methods("POST")
 	u.Handle("/register", http.HandlerFunc(a.SignUpNewUser)).Methods("POST")
 	f := r.PathPrefix("/files").Subrouter()
-	f.Handle("/{id}", a.authorizedMiddleware(http.HandlerFunc(a.DownloadFile))).Methods("GET")
-	f.Handle("/", a.authenticatedMiddleware(http.HandlerFunc(a.UploadFile))).Methods("POST")
-	f.Handle("/{id}", a.authorizedMiddleware(http.HandlerFunc(a.UploadFile))).Methods("POST")
-	f.Handle("/{id}", a.authorizedMiddleware(http.HandlerFunc(a.DeleteFile))).Methods("DELETE")
+	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DownloadFile))).Methods("GET")
+	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.UploadFile))).Methods("PUT")
+	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DeleteFile))).Methods("DELETE")
 }

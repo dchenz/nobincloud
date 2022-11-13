@@ -7,7 +7,7 @@ export default function NavBrand(): JSX.Element {
   return (
     <Link to={PageRoutes.home}>
       <Box className="nav-brand">
-        <Image src="/static/media/logo-black.png" height="32px" />
+        <Image src="/static/media/logo-white.png" height="32px" />
       </Box>
     </Link>
   );

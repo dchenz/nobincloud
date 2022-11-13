@@ -1,4 +1,4 @@
-import { arrayBufferToString, concatArrayBuffer, randomBytes } from "./utils";
+import { arrayBufferToString, concatArrayBuffer, randomBytes, uuid } from "./utils";
 
 test("Concat array buffer", () => {
   const text1 = "hello world";
@@ -55,4 +55,9 @@ test("Convert array buffer to string", () => {
 test("Generate random bytes", () => {
   expect(randomBytes(32).byteLength)
     .toBe(32);
+});
+
+test("Generate UUID", () => {
+  expect(/[a-f0-9]{32}/.test(uuid()))
+    .toBe(true);
 });

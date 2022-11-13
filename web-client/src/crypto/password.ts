@@ -52,9 +52,10 @@ export function deriveServerPasswordHash(pw: string, passwordKey: ArrayBuffer):
  * Generate an encrypted AES256 key.
  * This is used during account creation and is stored on the server.
  *
- * @param passwordKey AES key derived from password
- * @returns Encrypted AES256 key
+ * @param key AES key to encrypt the other AES key
+ * @returns AES key, both encrypted and unencrypted
  */
-export function generateWrappedKey(passwordKey: ArrayBuffer): Promise<ArrayBuffer> {
-  return encrypt(randomBytes(32), passwordKey);
+export async function generateWrappedKey(key: ArrayBuffer): Promise<ArrayBuffer[]> {
+  const k = randomBytes(32);
+  return [await encrypt(k, key), k];
 }

@@ -18,7 +18,7 @@ import { jsonFetch } from "./helpers";
 export async function registerAccount(details: AccountSignupDetails): Promise<Response> {
   const passwordKey = derivePasswordKey(details.password, details.email);
   const passwordHash = await deriveServerPasswordHash(details.password, passwordKey);
-  const accountKey = await generateWrappedKey(passwordKey);
+  const [encryptedAccountKey] = await generateWrappedKey(passwordKey);
 
   return await jsonFetch(ServerRoutes.register, {
     method: "POST",
@@ -29,7 +29,7 @@ export async function registerAccount(details: AccountSignupDetails): Promise<Re
       email: details.email,
       nickname: details.nickname,
       password_hash: arrayBufferToString(passwordHash, "hex"),
-      account_key: arrayBufferToString(accountKey, "hex"),
+      account_key: arrayBufferToString(encryptedAccountKey, "hex"),
     })
   });
 }

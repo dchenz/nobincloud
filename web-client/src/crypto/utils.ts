@@ -27,3 +27,12 @@ export function arrayBufferToString(buf: ArrayBuffer, encoding?: BufferEncoding)
 export function randomBytes(n: number): ArrayBuffer {
   return window.crypto.getRandomValues(new Uint8Array(n));
 }
+
+/**
+ * Generate a UUID hexadecimal (no dashes).
+ *
+ * @returns UUID
+ */
+export function uuid(): string {
+  return window.crypto.randomUUID().replace(/-/g, "");
+}

@@ -9,6 +9,7 @@ import (
 	"nobincloud/pkg/model"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 )
 
 var _validate *validator.Validate
@@ -26,6 +27,15 @@ func GetBody(r *http.Request, dest interface{}) error {
 		return fmt.Errorf("request body is required")
 	}
 	return err
+}
+
+func GetPathID(r *http.Request, name string) (string, error) {
+	vars := mux.Vars(r)
+	value, exists := vars[name]
+	if !exists {
+		return "", fmt.Errorf("missing path variable")
+	}
+	return value, nil
 }
 
 func ResponseSuccess(w http.ResponseWriter, data interface{}) {
@@ -49,6 +59,7 @@ func RespondFail(w http.ResponseWriter, status int, reason string) {
 	if err != nil {
 		logging.Error("Cannot JSON decode in RespondFail")
 	}
+	logging.Warn("[%d] %s", status, reason)
 }
 
 func RespondError(w http.ResponseWriter, reason string) {
