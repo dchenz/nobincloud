@@ -7,12 +7,10 @@ import (
 )
 
 type ServerConfig struct {
-	HostName        string `env:"SERVER_HOSTNAME,default=localhost"`
-	Port            int    `env:"SERVER_PORT,default=5000"`
-	Secret          []byte `env:"SERVER_SECRET,required"`
-	MySQLDBString   string `env:"MYSQL_DB,required"`
-	filesDBString   string
-	accountsDBSting string
+	HostName string `env:"SERVER_HOSTNAME,default=localhost"`
+	Port     int    `env:"SERVER_PORT,default=5000"`
+	Secret   []byte `env:"SERVER_SECRET,required"`
+	DSN      string `env:"MYSQL_DB,required"`
 }
 
 func (s *Server) loadConfig() error {
@@ -20,7 +18,5 @@ func (s *Server) loadConfig() error {
 	if err != nil {
 		return err
 	}
-	s.config.accountsDBSting = s.config.MySQLDBString + "/accounts"
-	s.config.filesDBString = s.config.MySQLDBString + "/files"
 	return nil
 }

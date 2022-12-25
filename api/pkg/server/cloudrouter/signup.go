@@ -2,7 +2,7 @@ package cloudrouter
 
 import (
 	"net/http"
-	"nobincloud/pkg/accountsdb"
+	"nobincloud/pkg/database"
 	"nobincloud/pkg/model"
 	"nobincloud/pkg/utils"
 )
@@ -17,9 +17,9 @@ func (a *CloudRouter) SignUpNewUser(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := a.AccountsDB.CreateUserAccount(user); err != nil {
+	if err := a.Database.CreateUserAccount(user); err != nil {
 		switch err {
-		case accountsdb.ErrDuplicateEmail:
+		case database.ErrDuplicateEmail:
 			utils.RespondFail(w, http.StatusBadRequest, err.Error())
 		default:
 			utils.RespondError(w, err.Error())

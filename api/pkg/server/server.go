@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"nobincloud/pkg/database"
 	"nobincloud/pkg/logging"
 	"nobincloud/pkg/server/cloudrouter"
 	"time"
@@ -35,14 +36,13 @@ func NewServer() (*Server, error) {
 	if err := s.loadConfig(); err != nil {
 		return nil, err
 	}
-	ds, err := s.setupDataStore()
+	db, err := database.NewDatabase(s.config.DSN)
 	if err != nil {
 		return nil, err
 	}
 	api := s.router.PathPrefix("/api").Subrouter()
 	cr := cloudrouter.CloudRouter{
-		FilesDB:        ds.Files,
-		AccountsDB:     ds.Accounts,
+		Database:       db,
 		SessionManager: sessionMgr,
 	}
 	cr.RegisterRoutes(api)

@@ -1,10 +1,10 @@
 //go:build integration
 // +build integration
 
-package accountsdb_test
+package database_test
 
 import (
-	"nobincloud/pkg/accountsdb"
+	"nobincloud/pkg/database"
 	"nobincloud/pkg/model"
 	"os"
 	"testing"
@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockDB() *accountsdb.AccountsDB {
+func mockDB() *database.Database {
 	dbString := os.Getenv("MYSQL_DB")
 	if dbString == "" {
 		panic("missing MYSQL_DB for testing")
 	}
-	dbString = dbString + "/accounts"
-	db, err := accountsdb.NewAccountsDB(dbString)
+	dbString = dbString + "/user_data"
+	db, err := database.NewDatabase(dbString)
 	if err != nil {
 		panic(err)
 	}

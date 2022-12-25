@@ -2,16 +2,14 @@ package cloudrouter
 
 import (
 	"net/http"
-	"nobincloud/pkg/accountsdb"
-	"nobincloud/pkg/filesdb"
+	"nobincloud/pkg/database"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/mux"
 )
 
 type CloudRouter struct {
-	FilesDB        *filesdb.FilesDB
-	AccountsDB     *accountsdb.AccountsDB
+	Database       *database.Database
 	SessionManager *scs.SessionManager
 }
 

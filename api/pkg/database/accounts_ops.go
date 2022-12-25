@@ -1,11 +1,11 @@
-package accountsdb
+package database
 
 import (
 	"nobincloud/pkg/model/dbmodel"
 	"nobincloud/pkg/utils"
 )
 
-func (a *AccountsDB) createUserAccount(user dbmodel.UserAccount) error {
+func (a *Database) createUserAccount(user dbmodel.UserAccount) error {
 	q := `INSERT INTO user_accounts(
 			created_at,
 			nickname,
@@ -29,7 +29,7 @@ func (a *AccountsDB) createUserAccount(user dbmodel.UserAccount) error {
 	return nil
 }
 
-func (a *AccountsDB) userAccountEmailExists(email string) (bool, error) {
+func (a *Database) userAccountEmailExists(email string) (bool, error) {
 	q := `SELECT 1
 	      FROM user_accounts
 		  WHERE email = ?;`
@@ -40,7 +40,7 @@ func (a *AccountsDB) userAccountEmailExists(email string) (bool, error) {
 	return rows.Next(), nil
 }
 
-func (a *AccountsDB) userAccountPasswordMatches(email string, p []byte) (bool, error) {
+func (a *Database) userAccountPasswordMatches(email string, p []byte) (bool, error) {
 	q := `SELECT 1
 		  FROM user_accounts
 		  WHERE email = ? AND password_hash = ?;`
@@ -51,7 +51,7 @@ func (a *AccountsDB) userAccountPasswordMatches(email string, p []byte) (bool, e
 	return rows.Next(), nil
 }
 
-func (a *AccountsDB) getAccountPasswordSalt(email string) ([]byte, error) {
+func (a *Database) getAccountPasswordSalt(email string) ([]byte, error) {
 	q := `SELECT password_salt
 		  FROM user_accounts
 		  WHERE email = ?;`
@@ -63,7 +63,7 @@ func (a *AccountsDB) getAccountPasswordSalt(email string) ([]byte, error) {
 	return salt, nil
 }
 
-func (a *AccountsDB) getAccountWrappedKey(email string) ([]byte, error) {
+func (a *Database) getAccountWrappedKey(email string) ([]byte, error) {
 	q := `SELECT account_encryption_key
 		  FROM user_accounts
 		  WHERE email = ?;`
