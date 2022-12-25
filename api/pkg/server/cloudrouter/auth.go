@@ -4,10 +4,9 @@ import (
 	"net/http"
 	"nobincloud/pkg/model"
 	"nobincloud/pkg/utils"
-	"time"
 )
 
-func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
+func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 	var login model.LoginRequest
 	if err := utils.GetBody(r, &login); err != nil {
 		utils.RespondFail(w, http.StatusBadRequest, err.Error())
@@ -31,29 +30,22 @@ func (a *CloudRouter) LoginUserAccount(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	session, err := a.SessionStore.Get(r, a.SessionCookieName)
-	if err != nil {
+	if err := a.SessionManager.RenewToken(r.Context()); err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	session.Values["Expiry"] = time.Now().Add(time.Hour * 24).Unix()
-	if err := session.Save(r, w); err != nil {
-		utils.RespondError(w, err.Error())
-		return
-	}
+	a.SessionManager.Put(r.Context(), "email", login.Email)
 	utils.ResponseSuccess(w, model.LoginResponse{
 		AccountEncryptionKey: key,
 	})
 }
 
-func (a *CloudRouter) LogoutUserAccount(w http.ResponseWriter, r *http.Request) {
-	session, err := a.SessionStore.Get(r, a.SessionCookieName)
-	if err != nil {
+func (a *CloudRouter) Logout(w http.ResponseWriter, r *http.Request) {
+	if err := a.SessionManager.RenewToken(r.Context()); err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	session.Options.MaxAge = -1
-	if err := session.Save(r, w); err != nil {
+	if err := a.SessionManager.Destroy(r.Context()); err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}

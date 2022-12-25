@@ -7,6 +7,7 @@ import (
 	"nobincloud/pkg/server/cloudrouter"
 	"time"
 
+	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/mux"
 )
 
@@ -27,9 +28,10 @@ func (s *Server) Start() error {
 }
 
 func NewServer() (*Server, error) {
-	s := Server{
+	s := &Server{
 		router: mux.NewRouter(),
 	}
+	sessionMgr := scs.New()
 	if err := s.loadConfig(); err != nil {
 		return nil, err
 	}
@@ -39,11 +41,11 @@ func NewServer() (*Server, error) {
 	}
 	api := s.router.PathPrefix("/api").Subrouter()
 	cr := cloudrouter.CloudRouter{
-		FilesDB:           ds.Files,
-		AccountsDB:        ds.Accounts,
-		SessionStore:      ds.Sessions,
-		SessionCookieName: "session_token",
+		FilesDB:        ds.Files,
+		AccountsDB:     ds.Accounts,
+		SessionManager: sessionMgr,
 	}
 	cr.RegisterRoutes(api)
-	return &s, nil
+	api.Use(sessionMgr.LoadAndSave)
+	return s, nil
 }

@@ -1,13 +1,19 @@
 package cloudrouter
 
-import "net/http"
+import (
+	"net/http"
+)
 
-func (f *CloudRouter) authenticatedMiddleware(next http.Handler) http.Handler {
+func (a *CloudRouter) authenticatedMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := f.SessionStore.Get(r, f.SessionCookieName)
-		if err != nil {
+		if a.whoami(r) == "" {
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func (a *CloudRouter) whoami(r *http.Request) string {
+	return a.SessionManager.GetString(r.Context(), "email")
 }
