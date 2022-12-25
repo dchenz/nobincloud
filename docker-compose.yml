@@ -1,0 +1,41 @@
+version: "3"
+services:
+  proxy:
+    image: nginx:alpine
+    ports:
+      - 8000:80
+    volumes:
+      - type: bind
+        source: ./docker/nginx.dev.conf
+        target: /etc/nginx/nginx.conf
+    depends_on:
+      - web
+      - api
+  web:
+    image: node:18.7.0-slim
+    working_dir: /src
+    command: yarn start
+    environment:
+      - WATCHPACK_POLLING=true
+      - WDS_SOCKET_PORT=8000
+    volumes:
+      - ./web:/src
+  api:
+    build:
+      context: ./api
+      dockerfile: ../docker/api.Dockerfile
+    env_file: ./.env
+    environment:
+      - SERVER_HOSTNAME=0.0.0.0
+      - SERVER_PORT=5000
+    depends_on:
+      - database
+  database:
+    image: mariadb:10.5
+    restart: always
+    ports:
+      - 9000:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=test123
+    volumes:
+      - ./schema:/docker-entrypoint-initdb.d

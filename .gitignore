@@ -1,11 +1,6 @@
 # Environment files
-.env*
-
-# Build output
-bin
-
+.env
 # Log files
 *.log
-
 # IDE & editor files
 .vscode
