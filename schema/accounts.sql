@@ -1,4 +1,7 @@
-CREATE TABLE IF NOT EXISTS user_accounts (
+CREATE DATABASE IF NOT EXISTS `accounts`;
+USE `accounts`;
+DROP TABLE IF EXISTS `user_accounts`;
+CREATE TABLE `user_accounts` (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
 
     -- Registration time (UTC).
