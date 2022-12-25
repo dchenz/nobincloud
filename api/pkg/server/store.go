@@ -1,11 +1,9 @@
 package server
 
 import (
-	"database/sql"
 	"nobincloud/pkg/accountsdb"
 	"nobincloud/pkg/filesdb"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 )
 
@@ -16,11 +14,11 @@ type ServerDataStore struct {
 }
 
 func (s *Server) setupDataStore() (*ServerDataStore, error) {
-	filesConn, err := connectFilesDB(s.config.FilesDBString)
+	filesConn, err := filesdb.NewFilesDB(s.config.filesDBString)
 	if err != nil {
 		return nil, err
 	}
-	accountsConn, err := connectAccountsDB(s.config.AccountsDBSting)
+	accountsConn, err := accountsdb.NewAccountsDB(s.config.accountsDBSting)
 	if err != nil {
 		return nil, err
 	}
@@ -37,24 +35,4 @@ func createSessionStore(secret []byte) *sessions.CookieStore {
 	cs.Options.Secure = true
 	cs.Options.MaxAge = 0
 	return cs
-}
-
-func connectFilesDB(dbString string) (*filesdb.FilesDB, error) {
-	conn, err := sql.Open("mysql", dbString)
-	if err != nil {
-		return nil, err
-	}
-	return &filesdb.FilesDB{
-		Conn: conn,
-	}, nil
-}
-
-func connectAccountsDB(dbString string) (*accountsdb.AccountsDB, error) {
-	conn, err := sql.Open("mysql", dbString)
-	if err != nil {
-		return nil, err
-	}
-	return &accountsdb.AccountsDB{
-		Conn: conn,
-	}, nil
 }

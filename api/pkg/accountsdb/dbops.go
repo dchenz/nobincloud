@@ -14,7 +14,7 @@ func (a *AccountsDB) createUserAccount(user dbmodel.UserAccount) error {
 			password_hash,
 			account_encryption_key
 		  ) VALUES(?, ?, ?, ?, ?, ?);`
-	_, err := a.Conn.Exec(
+	_, err := a.conn.Exec(
 		q,
 		utils.TimeNow(),
 		user.Nickname,
@@ -33,7 +33,7 @@ func (a *AccountsDB) userAccountEmailExists(email string) (bool, error) {
 	q := `SELECT 1
 	      FROM user_accounts
 		  WHERE email = ?;`
-	rows, err := a.Conn.Query(q, email)
+	rows, err := a.conn.Query(q, email)
 	if err != nil {
 		return false, err
 	}
@@ -44,7 +44,7 @@ func (a *AccountsDB) userAccountPasswordMatches(email string, p []byte) (bool, e
 	q := `SELECT 1
 		  FROM user_accounts
 		  WHERE email = ? AND password_hash = ?;`
-	rows, err := a.Conn.Query(q, email, p)
+	rows, err := a.conn.Query(q, email, p)
 	if err != nil {
 		return false, err
 	}
@@ -55,7 +55,7 @@ func (a *AccountsDB) getAccountPasswordSalt(email string) ([]byte, error) {
 	q := `SELECT password_salt
 		  FROM user_accounts
 		  WHERE email = ?;`
-	row := a.Conn.QueryRow(q, email)
+	row := a.conn.QueryRow(q, email)
 	var salt []byte
 	if err := row.Scan(&salt); err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (a *AccountsDB) getAccountWrappedKey(email string) ([]byte, error) {
 	q := `SELECT account_encryption_key
 		  FROM user_accounts
 		  WHERE email = ?;`
-	row := a.Conn.QueryRow(q, email)
+	row := a.conn.QueryRow(q, email)
 	var key []byte
 	if err := row.Scan(&key); err != nil {
 		return nil, err
