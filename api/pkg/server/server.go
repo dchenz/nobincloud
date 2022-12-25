@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"nobincloud/pkg/logging"
 	"nobincloud/pkg/server/cloudrouter"
+	"nobincloud/pkg/usersdb"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -35,14 +36,13 @@ func NewServer() (*Server, error) {
 	if err := s.loadConfig(); err != nil {
 		return nil, err
 	}
-	ds, err := s.setupDataStore()
+	db, err := usersdb.NewUsersDB(s.config.DSN)
 	if err != nil {
 		return nil, err
 	}
 	api := s.router.PathPrefix("/api").Subrouter()
 	cr := cloudrouter.CloudRouter{
-		FilesDB:        ds.Files,
-		AccountsDB:     ds.Accounts,
+		UsersDB:        db,
 		SessionManager: sessionMgr,
 	}
 	cr.RegisterRoutes(api)

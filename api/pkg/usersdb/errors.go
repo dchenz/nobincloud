@@ -1,4 +1,4 @@
-package accountsdb
+package usersdb
 
 import "errors"
 

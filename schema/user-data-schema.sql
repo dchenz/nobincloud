@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS `accounts`;
-USE `accounts`;
+CREATE DATABASE IF NOT EXISTS `user_data`;
+USE `user_data`;
 DROP TABLE IF EXISTS `user_accounts`;
 CREATE TABLE `user_accounts` (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,

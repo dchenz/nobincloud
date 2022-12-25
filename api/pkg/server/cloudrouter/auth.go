@@ -16,7 +16,7 @@ func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	success, err := a.AccountsDB.CheckUserCredentials(login)
+	success, err := a.UsersDB.CheckUserCredentials(login)
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
@@ -25,7 +25,7 @@ func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusOK, "login failed")
 		return
 	}
-	key, err := a.AccountsDB.GetAccountEncryptionKey(login.Email)
+	key, err := a.UsersDB.GetAccountEncryptionKey(login.Email)
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return

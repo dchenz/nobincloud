@@ -1,4 +1,4 @@
-package accountsdb
+package usersdb
 
 import (
 	"crypto/sha512"
@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-func (a *AccountsDB) CreateUserAccount(user model.NewUserRequest) error {
+func (a *UsersDB) CreateUserAccount(user model.NewUserRequest) error {
 	// Emails cannot be re-used across accounts.
 	exists, err := a.userAccountEmailExists(user.Email)
 	if err != nil {
@@ -44,7 +44,7 @@ func (a *AccountsDB) CreateUserAccount(user model.NewUserRequest) error {
 	})
 }
 
-func (a *AccountsDB) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
+func (a *UsersDB) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
 	passwordSalt, err := a.getAccountPasswordSalt(creds.Email)
 	if err == sql.ErrNoRows {
 		return false, nil
@@ -59,7 +59,7 @@ func (a *AccountsDB) CheckUserCredentials(creds model.LoginRequest) (bool, error
 	return a.userAccountPasswordMatches(creds.Email, storedPassword)
 }
 
-func (a *AccountsDB) GetAccountEncryptionKey(email string) (string, error) {
+func (a *UsersDB) GetAccountEncryptionKey(email string) (string, error) {
 	key, err := a.getAccountWrappedKey(email)
 	if err != nil {
 		return "", err
