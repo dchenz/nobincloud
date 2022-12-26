@@ -4,6 +4,7 @@
 package database_test
 
 import (
+	"database/sql"
 	"os"
 	"testing"
 
@@ -13,21 +14,49 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockDB() *database.Database {
-	dbString := os.Getenv("MYSQL_DB")
+func createMockDB() *database.Database {
+	dbString := os.Getenv("TEST_MYSQL_DB")
 	if dbString == "" {
-		panic("missing MYSQL_DB for testing")
+		panic("missing TEST_MYSQL_DB for testing")
 	}
-	dbString = dbString + "/user_data"
-	db, err := database.NewDatabase(dbString)
+	conn, err := sql.Open("mysql", dbString+"?multiStatements=true")
+	if err != nil {
+		panic(err)
+	}
+	schema, err := os.ReadFile("./schema/database-schema.sql")
+	if err != nil {
+		panic(err)
+	}
+	if _, err := conn.Exec(string(schema)); err != nil {
+		panic(err)
+	}
+	if err := conn.Close(); err != nil {
+		panic(err)
+	}
+	db, err := database.NewDatabase(dbString + "user_data")
 	if err != nil {
 		panic(err)
 	}
 	return db
 }
 
+func destroyMockDB() {
+	dbString := os.Getenv("TEST_MYSQL_DB")
+	if dbString == "" {
+		panic("missing TEST_MYSQL_DB for testing")
+	}
+	conn, err := sql.Open("mysql", dbString+"user_data")
+	if err != nil {
+		panic(err)
+	}
+	if _, err := conn.Exec("DROP DATABASE user_data;"); err != nil {
+		panic(err)
+	}
+}
+
 func TestLogin(t *testing.T) {
-	db := mockDB()
+	db := createMockDB()
+	defer destroyMockDB()
 
 	err := db.CreateUserAccount(model.NewUserRequest{
 		Email:                "example@example.com",

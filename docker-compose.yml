@@ -38,4 +38,4 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=test123
     volumes:
-      - ./schema:/docker-entrypoint-initdb.d
+      - ./api/pkg/database/schema:/docker-entrypoint-initdb.d
