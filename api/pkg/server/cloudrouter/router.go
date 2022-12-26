@@ -2,7 +2,8 @@ package cloudrouter
 
 import (
 	"net/http"
-	"nobincloud/pkg/database"
+
+	"github.com/dchenz/nobincloud/pkg/database"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/mux"

@@ -1,8 +1,8 @@
 package database
 
 import (
-	"nobincloud/pkg/model/dbmodel"
-	"nobincloud/pkg/utils"
+	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
+	"github.com/dchenz/nobincloud/pkg/utils"
 )
 
 func (a *Database) createUserAccount(user dbmodel.UserAccount) error {

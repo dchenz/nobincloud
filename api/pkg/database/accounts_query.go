@@ -4,9 +4,10 @@ import (
 	"crypto/sha512"
 	"database/sql"
 	"encoding/hex"
-	"nobincloud/pkg/model"
-	"nobincloud/pkg/model/dbmodel"
-	"nobincloud/pkg/utils"
+
+	"github.com/dchenz/nobincloud/pkg/model"
+	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
+	"github.com/dchenz/nobincloud/pkg/utils"
 
 	"golang.org/x/crypto/pbkdf2"
 )

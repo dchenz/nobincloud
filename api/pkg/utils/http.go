@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"nobincloud/pkg/logging"
-	"nobincloud/pkg/model"
+
+	"github.com/dchenz/nobincloud/pkg/logging"
+	"github.com/dchenz/nobincloud/pkg/model"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"

@@ -3,10 +3,11 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"nobincloud/pkg/database"
-	"nobincloud/pkg/logging"
-	"nobincloud/pkg/server/cloudrouter"
 	"time"
+
+	"github.com/dchenz/nobincloud/pkg/database"
+	"github.com/dchenz/nobincloud/pkg/logging"
+	"github.com/dchenz/nobincloud/pkg/server/cloudrouter"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/mux"

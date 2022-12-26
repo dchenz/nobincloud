@@ -3,7 +3,8 @@ package cloudrouter
 import (
 	"fmt"
 	"net/http"
-	"nobincloud/pkg/utils"
+
+	"github.com/dchenz/nobincloud/pkg/utils"
 )
 
 func (a *CloudRouter) UploadFile(w http.ResponseWriter, r *http.Request) {

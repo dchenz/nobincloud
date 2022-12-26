@@ -2,9 +2,10 @@ package cloudrouter
 
 import (
 	"net/http"
-	"nobincloud/pkg/database"
-	"nobincloud/pkg/model"
-	"nobincloud/pkg/utils"
+
+	"github.com/dchenz/nobincloud/pkg/database"
+	"github.com/dchenz/nobincloud/pkg/model"
+	"github.com/dchenz/nobincloud/pkg/utils"
 )
 
 func (a *CloudRouter) SignUpNewUser(w http.ResponseWriter, r *http.Request) {

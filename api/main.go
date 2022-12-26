@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"nobincloud/pkg/server"
+
+	"github.com/dchenz/nobincloud/pkg/server"
 )
 
 func main() {

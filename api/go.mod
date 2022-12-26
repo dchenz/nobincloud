@@ -1,4 +1,4 @@
-module nobincloud
+module github.com/dchenz/nobincloud
 
 go 1.17
 

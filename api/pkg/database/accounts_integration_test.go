@@ -4,10 +4,11 @@
 package database_test
 
 import (
-	"nobincloud/pkg/database"
-	"nobincloud/pkg/model"
 	"os"
 	"testing"
+
+	"github.com/dchenz/nobincloud/pkg/database"
+	"github.com/dchenz/nobincloud/pkg/model"
 
 	"github.com/stretchr/testify/assert"
 )
