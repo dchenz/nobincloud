@@ -35,7 +35,13 @@ func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	a.SessionManager.Put(r.Context(), "email", login.Email)
+	accountID, err := a.Database.ResolveAccountID(login.Email)
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	a.SessionManager.Put(r.Context(), "current_user_id", accountID)
+	a.SessionManager.Put(r.Context(), "current_user_email", login.Email)
 	utils.ResponseSuccess(w, model.LoginResponse{
 		AccountEncryptionKey: key,
 	})

@@ -68,6 +68,10 @@ func (a *Database) GetAccountEncryptionKey(email string) (string, error) {
 	return hex.EncodeToString(key), nil
 }
 
+func (a *Database) ResolveAccountID(email string) (int, error) {
+	return a.findAccountID(email)
+}
+
 func deriveStoredPassword(password string, salt []byte) ([]byte, error) {
 	// Convert hex password into bytes.
 	passwordBytes, err := hex.DecodeString(password)

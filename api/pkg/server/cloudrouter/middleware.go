@@ -6,7 +6,7 @@ import (
 
 func (a *CloudRouter) authenticatedMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if a.whoami(r) == "" {
+		if _, email := a.whoami(r); email == "" {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -14,6 +14,8 @@ func (a *CloudRouter) authenticatedMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (a *CloudRouter) whoami(r *http.Request) string {
-	return a.SessionManager.GetString(r.Context(), "email")
+func (a *CloudRouter) whoami(r *http.Request) (int, string) {
+	id := a.SessionManager.GetInt(r.Context(), "current_user_id")
+	email := a.SessionManager.GetString(r.Context(), "current_user_email`")
+	return id, email
 }
