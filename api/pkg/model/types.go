@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 )
 
 type JSON[T any] struct {
@@ -27,9 +28,16 @@ func (s *JSON[T]) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// Color is an RGB value represented using the 3 lower-order bytes
+// of a 4-byte integer (_ R G B). Values overflowing into the highest
+// byte are treated as undefined and will cause an error.
 type Color int
 
+// MarshalJSON converts Color into a 6-digit RGB hexadecimal.
 func (s Color) MarshalJSON() ([]byte, error) {
+	if s < 0 || s > 0xFFFFFF {
+		return nil, fmt.Errorf("invalid RGB value")
+	}
 	v := []byte{
 		byte((s & 0xFF0000) >> 16),
 		byte((s & 0xFF00) >> 8),
@@ -38,19 +46,19 @@ func (s Color) MarshalJSON() ([]byte, error) {
 	return json.Marshal(hex.EncodeToString(v))
 }
 
+// UnmarshalJSON converts a 6-digit RGB hexadecimal into Color.
+// It doesn't support the 3-digit RGB shorthand format.
 func (s *Color) UnmarshalJSON(b []byte) error {
-	if string(b) == "null" {
-		*s = 0
-		return nil
-	}
 	var h string
-	err := json.Unmarshal(b, &h)
-	if err != nil {
+	if err := json.Unmarshal(b, &h); err != nil {
 		return err
 	}
 	v, err := hex.DecodeString(h)
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid RGB value")
+	}
+	if len(v) != 3 {
+		return fmt.Errorf("invalid RGB value")
 	}
 	n := 0
 	n |= int(v[0]) << 16
