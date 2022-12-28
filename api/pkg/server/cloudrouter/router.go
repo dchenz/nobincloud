@@ -2,15 +2,20 @@ package cloudrouter
 
 import (
 	"net/http"
-	"nobincloud/pkg/usersdb"
+
+	"github.com/dchenz/go-assemble"
+	"github.com/dchenz/nobincloud/pkg/database"
+	"github.com/dchenz/nobincloud/pkg/filestore"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/mux"
 )
 
 type CloudRouter struct {
-	UsersDB        *usersdb.UsersDB
+	Database       *database.Database
+	Files          *filestore.FileStore
 	SessionManager *scs.SessionManager
+	UploadManager  *assemble.FileChunksAssembler
 }
 
 func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
@@ -18,8 +23,24 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	u.Handle("/login", http.HandlerFunc(a.Login)).Methods("POST")
 	u.Handle("/logout", http.HandlerFunc(a.Logout)).Methods("POST")
 	u.Handle("/register", http.HandlerFunc(a.SignUpNewUser)).Methods("POST")
-	f := r.PathPrefix("/files").Subrouter()
+
+	c := r.PathPrefix("/upload").Subrouter()
+
+	c.Handle("/init",
+		a.authenticatedMiddleware(
+			http.HandlerFunc(a.UploadManager.UploadStartHandler),
+		),
+	).Methods("POST")
+
+	c.Handle("/parts",
+		a.authenticatedMiddleware(
+			a.UploadManager.ChunksMiddleware(
+				http.HandlerFunc(a.UploadFile),
+			),
+		),
+	).Methods("POST")
+
+	f := r.PathPrefix("/file").Subrouter()
 	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DownloadFile))).Methods("GET")
-	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.UploadFile))).Methods("PUT")
 	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DeleteFile))).Methods("DELETE")
 }

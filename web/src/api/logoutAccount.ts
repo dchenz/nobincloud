@@ -6,7 +6,7 @@ export async function logoutAccount(): Promise<Response> {
   return await jsonFetch(ServerRoutes.logout, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   });
 }

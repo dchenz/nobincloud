@@ -7,10 +7,11 @@ import (
 )
 
 type ServerConfig struct {
-	HostName string `env:"SERVER_HOSTNAME,default=localhost"`
-	Port     int    `env:"SERVER_PORT,default=5000"`
-	Secret   []byte `env:"SERVER_SECRET,required"`
-	DSN      string `env:"MYSQL_DB,required"`
+	HostName      string `env:"SERVER_HOSTNAME,default=localhost"`
+	Port          int    `env:"SERVER_PORT,default=5000"`
+	Secret        []byte `env:"SERVER_SECRET,required"`
+	DSN           string `env:"MYSQL_DB,required"`
+	DataStorePath string `env:"DATA_STORE_PATH,required"`
 }
 
 func (s *Server) loadConfig() error {

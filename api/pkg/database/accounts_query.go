@@ -1,17 +1,18 @@
-package usersdb
+package database
 
 import (
 	"crypto/sha512"
 	"database/sql"
 	"encoding/hex"
-	"nobincloud/pkg/model"
-	"nobincloud/pkg/model/dbmodel"
-	"nobincloud/pkg/utils"
+
+	"github.com/dchenz/nobincloud/pkg/model"
+	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
+	"github.com/dchenz/nobincloud/pkg/utils"
 
 	"golang.org/x/crypto/pbkdf2"
 )
 
-func (a *UsersDB) CreateUserAccount(user model.NewUserRequest) error {
+func (a *Database) CreateUserAccount(user model.NewUserRequest) error {
 	// Emails cannot be re-used across accounts.
 	exists, err := a.userAccountEmailExists(user.Email)
 	if err != nil {
@@ -44,7 +45,7 @@ func (a *UsersDB) CreateUserAccount(user model.NewUserRequest) error {
 	})
 }
 
-func (a *UsersDB) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
+func (a *Database) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
 	passwordSalt, err := a.getAccountPasswordSalt(creds.Email)
 	if err == sql.ErrNoRows {
 		return false, nil
@@ -59,12 +60,16 @@ func (a *UsersDB) CheckUserCredentials(creds model.LoginRequest) (bool, error) {
 	return a.userAccountPasswordMatches(creds.Email, storedPassword)
 }
 
-func (a *UsersDB) GetAccountEncryptionKey(email string) (string, error) {
+func (a *Database) GetAccountEncryptionKey(email string) (string, error) {
 	key, err := a.getAccountWrappedKey(email)
 	if err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(key), nil
+}
+
+func (a *Database) ResolveAccountID(email string) (int, error) {
+	return a.findAccountID(email)
 }
 
 func deriveStoredPassword(password string, salt []byte) ([]byte, error) {

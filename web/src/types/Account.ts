@@ -1,15 +1,15 @@
 export type AccountSignupDetails = {
-  email: string
-  nickname: string
-  password: string
-}
+  email: string;
+  nickname: string;
+  password: string;
+};
 
 export type AccountLoginDetails = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export type SuccessfulLoginResult = {
-  passwordKey: ArrayBuffer
-  accountKey: ArrayBuffer
-}
+  passwordKey: ArrayBuffer;
+  accountKey: ArrayBuffer;
+};

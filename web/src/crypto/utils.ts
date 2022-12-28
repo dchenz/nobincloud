@@ -4,7 +4,10 @@ import { Buffer } from "buffer";
  * Concatenate N ArrayBuffer into one ArrayBuffer.
  */
 export function concatArrayBuffer(...buffers: ArrayBuffer[]): ArrayBuffer {
-  const totalByteLength = buffers.reduce((prev, cur) => prev + cur.byteLength, 0);
+  const totalByteLength = buffers.reduce(
+    (prev, cur) => prev + cur.byteLength,
+    0
+  );
   const tmp = new Uint8Array(totalByteLength);
   let curOffset = 0;
   for (const buf of buffers) {
@@ -14,7 +17,10 @@ export function concatArrayBuffer(...buffers: ArrayBuffer[]): ArrayBuffer {
   return tmp.buffer;
 }
 
-export function arrayBufferToString(buf: ArrayBuffer, encoding?: BufferEncoding): string {
+export function arrayBufferToString(
+  buf: ArrayBuffer,
+  encoding?: BufferEncoding
+): string {
   return Buffer.from(buf).toString(encoding);
 }
 
@@ -29,10 +35,10 @@ export function randomBytes(n: number): ArrayBuffer {
 }
 
 /**
- * Generate a UUID hexadecimal (no dashes).
+ * Generate a UUID string with dashes.
  *
  * @returns UUID
  */
 export function uuid(): string {
-  return window.crypto.randomUUID().replace(/-/g, "");
+  return window.crypto.randomUUID();
 }

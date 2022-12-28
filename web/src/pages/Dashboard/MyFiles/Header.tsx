@@ -1,7 +1,7 @@
 import { Box, Button, HStack, Icon } from "@chakra-ui/react";
 import React, { ChangeEvent, useContext } from "react";
 import { Upload } from "react-bootstrap-icons";
-import { uploadFile } from "../../../api/uploadFile";
+import { encryptAndUploadFile } from "../../../api/uploadFile";
 import AuthContext from "../../../context/AuthContext";
 import "./styles.scss";
 
@@ -12,18 +12,21 @@ export default function Header(): JSX.Element {
     throw new Error();
   }
 
+  const onProgress = (currentChunks: number, totalChunks: number) =>
+    console.log(currentChunks, totalChunks);
+
   const onUploadButtonClick = () => {
     const fileForm = document.createElement("input");
     fileForm.type = "file";
     fileForm.click();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     fileForm.onchange = (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
-        uploadFile({
+        const uploadRequest = {
           file: e.target.files[0],
-          key: accountKey
-        });
+          parentFolder: null,
+        };
+        encryptAndUploadFile(uploadRequest, accountKey, onProgress);
       }
     };
   };
@@ -31,8 +34,7 @@ export default function Header(): JSX.Element {
     <Box className="file-browser-header">
       <HStack gap={2}>
         <Button color="black" onClick={onUploadButtonClick}>
-          <Icon as={Upload}></Icon>&nbsp;
-          Upload
+          <Icon as={Upload}></Icon>&nbsp; Upload
         </Button>
       </HStack>
     </Box>

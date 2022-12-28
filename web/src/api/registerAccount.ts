@@ -2,7 +2,7 @@ import { ServerRoutes } from "../const";
 import {
   derivePasswordKey,
   deriveServerPasswordHash,
-  generateWrappedKey
+  generateWrappedKey,
 } from "../crypto/password";
 import { arrayBufferToString } from "../crypto/utils";
 import { AccountSignupDetails } from "../types/Account";
@@ -15,21 +15,26 @@ import { jsonFetch } from "./helpers";
  * @param details Account details (email, password, nickname)
  * @returns ({ success: true, data: undefined })
  */
-export async function registerAccount(details: AccountSignupDetails): Promise<Response> {
+export async function registerAccount(
+  details: AccountSignupDetails
+): Promise<Response> {
   const passwordKey = derivePasswordKey(details.password, details.email);
-  const passwordHash = await deriveServerPasswordHash(details.password, passwordKey);
+  const passwordHash = await deriveServerPasswordHash(
+    details.password,
+    passwordKey
+  );
   const [encryptedAccountKey] = await generateWrappedKey(passwordKey);
 
   return await jsonFetch(ServerRoutes.register, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       email: details.email,
       nickname: details.nickname,
       password_hash: arrayBufferToString(passwordHash, "hex"),
       account_key: arrayBufferToString(encryptedAccountKey, "hex"),
-    })
+    }),
   });
 }

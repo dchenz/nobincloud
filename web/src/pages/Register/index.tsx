@@ -7,9 +7,11 @@ import {
   FormLabel,
   Heading,
   Input,
-  Stack
+  Stack,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { registerAccount } from "../../api/registerAccount";
 
 export default function RegisterPage(): JSX.Element {
@@ -18,10 +20,8 @@ export default function RegisterPage(): JSX.Element {
   const [password, setPassword] = useState<string>("");
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newUser = {email, nickname, password};
-    registerAccount(newUser)
-      .then(console.log)
-      .catch(console.error);
+    const newUser = { email, nickname, password };
+    registerAccount(newUser).then(console.log).catch(console.error);
   };
   return (
     <Center p={12}>
@@ -39,7 +39,10 @@ export default function RegisterPage(): JSX.Element {
             </FormControl>
             <FormControl>
               <FormLabel>Password</FormLabel>
-              <Input type="password" onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
               <FormHelperText>
                 All account data is lost if you forget your password.
               </FormHelperText>
@@ -47,6 +50,14 @@ export default function RegisterPage(): JSX.Element {
             <Button type="submit">Create</Button>
           </Stack>
         </form>
+        <Box mt={8}>
+          <Text>
+            Already have an account?{" "}
+            <Link to="/login">
+              <u>Login here.</u>
+            </Link>
+          </Text>
+        </Box>
       </Box>
     </Center>
   );

@@ -3,10 +3,13 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"nobincloud/pkg/logging"
-	"nobincloud/pkg/server/cloudrouter"
-	"nobincloud/pkg/usersdb"
 	"time"
+
+	"github.com/dchenz/go-assemble"
+	"github.com/dchenz/nobincloud/pkg/database"
+	"github.com/dchenz/nobincloud/pkg/filestore"
+	"github.com/dchenz/nobincloud/pkg/logging"
+	"github.com/dchenz/nobincloud/pkg/server/cloudrouter"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/mux"
@@ -36,14 +39,18 @@ func NewServer() (*Server, error) {
 	if err := s.loadConfig(); err != nil {
 		return nil, err
 	}
-	db, err := usersdb.NewUsersDB(s.config.DSN)
+	db, err := database.NewDatabase(s.config.DSN)
 	if err != nil {
 		return nil, err
 	}
 	api := s.router.PathPrefix("/api").Subrouter()
 	cr := cloudrouter.CloudRouter{
-		UsersDB:        db,
+		Database:       db,
 		SessionManager: sessionMgr,
+		Files: &filestore.FileStore{
+			Path: s.config.DataStorePath,
+		},
+		UploadManager: assemble.NewFileChunksAssembler(nil),
 	}
 	cr.RegisterRoutes(api)
 	api.Use(sessionMgr.LoadAndSave)

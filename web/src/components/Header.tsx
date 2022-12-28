@@ -1,9 +1,15 @@
 import { SettingsIcon } from "@chakra-ui/icons";
-import { Box, Flex, IconButton, Image, Spacer } from "@chakra-ui/react";
-import React from "react";
-import { Link } from "react-router-dom";
+import { Box, Button, Flex, IconButton, Image, Spacer } from "@chakra-ui/react";
+import React, { useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 
 export default function Header(): JSX.Element {
+  const { loggedIn } = useContext(AuthContext);
+  const location = useLocation();
+  const onLoginOrRegisterPage =
+    location.pathname.startsWith("/login") ||
+    location.pathname.startsWith("/register");
   return (
     <Flex backgroundColor="#2f2f33" px={12} py={3} align="center">
       <Box>
@@ -13,11 +19,17 @@ export default function Header(): JSX.Element {
       </Box>
       <Spacer />
       <Box>
-        <IconButton
-          icon={<SettingsIcon />}
-          aria-label="Settings"
-          colorScheme="blackAlpha"
-        />
+        {loggedIn ? (
+          <IconButton
+            icon={<SettingsIcon />}
+            aria-label="Settings"
+            colorScheme="blackAlpha"
+          />
+        ) : !onLoginOrRegisterPage ? (
+          <Button as={Link} to="/login" size="sm" colorScheme="blackAlpha">
+            Get Started
+          </Button>
+        ) : null}
       </Box>
     </Flex>
   );

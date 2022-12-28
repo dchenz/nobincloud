@@ -1,11 +1,13 @@
-module nobincloud
+module github.com/dchenz/nobincloud
 
-go 1.17
+go 1.18
 
 require (
 	github.com/alexedwards/scs/v2 v2.5.0
+	github.com/dchenz/go-assemble v0.0.0-20221227160118-6c9c3d5d3663
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/sethvargo/go-envconfig v0.8.2
 	github.com/sirupsen/logrus v1.9.0

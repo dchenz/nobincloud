@@ -2,8 +2,9 @@ package cloudrouter
 
 import (
 	"net/http"
-	"nobincloud/pkg/model"
-	"nobincloud/pkg/utils"
+
+	"github.com/dchenz/nobincloud/pkg/model"
+	"github.com/dchenz/nobincloud/pkg/utils"
 )
 
 func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +17,7 @@ func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	success, err := a.UsersDB.CheckUserCredentials(login)
+	success, err := a.Database.CheckUserCredentials(login)
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
@@ -25,7 +26,7 @@ func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusOK, "login failed")
 		return
 	}
-	key, err := a.UsersDB.GetAccountEncryptionKey(login.Email)
+	key, err := a.Database.GetAccountEncryptionKey(login.Email)
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
@@ -34,7 +35,13 @@ func (a *CloudRouter) Login(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	a.SessionManager.Put(r.Context(), "email", login.Email)
+	accountID, err := a.Database.ResolveAccountID(login.Email)
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	a.SessionManager.Put(r.Context(), "current_user_id", accountID)
+	a.SessionManager.Put(r.Context(), "current_user_email", login.Email)
 	utils.ResponseSuccess(w, model.LoginResponse{
 		AccountEncryptionKey: key,
 	})

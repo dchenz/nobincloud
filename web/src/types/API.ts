@@ -1,11 +1,11 @@
 export type Success<T> = {
-  success: true
-  data: T
-}
+  success: true;
+  data: T;
+};
 
 export type Failure = {
-  success: false
-  data: string
-}
+  success: false;
+  data: string;
+};
 
-export type Response<T = undefined> = Success<T> | Failure
+export type Response<T = undefined> = Success<T> | Failure;

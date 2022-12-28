@@ -1,4 +1,4 @@
-package usersdb
+package database
 
 import (
 	"database/sql"
@@ -6,16 +6,16 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type UsersDB struct {
+type Database struct {
 	conn *sql.DB
 }
 
-func NewUsersDB(dbString string) (*UsersDB, error) {
+func NewDatabase(dbString string) (*Database, error) {
 	conn, err := sql.Open("mysql", dbString)
 	if err != nil {
 		return nil, err
 	}
-	return &UsersDB{
+	return &Database{
 		conn: conn,
 	}, nil
 }

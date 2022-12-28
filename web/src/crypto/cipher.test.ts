@@ -25,12 +25,12 @@ test("Encrypt/decrypt - regular unicode text", async () => {
   if (decryptionOutput === null) {
     fail("Expected successful decryption");
   } else {
-    expect(Buffer.from(decryptionOutput).toString())
-      .toBe(PLAIN_TEXT.toString());
+    expect(Buffer.from(decryptionOutput).toString()).toBe(
+      PLAIN_TEXT.toString()
+    );
   }
   // Check for failed decryption using incorrect key.
-  expect(badDecryptionOutput)
-    .toBeNull();
+  expect(badDecryptionOutput).toBeNull();
 });
 
 test("Encrypt/decrypt - empty plaintext", async () => {
@@ -41,11 +41,10 @@ test("Encrypt/decrypt - empty plaintext", async () => {
   if (decryptionOutput === null) {
     fail("Expected successful decryption");
   } else {
-    expect(Buffer.from(decryptionOutput).toString())
-      .toBe(EMPTY_PLAIN_TEXT.toString());
+    expect(Buffer.from(decryptionOutput).toString()).toBe(
+      EMPTY_PLAIN_TEXT.toString()
+    );
   }
   // Check for failed decryption using incorrect key.
-  expect(badDecryptionOutput)
-    .toBeNull();
+  expect(badDecryptionOutput).toBeNull();
 });
-

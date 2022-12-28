@@ -28,6 +28,9 @@ services:
     environment:
       - SERVER_HOSTNAME=0.0.0.0
       - SERVER_PORT=5000
+      - DATA_STORE_PATH=/uploads
+    volumes:
+      - ${HOME}/.nobincloud/filedata:/uploads
     depends_on:
       - database
   database:
@@ -38,4 +41,4 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=test123
     volumes:
-      - ./schema:/docker-entrypoint-initdb.d
+      - ./api/pkg/database/schema:/docker-entrypoint-initdb.d
