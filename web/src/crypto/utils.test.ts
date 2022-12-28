@@ -58,6 +58,6 @@ test("Generate random bytes", () => {
 });
 
 test("Generate UUID", () => {
-  expect(/[a-f0-9]{32}/.test(uuid()))
-    .toBe(true);
+  expect(uuid().length)
+    .toBe(36);
 });

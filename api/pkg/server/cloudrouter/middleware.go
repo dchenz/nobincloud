@@ -16,6 +16,6 @@ func (a *CloudRouter) authenticatedMiddleware(next http.Handler) http.Handler {
 
 func (a *CloudRouter) whoami(r *http.Request) (int, string) {
 	id := a.SessionManager.GetInt(r.Context(), "current_user_id")
-	email := a.SessionManager.GetString(r.Context(), "current_user_email`")
+	email := a.SessionManager.GetString(r.Context(), "current_user_email")
 	return id, email
 }

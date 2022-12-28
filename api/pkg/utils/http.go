@@ -6,8 +6,10 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/dchenz/go-assemble"
 	"github.com/dchenz/nobincloud/pkg/logging"
 	"github.com/dchenz/nobincloud/pkg/model"
+	"github.com/google/uuid"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -37,6 +39,42 @@ func GetPathID(r *http.Request, name string) (string, error) {
 		return "", fmt.Errorf("missing path variable")
 	}
 	return value, nil
+}
+
+func GetFileMetadataString(r *http.Request, key string) (model.JSON[string], error) {
+	fileMetadata := assemble.GetFileMetadata(r)
+	v, exists := fileMetadata[key]
+	if !exists {
+		return model.JSON[string]{}, nil
+	}
+	fileName, ok := v.(string)
+	if !ok {
+		return model.JSON[string]{}, fmt.Errorf("invalid type for '%s'", key)
+	}
+	return model.JSON[string]{
+		Valid: true,
+		Value: fileName,
+	}, nil
+}
+
+func GetFileMetadataUUID(r *http.Request, key string) (model.JSON[uuid.UUID], error) {
+	fileMetadata := assemble.GetFileMetadata(r)
+	v, exists := fileMetadata[key]
+	if !exists {
+		return model.JSON[uuid.UUID]{}, nil
+	}
+	uuidString, ok := v.(string)
+	if !ok {
+		return model.JSON[uuid.UUID]{}, fmt.Errorf("invalid type for '%s'", key)
+	}
+	uuidValue, err := uuid.Parse(uuidString)
+	if err != nil {
+		return model.JSON[uuid.UUID]{}, err
+	}
+	return model.JSON[uuid.UUID]{
+		Valid: true,
+		Value: uuidValue,
+	}, nil
 }
 
 func ResponseSuccess(w http.ResponseWriter, data interface{}) {

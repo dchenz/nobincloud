@@ -9,5 +9,6 @@ export const ServerRoutes = {
   login: "/api/user/login",
   logout: "/api/user/logout",
   register: "/api/user/register",
-  uploadFile: "/api/files",
+  uploadInit: "/api/upload/init",
+  uploadParts: "/api/upload/parts"
 };

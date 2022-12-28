@@ -1,23 +1,32 @@
 export type FileUploadDetails = {
-  id?: string
-  file: File
-  key: ArrayBuffer
-}
+  file: File;
+  parentFolder: string | null;
+};
+
+export type UploadInitResponse = {
+  id: number;
+};
+
+export type UploadPartsResponse = {
+  have: number;
+  want: number;
+  error?: string;
+};
 
 type BaseFolderObject = {
-  id: number
-  name: string
-  owner: string
-  parentFolder: string | null
-}
+  id: number;
+  name: string;
+  owner: string;
+  parentFolder: string | null;
+};
 
 export type FileRef = BaseFolderObject & {
-  type: "f"
-}
+  type: "f";
+};
 
 export type FolderRef = BaseFolderObject & {
-  type: "d"
-  color: string | null
-}
+  type: "d";
+  color: string | null;
+};
 
-export type FileNodeRef = FileRef | FolderRef
+export type FileNodeRef = FileRef | FolderRef;

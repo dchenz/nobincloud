@@ -1,19 +1,60 @@
 import { ServerRoutes } from "../const";
+import { encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
 import { arrayBufferToString, uuid } from "../crypto/utils";
-import { FileUploadDetails } from "../types/Files";
+import {
+  FileUploadDetails,
+  UploadInitResponse,
+  UploadPartsResponse,
+} from "../types/Files";
 
-export async function uploadFile(uploaded: FileUploadDetails) {
-  const id = uploaded.id ?? uuid();
-  const url = `${ServerRoutes.uploadFile}/${id}`;
-  const [encryptedFileKey, _] = await generateWrappedKey(uploaded.key);
-  const form = new FormData();
-  form.append("file", uploaded.file);
-  form.append("key", arrayBufferToString(encryptedFileKey, "hex"));
-  const response = await fetch(url, {
-    method: "PUT",
-    body: form,
-  });
-  const result = await response.text();
-  console.log(result);
+const CHUNK_SIZE = 2 ** 24;
+
+export async function encryptAndUploadFile(
+  fileUpload: FileUploadDetails,
+  accountKey: ArrayBuffer,
+  onProgress: (current: number, total: number) => void
+) {
+  const [encryptedFileKey, fileKey] = await generateWrappedKey(accountKey);
+  const totalChunks = Math.ceil(fileUpload.file.size / CHUNK_SIZE);
+  const initResponse: UploadInitResponse = await (
+    await fetch(ServerRoutes.uploadInit, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        total_chunks: totalChunks,
+        metadata: {
+          key: arrayBufferToString(encryptedFileKey, "hex"),
+          name: fileUpload.file.name,
+          type: fileUpload.file.type,
+          id: uuid(),
+        },
+      }),
+    })
+  ).json();
+  for (let i = 0; i < totalChunks; i++) {
+    const chunkBytes = await fileUpload.file
+      .slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE)
+      .arrayBuffer();
+
+    const encryptedChunkBytes = await encrypt(chunkBytes, fileKey);
+
+    fetch(ServerRoutes.uploadParts, {
+      method: "POST",
+      headers: {
+        "x-assemble-upload-id": `${initResponse.id}`,
+        "x-assemble-chunk-id": `${i}`,
+      },
+      body: encryptedChunkBytes,
+    })
+      .then((resp) => resp.json())
+      .then((resp: UploadPartsResponse) => {
+        if (resp.error) {
+          throw new Error(resp.error);
+        }
+        onProgress(resp.have, resp.want);
+      });
+  }
 }

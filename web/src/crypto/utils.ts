@@ -29,10 +29,10 @@ export function randomBytes(n: number): ArrayBuffer {
 }
 
 /**
- * Generate a UUID hexadecimal (no dashes).
+ * Generate a UUID string with dashes.
  *
  * @returns UUID
  */
 export function uuid(): string {
-  return window.crypto.randomUUID().replace(/-/g, "");
+  return window.crypto.randomUUID();
 }
