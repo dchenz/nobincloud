@@ -6,11 +6,12 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  Input, Stack,
-  Text
+  Input,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginAccount } from "../../api/loginAccount";
 import { PageRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
@@ -76,23 +77,22 @@ export default function LoginPage(): JSX.Element {
               />
             </FormControl>
             <Button type="submit">Submit</Button>
-            {
-              failedLogin ?
-                <Alert status="warning">
-                  {failedLogin}
-                </Alert> : null
-            }
+            {failedLogin ? <Alert status="warning">{failedLogin}</Alert> : null}
           </Stack>
         </form>
-        <Box mt={12}>
+        <Box mt={8}>
           <Text>
-            After logging in, do not refresh the page
-            or navigate via the address bar as you will
-            be forced to re-enter your password.
-
-            Currently, your encryption keys
-            are never put in browser storage (in-memory)
-            for security reasons.
+            Don&apos;t have an account?{" "}
+            <Link to="/register">
+              <u>Register here.</u>
+            </Link>
+          </Text>
+          <br />
+          <Text>
+            After logging in, do not refresh the page or navigate via the
+            address bar as you will be forced to re-enter your password.
+            Currently, your encryption keys are never put in browser storage
+            (in-memory) for security reasons.
           </Text>
         </Box>
       </Box>
