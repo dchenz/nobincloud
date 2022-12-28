@@ -1,13 +1,12 @@
 .file-browser-container {
-    flex-grow: 1;
+  flex-grow: 1;
 
-    .file-browser-header {
-        padding: 1em 1.5em;
-        background-color: #f5f5f5;
-    }
+  .file-browser-header {
+    padding: 1em 1.5em;
+    background-color: #f5f5f5;
+  }
 
-    .file-browser-content {
-        padding: 1.5em;
-    }
-
+  .file-browser-content {
+    padding: 1.5em;
+  }
 }

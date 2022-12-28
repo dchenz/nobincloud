@@ -24,14 +24,16 @@ const scryptDefaultOptions = {
 export function derivePasswordKey(password: string, salt: string): ArrayBuffer {
   // Key is directly as an AES256 key to decrypt wrapped DEK,
   // so it's 32 bytes long.
-  return Buffer.from(ScryptJS.syncScrypt(
-    Buffer.from(password),
-    Buffer.from(salt),
-    scryptDefaultOptions.cpu,
-    scryptDefaultOptions.memory,
-    scryptDefaultOptions.threads,
-    32,
-  ));
+  return Buffer.from(
+    ScryptJS.syncScrypt(
+      Buffer.from(password),
+      Buffer.from(salt),
+      scryptDefaultOptions.cpu,
+      scryptDefaultOptions.memory,
+      scryptDefaultOptions.threads,
+      32
+    )
+  );
 }
 
 /**
@@ -41,9 +43,12 @@ export function derivePasswordKey(password: string, salt: string): ArrayBuffer {
  * @param passwordKey AES key derived from password
  * @returns Hash to be sent to server to prove identity
  */
-export function deriveServerPasswordHash(pw: string, passwordKey: ArrayBuffer):
-  Promise<ArrayBuffer> {
-  return window.crypto.subtle.digest("SHA-512",
+export function deriveServerPasswordHash(
+  pw: string,
+  passwordKey: ArrayBuffer
+): Promise<ArrayBuffer> {
+  return window.crypto.subtle.digest(
+    "SHA-512",
     Buffer.concat([passwordKey as Buffer, Buffer.from(pw)])
   );
 }
@@ -55,7 +60,9 @@ export function deriveServerPasswordHash(pw: string, passwordKey: ArrayBuffer):
  * @param key AES key to encrypt the other AES key
  * @returns AES key, both encrypted and unencrypted
  */
-export async function generateWrappedKey(key: ArrayBuffer): Promise<ArrayBuffer[]> {
+export async function generateWrappedKey(
+  key: ArrayBuffer
+): Promise<ArrayBuffer[]> {
   const k = randomBytes(32);
   return [await encrypt(k, key), k];
 }

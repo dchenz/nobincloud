@@ -22,21 +22,30 @@ export default function App(): JSX.Element {
             <Route path="*" element={<Header />} />
           </Routes>
           <Routes>
-            <Route path={PageRoutes.login} element={
-              <RedirectSignedIn to={PageRoutes.dashboard}>
-                <LoginPage />
-              </RedirectSignedIn>
-            } />
-            <Route path={PageRoutes.register} element={
-              <RedirectSignedIn to={PageRoutes.dashboard}>
-                <RegisterPage />
-              </RedirectSignedIn>
-            } />
-            <Route path={PageRoutes.dashboard} element={
-              <RedirectSignedOut to={PageRoutes.login}>
-                <DashboardPage />
-              </RedirectSignedOut>
-            }>
+            <Route
+              path={PageRoutes.login}
+              element={
+                <RedirectSignedIn to={PageRoutes.dashboard}>
+                  <LoginPage />
+                </RedirectSignedIn>
+              }
+            />
+            <Route
+              path={PageRoutes.register}
+              element={
+                <RedirectSignedIn to={PageRoutes.dashboard}>
+                  <RegisterPage />
+                </RedirectSignedIn>
+              }
+            />
+            <Route
+              path={PageRoutes.dashboard}
+              element={
+                <RedirectSignedOut to={PageRoutes.login}>
+                  <DashboardPage />
+                </RedirectSignedOut>
+              }
+            >
               <Route index element={<MyFilesDashboard />} />
             </Route>
           </Routes>
@@ -49,14 +58,18 @@ export default function App(): JSX.Element {
 function AuthProvider(props: { children: React.ReactNode }): JSX.Element {
   const [cookies] = useCookies();
   const [accountKey, setAccountKey] = useState<ArrayBuffer | null>(null);
-  const [loggedIn, setLoggedIn] = useState<boolean>(!!cookies.session_token && !!accountKey);
+  const [loggedIn, setLoggedIn] = useState<boolean>(
+    !!cookies.session_token && !!accountKey
+  );
   return (
-    <AuthContext.Provider value={{
-      loggedIn,
-      accountKey,
-      setLoggedIn,
-      setAccountKey
-    }}>
+    <AuthContext.Provider
+      value={{
+        loggedIn,
+        accountKey,
+        setLoggedIn,
+        setAccountKey,
+      }}
+    >
       {props.children}
     </AuthContext.Provider>
   );

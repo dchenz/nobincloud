@@ -1,11 +1,11 @@
 import { createContext } from "react";
 
 type AuthCtxType = {
-  loggedIn: boolean
-  accountKey: ArrayBuffer | null
-  setLoggedIn: (_: boolean) => void
-  setAccountKey: (_: ArrayBuffer | null) => void
-}
+  loggedIn: boolean;
+  accountKey: ArrayBuffer | null;
+  setLoggedIn: (_: boolean) => void;
+  setAccountKey: (_: ArrayBuffer | null) => void;
+};
 
 export const initState: AuthCtxType = {
   loggedIn: false,

@@ -19,7 +19,6 @@ export default function Header(): JSX.Element {
     const fileForm = document.createElement("input");
     fileForm.type = "file";
     fileForm.click();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     fileForm.onchange = (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {

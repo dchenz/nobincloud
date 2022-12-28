@@ -10,5 +10,5 @@ export const ServerRoutes = {
   logout: "/api/user/logout",
   register: "/api/user/register",
   uploadInit: "/api/upload/init",
-  uploadParts: "/api/upload/parts"
+  uploadParts: "/api/upload/parts",
 };
