@@ -2,21 +2,28 @@ import { ServerRoutes } from "../const";
 import { encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
 import { arrayBufferToString, uuid } from "../crypto/utils";
+import { Response } from "../types/API";
 import {
+  FileRef,
   FileUploadDetails,
+  FolderContents,
   UploadInitResponse,
   UploadPartsResponse,
+  UUID,
 } from "../types/Files";
+import { jsonFetch } from "./helpers";
 
 const CHUNK_SIZE = 2 ** 24;
 
 export async function encryptAndUploadFile(
   fileUpload: FileUploadDetails,
   accountKey: ArrayBuffer,
-  onProgress: (current: number, total: number) => void
+  onProgress: (current: number, total: number) => void,
+  onComplete: (item: FileRef) => void
 ) {
   const [encryptedFileKey, fileKey] = await generateWrappedKey(accountKey);
   const totalChunks = Math.ceil(fileUpload.file.size / CHUNK_SIZE);
+  const fileID = uuid();
   const initResponse: UploadInitResponse = await (
     await fetch(ServerRoutes.uploadInit, {
       method: "POST",
@@ -29,7 +36,7 @@ export async function encryptAndUploadFile(
           key: arrayBufferToString(encryptedFileKey, "hex"),
           name: fileUpload.file.name,
           type: fileUpload.file.type,
-          id: uuid(),
+          id: fileID,
         },
       }),
     })
@@ -55,6 +62,34 @@ export async function encryptAndUploadFile(
           throw new Error(resp.error);
         }
         onProgress(resp.have, resp.want);
+        if (resp.have === resp.want) {
+          onComplete({
+            id: fileID,
+            name: fileUpload.file.name,
+            parentFolder: fileUpload.parentFolder,
+          });
+        }
       });
   }
+}
+
+export async function getFolderContents(
+  folderID: UUID
+): Promise<FolderContents> {
+  const url = `${ServerRoutes.listFolder}?id=${folderID}`;
+  const response: Response<FolderContents> = await jsonFetch(url);
+  if (!response.success) {
+    throw new Error(response.data);
+  }
+  return response.data;
+}
+
+export async function getRootFolderContents(): Promise<FolderContents> {
+  const response: Response<FolderContents> = await jsonFetch(
+    ServerRoutes.listFolder
+  );
+  if (!response.success) {
+    throw new Error(response.data);
+  }
+  return response.data;
 }

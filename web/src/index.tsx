@@ -8,8 +8,4 @@ if (!root) {
   throw new Error("Cannot find root element");
 }
 
-ReactDOM.createRoot(root).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+ReactDOM.createRoot(root).render(<App />);

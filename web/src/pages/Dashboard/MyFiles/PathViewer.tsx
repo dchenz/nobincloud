@@ -1,26 +1,22 @@
-import { Button, HStack, IconButton, Text } from "@chakra-ui/react";
-import React from "react";
+import { Button, HStack, Text } from "@chakra-ui/react";
+import React, { useContext } from "react";
 import { ChevronRight } from "react-bootstrap-icons";
+import FolderContext from "../../../context/FolderContext";
 
-type PathViewerProps = {
-  pathComponents: string[];
-};
-
-export default function PathViewer(props: PathViewerProps): JSX.Element {
+const PathViewer: React.FC = () => {
+  const { pwd } = useContext(FolderContext);
   return (
     <HStack>
-      {props.pathComponents.map((name, k) => (
+      {pwd.parents.map((folder, k) => (
         <React.Fragment key={k}>
-          {k > 0 ? (
-            <IconButton aria-label={name} variant="link">
-              <ChevronRight />
-            </IconButton>
-          ) : null}
+          {k > 0 ? <ChevronRight /> : null}
           <Button variant="link">
-            <Text fontSize="xl">{name}</Text>
+            <Text fontSize="xl">{folder.name === "" ? "/" : folder.name}</Text>
           </Button>
         </React.Fragment>
       ))}
     </HStack>
   );
-}
+};
+
+export default PathViewer;

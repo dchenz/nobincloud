@@ -11,4 +11,5 @@ export const ServerRoutes = {
   register: "/api/user/register",
   uploadInit: "/api/upload/init",
   uploadParts: "/api/upload/parts",
+  listFolder: "/api/folder/list",
 };

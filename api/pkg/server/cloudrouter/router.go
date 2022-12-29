@@ -43,4 +43,7 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	f := r.PathPrefix("/file").Subrouter()
 	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DownloadFile))).Methods("GET")
 	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DeleteFile))).Methods("DELETE")
+
+	d := r.PathPrefix("/folder").Subrouter()
+	d.Handle("/list", http.HandlerFunc(a.ListFolderContents)).Methods("GET")
 }

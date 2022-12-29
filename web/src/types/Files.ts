@@ -14,19 +14,25 @@ export type UploadPartsResponse = {
 };
 
 type BaseFolderObject = {
-  id: number;
+  id: UUID;
   name: string;
-  owner: string;
-  parentFolder: string | null;
+  parentFolder: UUID | null;
 };
 
-export type FileRef = BaseFolderObject & {
-  type: "f";
-};
+export type FileRef = BaseFolderObject;
 
 export type FolderRef = BaseFolderObject & {
-  type: "d";
   color: string | null;
 };
 
-export type FileNodeRef = FileRef | FolderRef;
+export type FilePath = {
+  parents: FolderRef[];
+  current: FileRef | FolderRef;
+};
+
+export type UUID = string;
+
+export type FolderContents = {
+  files: FileRef[];
+  folders: FolderRef[];
+};
