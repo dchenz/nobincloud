@@ -60,7 +60,8 @@ func GetFileMetadataString(r *http.Request, key string) (model.JSON[string], err
 func GetFileMetadataUUID(r *http.Request, key string) (model.JSON[uuid.UUID], error) {
 	fileMetadata := assemble.GetFileMetadata(r)
 	v, exists := fileMetadata[key]
-	if !exists {
+	// Root directory
+	if !exists || v == nil {
 		return model.JSON[uuid.UUID]{}, nil
 	}
 	uuidString, ok := v.(string)

@@ -33,6 +33,7 @@ export async function encryptAndUploadFile(
       body: JSON.stringify({
         total_chunks: totalChunks,
         metadata: {
+          parent_folder: fileUpload.parentFolder,
           key: arrayBufferToString(encryptedFileKey, "hex"),
           name: fileUpload.file.name,
           type: fileUpload.file.type,
