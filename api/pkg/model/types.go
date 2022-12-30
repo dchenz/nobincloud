@@ -43,6 +43,7 @@ func (s *NullBytes) Scan(value any) error {
 	if !ok {
 		return fmt.Errorf("invalid value in NullBytes")
 	}
+	s.Valid = true
 	s.Bytes = v
 	return nil
 }
@@ -52,6 +53,31 @@ func (s NullBytes) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return s.Bytes, nil
+}
+
+type Hexadecimal struct {
+	Bytes []byte
+}
+
+func (s Hexadecimal) MarshalJSON() ([]byte, error) {
+	if s.Bytes == nil {
+		return []byte("null"), nil
+	}
+	return json.Marshal(hex.EncodeToString(s.Bytes))
+}
+
+func (s *Hexadecimal) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		s.Bytes = nil
+		return nil
+	}
+	var v string
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	decodedBytes, err := hex.DecodeString(v)
+	s.Bytes = decodedBytes
+	return err
 }
 
 // Color is an RGB value represented using the 3 lower-order bytes

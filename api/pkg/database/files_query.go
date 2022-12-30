@@ -25,7 +25,7 @@ func (a *Database) GetFilesInFolder(userID int, folder uuid.UUID) ([]model.File,
 		}
 		f := model.File{
 			ID:   id,
-			Name: dbFile.Name,
+			Name: model.Hexadecimal{Bytes: dbFile.Name},
 			ParentFolder: model.JSON[uuid.UUID]{
 				Valid: dbFile.ParentFolder.Valid,
 				Value: folder,
@@ -76,7 +76,7 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 	}
 	return a.insertFile(dbmodel.File{
 		PublicID:      file.ID[:],
-		Name:          file.Name,
+		Name:          file.Name.Bytes,
 		Owner:         userID,
 		ParentFolder:  folderID,
 		SavedLocation: file.SavedLocation,

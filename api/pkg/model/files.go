@@ -10,7 +10,7 @@ type FileRef struct {
 
 type File struct {
 	ID            uuid.UUID       `json:"id"`
-	Name          string          `json:"name"`
+	Name          Hexadecimal     `json:"name"`
 	ParentFolder  JSON[uuid.UUID] `json:"parent_folder,omitempty"`
 	SavedLocation string          `json:"-"`
 	Thumbnail     JSON[[]byte]    `json:"-"`

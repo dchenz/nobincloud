@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -75,6 +76,24 @@ func GetFileMetadataUUID(r *http.Request, key string) (model.JSON[uuid.UUID], er
 	return model.JSON[uuid.UUID]{
 		Valid: true,
 		Value: uuidValue,
+	}, nil
+}
+
+func GetFileMetadataHex(r *http.Request, key string) (model.JSON[model.Hexadecimal], error) {
+	s, err := GetFileMetadataString(r, key)
+	if err != nil {
+		return model.JSON[model.Hexadecimal]{}, err
+	}
+	if !s.Valid {
+		return model.JSON[model.Hexadecimal]{}, nil
+	}
+	v, err := hex.DecodeString(s.Value)
+	if err != nil {
+		return model.JSON[model.Hexadecimal]{}, err
+	}
+	return model.JSON[model.Hexadecimal]{
+		Valid: true,
+		Value: model.Hexadecimal{Bytes: v},
 	}, nil
 }
 

@@ -9,7 +9,7 @@ import (
 type File struct {
 	ID            int
 	PublicID      []byte
-	Name          string
+	Name          []byte
 	Owner         int
 	ParentFolder  sql.NullInt32
 	SavedLocation string

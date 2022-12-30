@@ -48,7 +48,7 @@ CREATE TABLE `files` (
     -- Common between files and folders.
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     public_id BINARY(16) NOT NULL UNIQUE,
-    name VARCHAR(50) NOT NULL,
+    name BLOB NOT NULL,
     owner_id INTEGER NOT NULL REFERENCES user_accounts(id),
     parent_folder_id INTEGER REFERENCES folders(id),
     -- File-specific fields.

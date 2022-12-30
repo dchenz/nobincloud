@@ -182,3 +182,63 @@ func TestUnmarshalColor(t *testing.T) {
 		}
 	}
 }
+
+func TestMarshalHexadecimal(t *testing.T) {
+	testCases := []struct {
+		input    model.Hexadecimal
+		expected string
+	}{
+		{
+			input:    model.Hexadecimal{Bytes: []byte("hello world")},
+			expected: "\"68656c6c6f20776f726c64\"",
+		},
+		{
+			input:    model.Hexadecimal{Bytes: []byte("")},
+			expected: "\"\"",
+		},
+		{
+			input:    model.Hexadecimal{Bytes: nil},
+			expected: "null",
+		},
+	}
+	for _, tc := range testCases {
+		b, err := json.Marshal(tc.input)
+		assert.NoError(t, err)
+		assert.JSONEq(t, tc.expected, string(b))
+	}
+}
+
+func TestUnmarshalHexadecimal(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected model.Hexadecimal
+		invalid  bool
+	}{
+		{
+			input:    "\"68656c6c6f20776f726c64\"",
+			expected: model.Hexadecimal{Bytes: []byte("hello world")},
+		},
+		{
+			input:    "\"\"",
+			expected: model.Hexadecimal{Bytes: []byte{}},
+		},
+		{
+			input:    "null",
+			expected: model.Hexadecimal{Bytes: nil},
+		},
+		{
+			input:   "\"68656c6c6f20776f726c6\"",
+			invalid: true,
+		},
+	}
+	for _, tc := range testCases {
+		var s model.Hexadecimal
+		err := json.Unmarshal([]byte(tc.input), &s)
+		if tc.invalid {
+			assert.Error(t, err)
+		} else {
+			assert.NoError(t, err)
+			assert.Equal(t, tc.expected, s)
+		}
+	}
+}

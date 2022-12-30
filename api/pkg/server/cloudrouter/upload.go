@@ -19,9 +19,13 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 		assemble.RejectFile(r, http.StatusBadRequest, "missing file ID")
 		return
 	}
-	fileName, err := utils.GetFileMetadataString(r, "name")
+	fileName, err := utils.GetFileMetadataHex(r, "name")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
+		return
+	}
+	if !fileName.Valid {
+		assemble.RejectFile(r, http.StatusBadRequest, "missing file name")
 		return
 	}
 	parentFolder, err := utils.GetFileMetadataUUID(r, "parent_folder")

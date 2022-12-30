@@ -33,7 +33,7 @@ func TestListingFilesAndFolders(t *testing.T) {
 
 	imageFile := model.File{
 		ID:   uuid.New(),
-		Name: "image.png",
+		Name: model.Hexadecimal{Bytes: []byte("image.png")},
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: false,
 		},
@@ -47,7 +47,7 @@ func TestListingFilesAndFolders(t *testing.T) {
 	}
 	helloFile := model.File{
 		ID:   uuid.New(),
-		Name: "hello.mp4",
+		Name: model.Hexadecimal{Bytes: []byte("hello.mp4")},
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: true,
 			Value: videosFolder.ID,
@@ -55,7 +55,7 @@ func TestListingFilesAndFolders(t *testing.T) {
 	}
 	worldFile := model.File{
 		ID:   uuid.New(),
-		Name: "world.mp4",
+		Name: model.Hexadecimal{Bytes: []byte("world.mp4")},
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: true,
 			Value: videosFolder.ID,
@@ -137,7 +137,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			isFile: true,
 			obj: model.File{
 				ID:   uuid.MustParse("ff0d78a8-deca-4e6c-be70-e3eaec197578"),
-				Name: "image.png",
+				Name: model.Hexadecimal{Bytes: []byte("image.png")},
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: false,
 				},
@@ -145,7 +145,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			json: `
 			{
 				"id": "ff0d78a8-deca-4e6c-be70-e3eaec197578",
-				"name": "image.png",
+				"name": "696d6167652e706e67",
 				"parent_folder": null
 			}`,
 		},
@@ -170,7 +170,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			isFile: true,
 			obj: model.File{
 				ID:   uuid.MustParse("8a79610b-7eb0-4038-9846-12e2d5891ddc"),
-				Name: "hello.mp4",
+				Name: model.Hexadecimal{Bytes: []byte("hello.mp4")},
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: true,
 					Value: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
@@ -179,7 +179,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			json: `
 			{
 				"id": "8a79610b-7eb0-4038-9846-12e2d5891ddc",
-				"name": "hello.mp4",
+				"name": "68656c6c6f2e6d7034",
 				"parent_folder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
 			}`,
 		},
