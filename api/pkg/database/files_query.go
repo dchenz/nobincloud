@@ -80,6 +80,10 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 		Owner:         userID,
 		ParentFolder:  folderID,
 		SavedLocation: file.SavedLocation,
+		Thumbnail: model.NullBytes{
+			Valid: file.Thumbnail.Valid,
+			Bytes: file.Thumbnail.Value,
+		},
 	})
 }
 

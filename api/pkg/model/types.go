@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql/driver"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -26,6 +27,31 @@ func (s *JSON[T]) UnmarshalJSON(b []byte) error {
 	err := json.Unmarshal(b, &s.Value)
 	s.Valid = (err == nil)
 	return err
+}
+
+type NullBytes struct {
+	Valid bool
+	Bytes []byte
+}
+
+func (s *NullBytes) Scan(value any) error {
+	if value == nil {
+		s.Valid = false
+		return nil
+	}
+	v, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("invalid value in NullBytes")
+	}
+	s.Bytes = v
+	return nil
+}
+
+func (s NullBytes) Value() (driver.Value, error) {
+	if !s.Valid {
+		return nil, nil
+	}
+	return s.Bytes, nil
 }
 
 // Color is an RGB value represented using the 3 lower-order bytes

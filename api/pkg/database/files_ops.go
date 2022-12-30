@@ -94,8 +94,9 @@ func (a *Database) insertFile(file dbmodel.File) error {
 			name,
 			owner_id,
 			parent_folder_id,
-			saved_location
-	  	  ) VALUES (?, ?, ?, ?, ?);`
+			saved_location,
+			thumbnail
+	  	  ) VALUES (?, ?, ?, ?, ?, ?);`
 	_, err := a.conn.Exec(
 		q,
 		file.PublicID,
@@ -103,6 +104,7 @@ func (a *Database) insertFile(file dbmodel.File) error {
 		file.Owner,
 		file.ParentFolder,
 		file.SavedLocation,
+		file.Thumbnail,
 	)
 	return err
 }

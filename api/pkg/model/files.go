@@ -13,6 +13,7 @@ type File struct {
 	Name          string          `json:"name"`
 	ParentFolder  JSON[uuid.UUID] `json:"parent_folder,omitempty"`
 	SavedLocation string          `json:"-"`
+	Thumbnail     JSON[[]byte]    `json:"-"`
 }
 
 type Folder struct {

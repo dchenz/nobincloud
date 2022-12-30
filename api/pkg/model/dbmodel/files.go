@@ -2,6 +2,8 @@ package dbmodel
 
 import (
 	"database/sql"
+
+	"github.com/dchenz/nobincloud/pkg/model"
 )
 
 type File struct {
@@ -11,6 +13,7 @@ type File struct {
 	Owner         int
 	ParentFolder  sql.NullInt32
 	SavedLocation string
+	Thumbnail     model.NullBytes
 }
 
 type Folder struct {

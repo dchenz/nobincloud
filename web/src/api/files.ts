@@ -2,6 +2,7 @@ import { ServerRoutes } from "../const";
 import { encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
 import { arrayBufferToString, uuid } from "../crypto/utils";
+import { createCustomFileThumbnail } from "../misc/thumbnails";
 import { Response } from "../types/API";
 import {
   FileRef,
@@ -24,6 +25,7 @@ export async function encryptAndUploadFile(
   const [encryptedFileKey, fileKey] = await generateWrappedKey(accountKey);
   const totalChunks = Math.ceil(fileUpload.file.size / CHUNK_SIZE);
   const fileID = uuid();
+  const thumbnail = await createCustomFileThumbnail(fileUpload.file);
   const initResponse: UploadInitResponse = await (
     await fetch(ServerRoutes.uploadInit, {
       method: "POST",
@@ -34,6 +36,9 @@ export async function encryptAndUploadFile(
         total_chunks: totalChunks,
         metadata: {
           parent_folder: fileUpload.parentFolder,
+          thumbnail: thumbnail
+            ? arrayBufferToString(await encrypt(thumbnail, fileKey), "hex")
+            : null,
           key: arrayBufferToString(encryptedFileKey, "hex"),
           name: fileUpload.file.name,
           type: fileUpload.file.type,

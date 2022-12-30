@@ -52,5 +52,6 @@ CREATE TABLE `files` (
     owner_id INTEGER NOT NULL REFERENCES user_accounts(id),
     parent_folder_id INTEGER REFERENCES folders(id),
     -- File-specific fields.
-    saved_location TEXT NOT NULL
+    saved_location TEXT NOT NULL,
+    thumbnail BLOB
 );

@@ -44,7 +44,7 @@ func GetPathID(r *http.Request, name string) (string, error) {
 func GetFileMetadataString(r *http.Request, key string) (model.JSON[string], error) {
 	fileMetadata := assemble.GetFileMetadata(r)
 	v, exists := fileMetadata[key]
-	if !exists {
+	if !exists || v == nil {
 		return model.JSON[string]{}, nil
 	}
 	fileName, ok := v.(string)
