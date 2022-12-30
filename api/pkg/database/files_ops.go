@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 
+	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
 )
 
@@ -126,4 +127,14 @@ func (a *Database) insertFolder(folder dbmodel.Folder) error {
 		folder.Color,
 	)
 	return err
+}
+
+func (a *Database) getFileThumbnail(ownerID int, fileID int) (model.NullBytes, error) {
+	q := `SELECT thumbnail
+		  FROM files
+		  WHERE owner_id = ? AND id = ?;`
+	row := a.conn.QueryRow(q, ownerID, fileID)
+	var b model.NullBytes
+	err := row.Scan(&b)
+	return b, err
 }

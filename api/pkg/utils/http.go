@@ -33,13 +33,13 @@ func GetBody(r *http.Request, dest interface{}) error {
 	return err
 }
 
-func GetPathID(r *http.Request, name string) (string, error) {
+func GetPathUUID(r *http.Request, name string) (uuid.UUID, error) {
 	vars := mux.Vars(r)
 	value, exists := vars[name]
 	if !exists {
-		return "", fmt.Errorf("missing path variable")
+		return uuid.Nil, fmt.Errorf("missing path variable")
 	}
-	return value, nil
+	return uuid.Parse(value)
 }
 
 func GetFileMetadataString(r *http.Request, key string) (model.JSON[string], error) {

@@ -103,3 +103,18 @@ func (a *Database) CreateFolder(userID int, folder model.Folder) error {
 		},
 	})
 }
+
+func (a *Database) GetThumbnail(userID int, file uuid.UUID) ([]byte, error) {
+	fileID, err := a.findFileID(file[:])
+	if err != nil {
+		return nil, err
+	}
+	thumbnail, err := a.getFileThumbnail(userID, fileID)
+	if err != nil {
+		return nil, err
+	}
+	if !thumbnail.Valid {
+		return nil, nil
+	}
+	return thumbnail.Bytes, nil
+}

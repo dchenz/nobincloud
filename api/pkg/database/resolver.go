@@ -6,6 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
+func (a *Database) findFileID(id []byte) (int, error) {
+	q := `SELECT id
+		  FROM files
+		  WHERE public_id = ?`
+	res := a.conn.QueryRow(q, id)
+	var fileID int
+	err := res.Scan(&fileID)
+	return fileID, err
+}
+
 func (a *Database) findFolderID(id []byte) (int, error) {
 	q := `SELECT id
 		  FROM folders
