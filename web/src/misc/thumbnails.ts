@@ -1,3 +1,4 @@
+import { getThumbnail } from "../api/files";
 import { FileRef } from "../types/Files";
 
 const THUMBNAIL_SIZE = 64;
@@ -26,8 +27,15 @@ export async function createCustomFileThumbnail(
  * @param file File object
  * @returns Returns the src attribute for a thumbnail image
  */
-export function loadFileThumbnail(file: FileRef): string {
-  return "";
+export async function loadFileThumbnail(
+  file: FileRef,
+  accountKey: ArrayBuffer
+): Promise<string> {
+  const thumbnail = await getThumbnail(file, accountKey);
+  if (thumbnail) {
+    return thumbnail;
+  }
+  return "/static/media/file-icon.png";
 }
 
 async function createImageThumbnail(f: File): Promise<ArrayBuffer> {

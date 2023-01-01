@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { getThumbnail } from "../../../api/files";
 import AuthContext from "../../../context/AuthContext";
+import { loadFileThumbnail } from "../../../misc/thumbnails";
 import { FileRef } from "../../../types/Files";
 
 type FileTileProps = {
@@ -16,13 +16,13 @@ const FileTile: React.FC<FileTileProps> = ({ file }) => {
   }
 
   useEffect(() => {
-    getThumbnail(file, accountKey).then((t) => setThumbnail(t ?? ""));
+    loadFileThumbnail(file, accountKey).then((t) => setThumbnail(t ?? ""));
   }, []);
 
   return (
     <Box>
-      <img src={thumbnail} alt={file.name} />
-      {file.name}
+      <img src={thumbnail} alt={file.name} width="96px" />
+      <span>{file.name}</span>
     </Box>
   );
 };
