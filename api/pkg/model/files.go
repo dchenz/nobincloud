@@ -11,8 +11,8 @@ type FileRef struct {
 type File struct {
 	ID            uuid.UUID       `json:"id"`
 	Name          Hexadecimal     `json:"name"`
-	ParentFolder  JSON[uuid.UUID] `json:"parent_folder,omitempty"`
-	EncryptionKey Hexadecimal     `json:"file_key"`
+	ParentFolder  JSON[uuid.UUID] `json:"parentFolder,omitempty"`
+	EncryptionKey Hexadecimal     `json:"fileKey"`
 	SavedLocation string          `json:"-"`
 	Thumbnail     JSON[[]byte]    `json:"-"`
 }
@@ -20,6 +20,6 @@ type File struct {
 type Folder struct {
 	ID           uuid.UUID       `json:"id"`
 	Name         string          `json:"name"`
-	ParentFolder JSON[uuid.UUID] `json:"parent_folder,omitempty"`
+	ParentFolder JSON[uuid.UUID] `json:"parentFolder,omitempty"`
 	Color        JSON[Color]     `json:"color,omitempty"`
 }

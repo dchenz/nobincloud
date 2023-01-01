@@ -152,8 +152,8 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "ff0d78a8-deca-4e6c-be70-e3eaec197578",
 				"name": "696d6167652e706e67",
-				"file_key": "74657374",
-				"parent_folder": null
+				"fileKey": "74657374",
+				"parentFolder": null
 			}`,
 		},
 		{
@@ -169,7 +169,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
 				"name": "videos",
-				"parent_folder": null,
+				"parentFolder": null,
 				"color": null
 			}`,
 		},
@@ -188,8 +188,8 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "8a79610b-7eb0-4038-9846-12e2d5891ddc",
 				"name": "68656c6c6f2e6d7034",
-				"file_key": "74657374",
-				"parent_folder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
+				"fileKey": "74657374",
+				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
 			}`,
 		},
 		{
@@ -210,7 +210,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "151f87f0-e77b-4381-810e-6a18ba953b93",
 				"name": "my_files",
-				"parent_folder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
+				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
 				"color": "ff9900"
 			}`,
 		},

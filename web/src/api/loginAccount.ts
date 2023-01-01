@@ -31,12 +31,11 @@ export async function loginAccount(
     },
     body: JSON.stringify({
       email: details.email,
-      password_hash: arrayBufferToString(passwordHash, "hex"),
+      passwordHash: arrayBufferToString(passwordHash, "hex"),
     }),
   });
   if (response.success) {
-    response.data.accountKey = Buffer.from(response.data.account_key, "hex");
-    delete response.data.account_key;
+    response.data.accountKey = Buffer.from(response.data.accountKey, "hex");
     response.data.passwordKey = passwordKey;
   }
   return response;

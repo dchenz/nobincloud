@@ -93,24 +93,10 @@ export async function getFolderContents(
   if (!response.success) {
     throw new Error(response.data);
   }
-  const files = [];
   for (const f of response.data.files) {
-    f.fileKey = Buffer.from(f.file_key, "hex");
-    f.parentFolder = f.parent_folder;
-    delete f.file_key;
-    delete f.parent_folder;
-    files.push(f);
+    f.fileKey = Buffer.from(f.fileKey, "hex");
   }
-  const folders = [];
-  for (const f of response.data.folders) {
-    f.parentFolder = f.parent_folder;
-    delete f.parent_folder;
-    folders.push(f);
-  }
-  return {
-    files,
-    folders,
-  };
+  return response.data;
 }
 
 export async function getRootFolderContents(): Promise<FolderContents> {
@@ -118,24 +104,10 @@ export async function getRootFolderContents(): Promise<FolderContents> {
   if (!response.success) {
     throw new Error(response.data);
   }
-  const files = [];
   for (const f of response.data.files) {
-    f.fileKey = Buffer.from(f.file_key, "hex");
-    f.parentFolder = f.parent_folder;
-    delete f.file_key;
-    delete f.parent_folder;
-    files.push(f);
+    f.fileKey = Buffer.from(f.fileKey, "hex");
   }
-  const folders = [];
-  for (const f of response.data.folders) {
-    f.parentFolder = f.parent_folder;
-    delete f.parent_folder;
-    folders.push(f);
-  }
-  return {
-    files,
-    folders,
-  };
+  return response.data;
 }
 
 export async function getThumbnail(
@@ -152,6 +124,7 @@ export async function getThumbnail(
     return null; // No thumbnail
   }
   const encryptedThumbnail = Buffer.from(response.data, "hex");
+  console.log(file.fileKey);
   const fileKey = await decrypt(file.fileKey, accountKey);
   if (!fileKey) {
     throw new Error("key cannot be decrypted");
