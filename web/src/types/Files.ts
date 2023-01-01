@@ -19,7 +19,9 @@ type BaseFolderObject = {
   parentFolder: UUID | null;
 };
 
-export type FileRef = BaseFolderObject;
+export type FileRef = BaseFolderObject & {
+  fileKey: ArrayBuffer;
+};
 
 export type FolderRef = BaseFolderObject & {
   color: string | null;

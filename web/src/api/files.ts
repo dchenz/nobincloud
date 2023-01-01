@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import { ServerRoutes } from "../const";
-import { encrypt } from "../crypto/cipher";
+import { decrypt, encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
 import { arrayBufferToString, uuid } from "../crypto/utils";
 import { createCustomFileThumbnail } from "../misc/thumbnails";
@@ -78,6 +78,7 @@ export async function encryptAndUploadFile(
             id: fileID,
             name: fileUpload.file.name,
             parentFolder: fileUpload.parentFolder,
+            fileKey: encryptedFileKey,
           });
         }
       });
@@ -88,19 +89,77 @@ export async function getFolderContents(
   folderID: UUID
 ): Promise<FolderContents> {
   const url = `${ServerRoutes.listFolder}?id=${folderID}`;
-  const response: Response<FolderContents> = await jsonFetch(url);
+  const response = await jsonFetch(url);
   if (!response.success) {
     throw new Error(response.data);
   }
-  return response.data;
+  const files = [];
+  for (const f of response.data.files) {
+    f.fileKey = Buffer.from(f.file_key, "hex");
+    f.parentFolder = f.parent_folder;
+    delete f.file_key;
+    delete f.parent_folder;
+    files.push(f);
+  }
+  const folders = [];
+  for (const f of response.data.folders) {
+    f.parentFolder = f.parent_folder;
+    delete f.parent_folder;
+    folders.push(f);
+  }
+  return {
+    files,
+    folders,
+  };
 }
 
 export async function getRootFolderContents(): Promise<FolderContents> {
-  const response: Response<FolderContents> = await jsonFetch(
-    ServerRoutes.listFolder
+  const response = await jsonFetch(ServerRoutes.listFolder);
+  if (!response.success) {
+    throw new Error(response.data);
+  }
+  const files = [];
+  for (const f of response.data.files) {
+    f.fileKey = Buffer.from(f.file_key, "hex");
+    f.parentFolder = f.parent_folder;
+    delete f.file_key;
+    delete f.parent_folder;
+    files.push(f);
+  }
+  const folders = [];
+  for (const f of response.data.folders) {
+    f.parentFolder = f.parent_folder;
+    delete f.parent_folder;
+    folders.push(f);
+  }
+  return {
+    files,
+    folders,
+  };
+}
+
+export async function getThumbnail(
+  file: FileRef,
+  accountKey: ArrayBuffer
+): Promise<string | null> {
+  const response: Response<string | null> = await jsonFetch(
+    `${ServerRoutes.thumbnail}/${file.id}`
   );
   if (!response.success) {
     throw new Error(response.data);
   }
-  return response.data;
+  if (!response.data) {
+    return null; // No thumbnail
+  }
+  const encryptedThumbnail = Buffer.from(response.data, "hex");
+  const fileKey = await decrypt(file.fileKey, accountKey);
+  if (!fileKey) {
+    throw new Error("key cannot be decrypted");
+  }
+  const thumbnailDataURI = await decrypt(encryptedThumbnail, fileKey);
+  if (!thumbnailDataURI) {
+    throw new Error("file cannot be decrypted");
+  }
+  const dataURI = arrayBufferToString(thumbnailDataURI, "base64");
+  return "data:image/jpeg;base64," + dataURI;
 }

@@ -18,6 +18,7 @@ export const initState: FolderCtxType = {
       id: "00000000-0000-0000-0000-000000000000",
       name: "",
       parentFolder: null,
+      fileKey: new ArrayBuffer(0),
     },
     parents: [],
   },
