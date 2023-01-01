@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Image, Text } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import AuthContext from "../../../context/AuthContext";
 import { loadFileThumbnail } from "../../../misc/thumbnails";
@@ -20,9 +20,13 @@ const FileTile: React.FC<FileTileProps> = ({ file }) => {
   }, []);
 
   return (
-    <Box>
-      <img src={thumbnail} alt={file.name} width="96px" />
-      <span>{file.name}</span>
+    <Box width={200}>
+      <Image src={thumbnail} alt={file.name} width="96px" margin="0 auto" />
+      <Box p={3}>
+        <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
+          {file.name}
+        </Text>
+      </Box>
     </Box>
   );
 };
