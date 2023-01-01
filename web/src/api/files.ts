@@ -86,21 +86,13 @@ export async function encryptAndUploadFile(
 }
 
 export async function getFolderContents(
-  folderID: UUID
+  folderID: UUID | null
 ): Promise<FolderContents> {
-  const url = `${ServerRoutes.listFolder}?id=${folderID}`;
+  let url = ServerRoutes.listFolder;
+  if (folderID) {
+    url += `?id=${folderID}`;
+  }
   const response = await jsonFetch(url);
-  if (!response.success) {
-    throw new Error(response.data);
-  }
-  for (const f of response.data.files) {
-    f.fileKey = Buffer.from(f.fileKey, "hex");
-  }
-  return response.data;
-}
-
-export async function getRootFolderContents(): Promise<FolderContents> {
-  const response = await jsonFetch(ServerRoutes.listFolder);
   if (!response.success) {
     throw new Error(response.data);
   }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { getFolderContents, getRootFolderContents } from "../../api/files";
+import { getFolderContents } from "../../api/files";
 import FolderContext, { initState } from "../../context/FolderContext";
 import {
   FilePath,
@@ -31,7 +31,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     // Root directory has nothing above it.
     const contentsRequest = pwd.parents.length
       ? getFolderContents(pwd.current.id)
-      : getRootFolderContents();
+      : getFolderContents(null);
     contentsRequest
       .then((contentsResult) => setContents(contentsResult))
       .catch(console.error)
