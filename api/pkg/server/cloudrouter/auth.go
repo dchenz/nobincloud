@@ -68,3 +68,41 @@ func (a *CloudRouter) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.ResponseSuccess(w, nil)
 }
+
+func (a *CloudRouter) LockedLogin(w http.ResponseWriter, r *http.Request) {
+	_, email := a.whoami(r)
+	var login model.LockedLoginRequest
+	if err := utils.GetBody(r, &login); err != nil {
+		utils.RespondFail(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := utils.Validate().Struct(login); err != nil {
+		utils.RespondFail(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	success, err := a.Database.CheckUserCredentials(model.LoginRequest{
+		Email:        email,
+		PasswordHash: login.PasswordHash,
+	})
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	if !success {
+		utils.RespondFail(w, http.StatusOK, "login failed")
+		return
+	}
+	key, err := a.Database.GetAccountEncryptionKey(email)
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	utils.ResponseSuccess(w, model.LoginResponse{
+		AccountEncryptionKey: key,
+	})
+}
+
+func (a *CloudRouter) WhoAmI(w http.ResponseWriter, r *http.Request) {
+	_, email := a.whoami(r)
+	utils.ResponseSuccess(w, email)
+}

@@ -23,6 +23,8 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	u.Handle("/login", http.HandlerFunc(a.Login)).Methods("POST")
 	u.Handle("/logout", http.HandlerFunc(a.Logout)).Methods("POST")
 	u.Handle("/register", http.HandlerFunc(a.SignUpNewUser)).Methods("POST")
+	u.Handle("/unlock", a.authenticatedMiddleware(http.HandlerFunc(a.LockedLogin))).Methods("POST")
+	u.Handle("/whoami", a.authenticatedMiddleware(http.HandlerFunc(a.WhoAmI))).Methods("GET")
 
 	c := r.PathPrefix("/upload").Subrouter()
 

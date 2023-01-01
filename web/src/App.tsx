@@ -1,6 +1,6 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useCookies } from "react-cookie";
+import { CookiesProvider, useCookies } from "react-cookie";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import RedirectSignedIn from "./components/RedirectSignedIn";
@@ -15,42 +15,37 @@ import RegisterPage from "./pages/Register";
 export default function App(): JSX.Element {
   return (
     <ChakraProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path={PageRoutes.dashboard + "*"} element={null} />
-            <Route path="*" element={<Header />} />
-          </Routes>
-          <Routes>
-            <Route
-              path={PageRoutes.login}
-              element={
-                <RedirectSignedIn to={PageRoutes.dashboard}>
-                  <LoginPage />
-                </RedirectSignedIn>
-              }
-            />
-            <Route
-              path={PageRoutes.register}
-              element={
-                <RedirectSignedIn to={PageRoutes.dashboard}>
-                  <RegisterPage />
-                </RedirectSignedIn>
-              }
-            />
-            <Route
-              path={PageRoutes.dashboard}
-              element={
-                <RedirectSignedOut to={PageRoutes.login}>
-                  <DashboardPage />
-                </RedirectSignedOut>
-              }
-            >
-              <Route index element={<MyFilesDashboard />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <CookiesProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path={PageRoutes.dashboard + "*"} element={null} />
+              <Route path="*" element={<Header />} />
+            </Routes>
+            <Routes>
+              <Route path={PageRoutes.login} element={<LoginPage />} />
+              <Route
+                path={PageRoutes.register}
+                element={
+                  <RedirectSignedIn to={PageRoutes.dashboard}>
+                    <RegisterPage />
+                  </RedirectSignedIn>
+                }
+              />
+              <Route
+                path={PageRoutes.dashboard}
+                element={
+                  <RedirectSignedOut to={PageRoutes.login}>
+                    <DashboardPage />
+                  </RedirectSignedOut>
+                }
+              >
+                <Route index element={<MyFilesDashboard />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </CookiesProvider>
     </ChakraProvider>
   );
 }

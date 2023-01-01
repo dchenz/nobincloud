@@ -40,3 +40,28 @@ export async function loginAccount(
   }
   return response;
 }
+
+export async function unlockAccount(
+  password: string
+): Promise<Response<SuccessfulLoginResult>> {
+  const emailResponse: Response<string> = await jsonFetch(ServerRoutes.whoami);
+  if (!emailResponse.success) {
+    throw new Error(emailResponse.data);
+  }
+  const passwordKey = derivePasswordKey(password, emailResponse.data);
+  const passwordHash = await deriveServerPasswordHash(password, passwordKey);
+  const response = await jsonFetch(ServerRoutes.unlock, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      passwordHash: arrayBufferToString(passwordHash, "hex"),
+    }),
+  });
+  if (response.success) {
+    response.data.accountKey = Buffer.from(response.data.accountKey, "hex");
+    response.data.passwordKey = passwordKey;
+  }
+  return response;
+}

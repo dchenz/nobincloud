@@ -18,3 +18,7 @@ type LoginRequest struct {
 	Email        string `json:"email" validate:"required,email"`
 	PasswordHash string `json:"passwordHash" validate:"required,sha512"`
 }
+
+type LockedLoginRequest struct {
+	PasswordHash string `json:"passwordHash" validate:"required,sha512"`
+}
