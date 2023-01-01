@@ -5,7 +5,7 @@ import {
   generateWrappedKey,
 } from "../crypto/password";
 import { arrayBufferToString } from "../crypto/utils";
-import { AccountSignupDetails } from "../types/Account";
+import { AccountSignupDetails, SuccessfulSignupResult } from "../types/Account";
 import { Response } from "../types/API";
 import { jsonFetch } from "./helpers";
 
@@ -17,15 +17,17 @@ import { jsonFetch } from "./helpers";
  */
 export async function registerAccount(
   details: AccountSignupDetails
-): Promise<Response> {
+): Promise<Response<SuccessfulSignupResult>> {
   const passwordKey = derivePasswordKey(details.password, details.email);
   const passwordHash = await deriveServerPasswordHash(
     details.password,
     passwordKey
   );
-  const [encryptedAccountKey] = await generateWrappedKey(passwordKey);
+  const [encryptedAccountKey, accountKey] = await generateWrappedKey(
+    passwordKey
+  );
 
-  return await jsonFetch(ServerRoutes.register, {
+  const response = await jsonFetch(ServerRoutes.register, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -37,4 +39,8 @@ export async function registerAccount(
       accountKey: arrayBufferToString(encryptedAccountKey, "hex"),
     }),
   });
+  if (response.success) {
+    response.data = { accountKey };
+  }
+  return response;
 }

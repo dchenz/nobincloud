@@ -13,3 +13,7 @@ export type SuccessfulLoginResult = {
   passwordKey: ArrayBuffer;
   accountKey: ArrayBuffer;
 };
+
+export type SuccessfulSignupResult = {
+  accountKey: ArrayBuffer;
+};

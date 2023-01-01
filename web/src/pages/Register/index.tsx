@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Center,
@@ -10,18 +11,37 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { registerAccount } from "../../api/registerAccount";
+import { PageRoutes } from "../../const";
+import AuthContext from "../../context/AuthContext";
 
 export default function RegisterPage(): JSX.Element {
+  const navigate = useNavigate();
+  const ctx = useContext(AuthContext);
   const [email, setEmail] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [failedSignup, setFailedSignup] = useState<string>("");
+
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newUser = { email, nickname, password };
-    registerAccount(newUser).then(console.log).catch(console.error);
+    registerAccount(newUser)
+      .then((result) => {
+        if (result.success) {
+          // Store the decrypted AES key on successful login
+          // as this will be used to encrypt/decrypt files.
+          ctx.setAccountKey(result.data.accountKey);
+          ctx.setLoggedIn(true);
+          // Redirect to personal dashboard.
+          navigate(PageRoutes.dashboard);
+        } else {
+          setFailedSignup(result.data);
+        }
+      })
+      .catch(console.error);
   };
   return (
     <Center p={12}>
@@ -31,7 +51,13 @@ export default function RegisterPage(): JSX.Element {
           <Stack gap={5}>
             <FormControl>
               <FormLabel>Email</FormLabel>
-              <Input type="email" onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                type="email"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFailedSignup("");
+                }}
+              />
             </FormControl>
             <FormControl>
               <FormLabel>Nickname</FormLabel>
@@ -48,6 +74,9 @@ export default function RegisterPage(): JSX.Element {
               </FormHelperText>
             </FormControl>
             <Button type="submit">Create</Button>
+            {failedSignup ? (
+              <Alert status="warning">{failedSignup}</Alert>
+            ) : null}
           </Stack>
         </form>
         <Box mt={8}>

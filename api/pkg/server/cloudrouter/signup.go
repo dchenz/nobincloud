@@ -27,5 +27,16 @@ func (a *CloudRouter) SignUpNewUser(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	utils.ResponseSuccess(w, user.Email)
+	if err := a.SessionManager.RenewToken(r.Context()); err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	accountID, err := a.Database.ResolveAccountID(user.Email)
+	if err != nil {
+		utils.RespondError(w, err.Error())
+		return
+	}
+	a.SessionManager.Put(r.Context(), "current_user_id", accountID)
+	a.SessionManager.Put(r.Context(), "current_user_email", user.Email)
+	utils.ResponseSuccess(w, nil)
 }
