@@ -56,10 +56,10 @@ export default function App(): JSX.Element {
 }
 
 function AuthProvider(props: { children: React.ReactNode }): JSX.Element {
-  const [cookies] = useCookies();
+  const [cookies] = useCookies(["signed_in"]);
   const [accountKey, setAccountKey] = useState<ArrayBuffer | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean>(
-    !!cookies.session_token && !!accountKey
+    !!cookies.signed_in && !!accountKey
   );
   return (
     <AuthContext.Provider

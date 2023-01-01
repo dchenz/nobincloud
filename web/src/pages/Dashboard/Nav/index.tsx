@@ -10,7 +10,7 @@ import "./styles.scss";
 
 export default function DashboardPage(): JSX.Element {
   const { setLoggedIn, setAccountKey } = useContext(AuthContext);
-  const clearCookies = useCookies()[2];
+  const clearCookies = useCookies(["session", "signed_in"])[2];
   return (
     <div className="nav-drawer">
       <Stack as="nav" gap={2} flexGrow={1}>
@@ -23,7 +23,8 @@ export default function DashboardPage(): JSX.Element {
             aria-label="logout"
             onClick={async () => {
               await logoutAccount();
-              clearCookies("session_token");
+              clearCookies("session");
+              clearCookies("signed_in");
               setAccountKey(null);
               setLoggedIn(false);
             }}
