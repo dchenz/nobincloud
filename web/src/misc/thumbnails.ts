@@ -35,6 +35,9 @@ export async function loadFileThumbnail(
   if (thumbnail) {
     return thumbnail;
   }
+  if (file.mimetype.startsWith("video/")) {
+    return "/static/media/video-icon.png";
+  }
   return "/static/media/file-icon.png";
 }
 

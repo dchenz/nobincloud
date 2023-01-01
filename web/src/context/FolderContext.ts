@@ -19,6 +19,7 @@ export const initState: FolderCtxType = {
       name: "",
       parentFolder: null,
       fileKey: new ArrayBuffer(0),
+      mimetype: "",
     },
     parents: [],
   },

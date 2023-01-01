@@ -147,13 +147,15 @@ func TestJSONFilesAndFolders(t *testing.T) {
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: false,
 				},
+				MimeType: "image/png",
 			},
 			json: `
 			{
 				"id": "ff0d78a8-deca-4e6c-be70-e3eaec197578",
 				"name": "696d6167652e706e67",
 				"fileKey": "74657374",
-				"parentFolder": null
+				"parentFolder": null,
+				"mimetype": "image/png"
 			}`,
 		},
 		{
@@ -183,13 +185,15 @@ func TestJSONFilesAndFolders(t *testing.T) {
 					Valid: true,
 					Value: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
 				},
+				MimeType: "video/mp4",
 			},
 			json: `
 			{
 				"id": "8a79610b-7eb0-4038-9846-12e2d5891ddc",
 				"name": "68656c6c6f2e6d7034",
 				"fileKey": "74657374",
-				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
+				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
+				"mimetype": "video/mp4"
 			}`,
 		},
 		{

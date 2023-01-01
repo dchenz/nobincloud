@@ -21,6 +21,7 @@ type BaseFolderObject = {
 
 export type FileRef = BaseFolderObject & {
   fileKey: ArrayBuffer;
+  mimetype: string;
 };
 
 export type FolderRef = BaseFolderObject & {

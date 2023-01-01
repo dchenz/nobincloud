@@ -15,6 +15,7 @@ type File struct {
 	EncryptionKey []byte
 	SavedLocation string
 	Thumbnail     model.NullBytes
+	MimeType      string
 }
 
 type Folder struct {

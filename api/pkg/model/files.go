@@ -15,6 +15,7 @@ type File struct {
 	EncryptionKey Hexadecimal     `json:"fileKey"`
 	SavedLocation string          `json:"-"`
 	Thumbnail     JSON[[]byte]    `json:"-"`
+	MimeType      string          `json:"mimetype"`
 }
 
 type Folder struct {

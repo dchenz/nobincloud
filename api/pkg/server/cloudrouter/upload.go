@@ -37,6 +37,15 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 		assemble.RejectFile(r, http.StatusBadRequest, "missing file name")
 		return
 	}
+	fileType, err := utils.GetFileMetadataString(r, "type")
+	if err != nil {
+		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
+		return
+	}
+	if !fileType.Valid {
+		fileType.Valid = true
+		fileType.Value = "application/octet-stream"
+	}
 	parentFolder, err := utils.GetFileMetadataUUID(r, "parent_folder")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
@@ -70,6 +79,7 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 		EncryptionKey: fileKey.Value,
 		SavedLocation: filePath,
 		Thumbnail:     thumbnail,
+		MimeType:      fileType.Value,
 	}
 	if err := a.Database.CreateFile(userID, f); err != nil {
 		assemble.RejectFile(r, http.StatusInternalServerError, err.Error())

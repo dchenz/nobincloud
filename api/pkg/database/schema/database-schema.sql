@@ -54,5 +54,6 @@ CREATE TABLE `files` (
     parent_folder_id INTEGER REFERENCES folders(id),
     -- File-specific fields.
     saved_location TEXT NOT NULL,
-    thumbnail BLOB
+    thumbnail BLOB,
+    mimetype VARCHAR(256) NOT NULL
 );

@@ -32,6 +32,7 @@ func (a *Database) GetFilesInFolder(userID int, folder uuid.UUID) ([]model.File,
 				Value: folder,
 			},
 			SavedLocation: dbFile.SavedLocation,
+			MimeType:      dbFile.MimeType,
 		}
 		res = append(res, f)
 	}
@@ -86,6 +87,7 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 			Valid: file.Thumbnail.Valid,
 			Bytes: file.Thumbnail.Value,
 		},
+		MimeType: file.MimeType,
 	})
 }
 
