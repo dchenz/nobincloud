@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { getFolderContents } from "../../api/files";
+import AuthContext from "../../context/AuthContext";
 import FolderContext, { initState } from "../../context/FolderContext";
 import {
   FilePath,
@@ -25,13 +26,17 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
   const [pwd, setPwd] = useState<FilePath>(initState.pwd);
   const [contents, setContents] = useState<FolderContents>(initState.contents);
   const [loading, setLoading] = useState<boolean>(false);
+  const { accountKey } = useContext(AuthContext);
+  if (!accountKey) {
+    throw new Error();
+  }
 
   useEffect(() => {
     setLoading(true);
     // Root directory has nothing above it.
     const contentsRequest = pwd.parents.length
-      ? getFolderContents(pwd.current.id)
-      : getFolderContents(null);
+      ? getFolderContents(pwd.current.id, accountKey)
+      : getFolderContents(null, accountKey);
     contentsRequest
       .then((contentsResult) => setContents(contentsResult))
       .catch(console.error)
