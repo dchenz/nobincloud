@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider, Divider, Heading } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -42,6 +42,21 @@ export default function App(): JSX.Element {
               >
                 <Route index element={<MyFilesDashboard />} />
               </Route>
+              <Route
+                path="/"
+                element={
+                  <Box p={8}>
+                    <Heading>
+                      Encrypted cloud storage. Server sees nothing!
+                    </Heading>
+                    <Divider my={5} />
+                    <img
+                      src="https://imgs.xkcd.com/comics/security.png"
+                      width="600px"
+                    />
+                  </Box>
+                }
+              />
             </Routes>
           </BrowserRouter>
         </AuthProvider>
