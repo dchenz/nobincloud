@@ -24,8 +24,9 @@ func (a *Database) GetFilesInFolder(userID int, folder uuid.UUID) ([]model.File,
 			return nil, err
 		}
 		f := model.File{
-			ID:   id,
-			Name: model.Hexadecimal{Bytes: dbFile.Name},
+			ID:            id,
+			Name:          model.Hexadecimal{Bytes: dbFile.Name},
+			EncryptionKey: model.Hexadecimal{Bytes: dbFile.EncryptionKey},
 			ParentFolder: model.JSON[uuid.UUID]{
 				Valid: dbFile.ParentFolder.Valid,
 				Value: folder,
@@ -79,6 +80,7 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 		Name:          file.Name.Bytes,
 		Owner:         userID,
 		ParentFolder:  folderID,
+		EncryptionKey: file.EncryptionKey.Bytes,
 		SavedLocation: file.SavedLocation,
 		Thumbnail: model.NullBytes{
 			Valid: file.Thumbnail.Valid,

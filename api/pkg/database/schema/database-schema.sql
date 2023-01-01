@@ -50,6 +50,7 @@ CREATE TABLE `files` (
     public_id BINARY(16) NOT NULL UNIQUE,
     name BLOB NOT NULL,
     owner_id INTEGER NOT NULL REFERENCES user_accounts(id),
+    encryption_key BINARY(60) NOT NULL,
     parent_folder_id INTEGER REFERENCES folders(id),
     -- File-specific fields.
     saved_location TEXT NOT NULL,

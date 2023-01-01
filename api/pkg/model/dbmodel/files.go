@@ -12,6 +12,7 @@ type File struct {
 	Name          []byte
 	Owner         int
 	ParentFolder  sql.NullInt32
+	EncryptionKey []byte
 	SavedLocation string
 	Thumbnail     model.NullBytes
 }

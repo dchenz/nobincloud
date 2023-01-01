@@ -13,6 +13,7 @@ func (a *Database) getFilesByParentFolder(ownerID int, folderID sql.NullInt32) (
 			public_id,
 			name,
 			owner_id,
+			encryption_key,
 			parent_folder_id,
 			saved_location
 		  FROM files
@@ -37,6 +38,7 @@ func (a *Database) getFilesByParentFolder(ownerID int, folderID sql.NullInt32) (
 			&f.PublicID,
 			&f.Name,
 			&f.Owner,
+			&f.EncryptionKey,
 			&f.ParentFolder,
 			&f.SavedLocation,
 		)
@@ -94,15 +96,17 @@ func (a *Database) insertFile(file dbmodel.File) error {
 			public_id,
 			name,
 			owner_id,
+			encryption_key,
 			parent_folder_id,
 			saved_location,
 			thumbnail
-	  	  ) VALUES (?, ?, ?, ?, ?, ?);`
+	  	  ) VALUES (?, ?, ?, ?, ?, ?, ?);`
 	_, err := a.conn.Exec(
 		q,
 		file.PublicID,
 		file.Name,
 		file.Owner,
+		file.EncryptionKey,
 		file.ParentFolder,
 		file.SavedLocation,
 		file.Thumbnail,

@@ -13,6 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var fakeEncryptionKey = []byte("123456789012345678901234567890123456789012345678901234567890")
+
 func TestListingFilesAndFolders(t *testing.T) {
 	db := createMockDB()
 	defer destroyMockDB()
@@ -32,8 +34,9 @@ func TestListingFilesAndFolders(t *testing.T) {
 	// ---
 
 	imageFile := model.File{
-		ID:   uuid.New(),
-		Name: model.Hexadecimal{Bytes: []byte("image.png")},
+		ID:            uuid.New(),
+		Name:          model.Hexadecimal{Bytes: []byte("image.png")},
+		EncryptionKey: model.Hexadecimal{Bytes: fakeEncryptionKey},
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: false,
 		},
@@ -46,16 +49,18 @@ func TestListingFilesAndFolders(t *testing.T) {
 		},
 	}
 	helloFile := model.File{
-		ID:   uuid.New(),
-		Name: model.Hexadecimal{Bytes: []byte("hello.mp4")},
+		ID:            uuid.New(),
+		Name:          model.Hexadecimal{Bytes: []byte("hello.mp4")},
+		EncryptionKey: model.Hexadecimal{Bytes: fakeEncryptionKey},
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: true,
 			Value: videosFolder.ID,
 		},
 	}
 	worldFile := model.File{
-		ID:   uuid.New(),
-		Name: model.Hexadecimal{Bytes: []byte("world.mp4")},
+		ID:            uuid.New(),
+		Name:          model.Hexadecimal{Bytes: []byte("world.mp4")},
+		EncryptionKey: model.Hexadecimal{Bytes: fakeEncryptionKey},
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: true,
 			Value: videosFolder.ID,
@@ -136,8 +141,9 @@ func TestJSONFilesAndFolders(t *testing.T) {
 		{
 			isFile: true,
 			obj: model.File{
-				ID:   uuid.MustParse("ff0d78a8-deca-4e6c-be70-e3eaec197578"),
-				Name: model.Hexadecimal{Bytes: []byte("image.png")},
+				ID:            uuid.MustParse("ff0d78a8-deca-4e6c-be70-e3eaec197578"),
+				Name:          model.Hexadecimal{Bytes: []byte("image.png")},
+				EncryptionKey: model.Hexadecimal{Bytes: []byte("test")},
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: false,
 				},
@@ -146,6 +152,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "ff0d78a8-deca-4e6c-be70-e3eaec197578",
 				"name": "696d6167652e706e67",
+				"file_key": "74657374",
 				"parent_folder": null
 			}`,
 		},
@@ -169,8 +176,9 @@ func TestJSONFilesAndFolders(t *testing.T) {
 		{
 			isFile: true,
 			obj: model.File{
-				ID:   uuid.MustParse("8a79610b-7eb0-4038-9846-12e2d5891ddc"),
-				Name: model.Hexadecimal{Bytes: []byte("hello.mp4")},
+				ID:            uuid.MustParse("8a79610b-7eb0-4038-9846-12e2d5891ddc"),
+				Name:          model.Hexadecimal{Bytes: []byte("hello.mp4")},
+				EncryptionKey: model.Hexadecimal{Bytes: []byte("test")},
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: true,
 					Value: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
@@ -180,6 +188,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "8a79610b-7eb0-4038-9846-12e2d5891ddc",
 				"name": "68656c6c6f2e6d7034",
+				"file_key": "74657374",
 				"parent_folder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
 			}`,
 		},

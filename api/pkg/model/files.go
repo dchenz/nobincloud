@@ -12,6 +12,7 @@ type File struct {
 	ID            uuid.UUID       `json:"id"`
 	Name          Hexadecimal     `json:"name"`
 	ParentFolder  JSON[uuid.UUID] `json:"parent_folder,omitempty"`
+	EncryptionKey Hexadecimal     `json:"file_key"`
 	SavedLocation string          `json:"-"`
 	Thumbnail     JSON[[]byte]    `json:"-"`
 }
