@@ -10,10 +10,9 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Download } from "react-bootstrap-icons";
 import { getFileDownload } from "../../../api/files";
-import AuthContext from "../../../context/AuthContext";
 import { saveFile } from "../../../misc/fileutils";
 import { FileRef } from "../../../types/Files";
 import ImageModal from "./ImageModal";
@@ -28,13 +27,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
   onClose,
 }) => {
   const [fileBytes, setFileBytes] = useState<ArrayBuffer | null>(null);
-  const { accountKey } = useContext(AuthContext);
-  if (!accountKey) {
-    throw new Error();
-  }
 
   useEffect(() => {
-    getFileDownload(selectedFile, accountKey)
+    getFileDownload(selectedFile)
       .then((buf) => setFileBytes(buf))
       .catch(console.error);
   }, []);

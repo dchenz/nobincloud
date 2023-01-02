@@ -27,11 +27,8 @@ export async function createCustomFileThumbnail(
  * @param file File object
  * @returns Returns the src attribute for a thumbnail image
  */
-export async function loadFileThumbnail(
-  file: FileRef,
-  accountKey: ArrayBuffer
-): Promise<string> {
-  const thumbnail = await getThumbnail(file, accountKey);
+export async function loadFileThumbnail(file: FileRef): Promise<string> {
+  const thumbnail = await getThumbnail(file);
   if (thumbnail) {
     return thumbnail;
   }

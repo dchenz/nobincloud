@@ -99,11 +99,11 @@ export async function getFolderContents(
     throw new Error(response.data);
   }
   for (const f of response.data.files) {
-    f.fileKey = Buffer.from(f.fileKey, "hex");
-    const fileKey = await decrypt(f.fileKey, accountKey);
+    const fileKey = await decrypt(Buffer.from(f.fileKey, "hex"), accountKey);
     if (!fileKey) {
       throw new Error("key cannot be decrypted");
     }
+    f.fileKey = fileKey;
     const fileName = await decrypt(Buffer.from(f.name, "hex"), fileKey);
     if (!fileName) {
       throw new Error("file name cannot be decrypted");
@@ -113,10 +113,7 @@ export async function getFolderContents(
   return response.data;
 }
 
-export async function getThumbnail(
-  file: FileRef,
-  accountKey: ArrayBuffer
-): Promise<string | null> {
+export async function getThumbnail(file: FileRef): Promise<string | null> {
   const response: Response<string | null> = await jsonFetch(
     `${ServerRoutes.thumbnail}/${file.id}`
   );
@@ -127,11 +124,7 @@ export async function getThumbnail(
     return null; // No thumbnail
   }
   const encryptedThumbnail = Buffer.from(response.data, "hex");
-  const fileKey = await decrypt(file.fileKey, accountKey);
-  if (!fileKey) {
-    throw new Error("key cannot be decrypted");
-  }
-  const thumbnailDataURI = await decrypt(encryptedThumbnail, fileKey);
+  const thumbnailDataURI = await decrypt(encryptedThumbnail, file.fileKey);
   if (!thumbnailDataURI) {
     throw new Error("file cannot be decrypted");
   }
@@ -139,18 +132,11 @@ export async function getThumbnail(
   return "data:image/jpeg;base64," + dataURI;
 }
 
-export async function getFileDownload(
-  file: FileRef,
-  accountKey: ArrayBuffer
-): Promise<ArrayBuffer> {
+export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
   const url = `${ServerRoutes.download}/${file.id}`;
   const responseBytes = await (await fetch(url)).arrayBuffer();
-  const fileKey = await decrypt(file.fileKey, accountKey);
-  if (!fileKey) {
-    throw new Error("key cannot be decrypted");
-  }
   // TODO: Find a new scheme to decrypt chunked large files.
-  const fileBytes = await decrypt(responseBytes, fileKey);
+  const fileBytes = await decrypt(responseBytes, file.fileKey);
   if (!fileBytes) {
     throw new Error("file cannot be decrypted");
   }
