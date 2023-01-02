@@ -1,6 +1,5 @@
 import {
   Box,
-  Center,
   Divider,
   IconButton,
   Modal,
@@ -16,6 +15,7 @@ import { getFileDownload } from "../../../api/files";
 import { saveFile } from "../../../misc/fileutils";
 import { FileRef } from "../../../types/Files";
 import ImageModal from "./ImageModal";
+import PDFModal from "./PDFModal";
 
 type ContentModalProps = {
   selectedFile: FileRef;
@@ -38,6 +38,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
     if (mimetype.startsWith("image/")) {
       return <ImageModal file={selectedFile} bytes={bytes} />;
     }
+    if (mimetype === "application/pdf") {
+      return <PDFModal file={selectedFile} bytes={bytes} />;
+    }
     return null;
   };
 
@@ -47,9 +50,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
       <ModalContent maxW="80vw">
         {fileBytes ? (
           <Box display={{ md: "block", lg: "flex" }}>
-            <Center flexGrow={1}>
+            <Box flexGrow={1} h="80vh" overflowY="scroll">
               {renderPreview(fileBytes, selectedFile.mimetype)}
-            </Center>
+            </Box>
             <VStack
               px={4}
               py={8}

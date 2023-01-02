@@ -35,6 +35,9 @@ export async function loadFileThumbnail(file: FileRef): Promise<string> {
   if (file.mimetype.startsWith("video/")) {
     return "/static/media/video-icon.png";
   }
+  if (file.mimetype === "application/pdf") {
+    return "/static/media/pdf-icon.png";
+  }
   return "/static/media/file-icon.png";
 }
 
