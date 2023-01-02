@@ -1,4 +1,4 @@
-import { Image } from "@chakra-ui/react";
+import { Box, Image } from "@chakra-ui/react";
 import React, { useMemo } from "react";
 import { arrayBufferToString } from "../../../crypto/utils";
 import { FileRef } from "../../../types/Files";
@@ -15,12 +15,15 @@ const ImageModal: React.FC<ImageModalProps> = ({ file, bytes }) => {
   }, [bytes]);
 
   return (
-    <Image
-      src={imageData}
-      alt={file.name}
-      width={{ md: "100%", lg: "auto" }}
-      height={{ md: "auto", lg: "500px" }}
-    />
+    <Box
+      width="100%"
+      height="100%"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Image src={imageData} alt={file.name} maxW="100%" maxH="100%" />
+    </Box>
   );
 };
 
