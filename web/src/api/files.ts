@@ -78,8 +78,8 @@ export async function encryptAndUploadFile(
             id: fileID,
             name: fileUpload.file.name,
             parentFolder: fileUpload.parentFolder,
-            fileKey: encryptedFileKey,
             mimetype: fileUpload.file.type,
+            fileKey,
           });
         }
       });
