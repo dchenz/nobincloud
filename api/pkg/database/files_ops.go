@@ -156,3 +156,10 @@ func (a *Database) getFileOwner(fileID int) (int, error) {
 	err := row.Scan(&ownerID)
 	return ownerID, err
 }
+
+func (a *Database) deleteFile(ownerID int, fileID int) error {
+	q := `DELETE FROM files
+		  WHERE owner_id = ? AND id = ?;`
+	_, err := a.conn.Exec(q, ownerID, fileID)
+	return err
+}

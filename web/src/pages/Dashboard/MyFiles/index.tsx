@@ -24,11 +24,11 @@ export default function MyFilesDashboard(): JSX.Element {
         <PathViewer />
         <SimpleGrid columns={4} spacing={8}>
           {contents.folders.map((folder, k) => (
-            <Box key={k}>{folder.name}</Box>
+            <Box key={folder.id}>{folder.name}</Box>
           ))}
           {contents.files.map((file, k) => (
             <FileTile
-              key={k}
+              key={file.id}
               file={file}
               onSelect={() => setSelectedFile(file)}
             />

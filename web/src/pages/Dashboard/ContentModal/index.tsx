@@ -9,9 +9,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { Download } from "react-bootstrap-icons";
-import { getFileDownload } from "../../../api/files";
+import React, { useContext, useEffect, useState } from "react";
+import { Download, Trash } from "react-bootstrap-icons";
+import { deleteFileOnServer, getFileDownload } from "../../../api/files";
+import FolderContext from "../../../context/FolderContext";
 import { saveFile } from "../../../misc/fileutils";
 import { FileRef } from "../../../types/Files";
 import ImageModal from "./ImageModal";
@@ -26,6 +27,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   selectedFile,
   onClose,
 }) => {
+  const { deleteFile } = useContext(FolderContext);
   const [fileBytes, setFileBytes] = useState<ArrayBuffer | null>(null);
 
   useEffect(() => {
@@ -42,6 +44,15 @@ const ContentModal: React.FC<ContentModalProps> = ({
       return <PDFModal file={selectedFile} bytes={bytes} />;
     }
     return null;
+  };
+
+  const onDeleteFile = () => {
+    deleteFileOnServer(selectedFile)
+      .then(() => {
+        deleteFile(selectedFile);
+        onClose();
+      })
+      .catch(console.error);
   };
 
   return (
@@ -69,6 +80,12 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   icon={<Download />}
                   aria-label="download"
                   onClick={() => saveFile(fileBytes, selectedFile.name)}
+                />
+                <IconButton
+                  title="Delete"
+                  icon={<Trash />}
+                  aria-label="delete"
+                  onClick={onDeleteFile}
                 />
               </Box>
             </VStack>

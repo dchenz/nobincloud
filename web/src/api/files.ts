@@ -133,7 +133,7 @@ export async function getThumbnail(file: FileRef): Promise<string | null> {
 }
 
 export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
-  const url = `${ServerRoutes.download}/${file.id}`;
+  const url = `${ServerRoutes.file}/${file.id}`;
   const responseBytes = await (await fetch(url)).arrayBuffer();
   // TODO: Find a new scheme to decrypt chunked large files.
   const fileBytes = await decrypt(responseBytes, file.fileKey);
@@ -141,4 +141,15 @@ export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
     throw new Error("file cannot be decrypted");
   }
   return fileBytes;
+}
+
+export async function deleteFileOnServer(file: FileRef): Promise<null> {
+  const url = `${ServerRoutes.file}/${file.id}`;
+  const response: Response<null> = await jsonFetch(url, {
+    method: "DELETE",
+  });
+  if (!response.success) {
+    throw new Error(response.data);
+  }
+  return response.data;
 }

@@ -130,3 +130,11 @@ func (a *Database) GetFileOwner(file uuid.UUID) (int, error) {
 	}
 	return a.getFileOwner(fileID)
 }
+
+func (a *Database) DeleteFile(userID int, file uuid.UUID) error {
+	fileID, err := a.findFileID(file[:])
+	if err != nil {
+		return err
+	}
+	return a.deleteFile(userID, fileID)
+}

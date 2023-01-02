@@ -51,6 +51,13 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     setContents((prev) => ({ ...prev, folders: [...prev.folders, item] }));
   };
 
+  const deleteFile = (item: FileRef) => {
+    setContents((prev) => ({
+      ...prev,
+      files: prev.files.filter((f) => f.id !== item.id),
+    }));
+  };
+
   return (
     <FolderContext.Provider
       value={{
@@ -62,6 +69,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
         setLoading,
         addFile,
         addFolder,
+        deleteFile,
       }}
     >
       {props.children}

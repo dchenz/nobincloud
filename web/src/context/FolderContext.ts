@@ -10,6 +10,7 @@ type FolderCtxType = {
   setLoading: (_: boolean) => void;
   addFile: (_: FileRef) => void;
   addFolder: (_: FolderRef) => void;
+  deleteFile: (_: FileRef) => void;
 };
 
 export const initState: FolderCtxType = {
@@ -33,6 +34,7 @@ export const initState: FolderCtxType = {
   setLoading: (_) => undefined,
   addFile: (_) => undefined,
   addFolder: (_) => undefined,
+  deleteFile: (_) => undefined,
 };
 
 export default createContext<FolderCtxType>(initState);
