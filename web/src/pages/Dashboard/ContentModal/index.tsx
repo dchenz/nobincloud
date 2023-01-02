@@ -12,6 +12,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { Download, Trash } from "react-bootstrap-icons";
 import { deleteFileOnServer, getFileDownload } from "../../../api/files";
+import ConfirmPopup from "../../../components/ConfirmPopup";
 import FolderContext from "../../../context/FolderContext";
 import { saveFile } from "../../../misc/fileutils";
 import { FileRef } from "../../../types/Files";
@@ -81,12 +82,13 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   aria-label="download"
                   onClick={() => saveFile(fileBytes, selectedFile.name)}
                 />
-                <IconButton
-                  title="Delete"
-                  icon={<Trash />}
-                  aria-label="delete"
-                  onClick={onDeleteFile}
-                />
+                <ConfirmPopup prompt="Delete file?" onConfirm={onDeleteFile}>
+                  <IconButton
+                    title="Delete"
+                    icon={<Trash />}
+                    aria-label="delete"
+                  />
+                </ConfirmPopup>
               </Box>
             </VStack>
           </Box>
