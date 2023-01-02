@@ -1,13 +1,16 @@
 import { Box, SimpleGrid } from "@chakra-ui/react";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
+import { FileRef } from "../../../types/Files";
+import ContentModal from "../ContentModal";
 import FileTile from "./FileTile";
 import Header from "./Header";
 import PathViewer from "./PathViewer";
 import "./styles.scss";
 
 export default function MyFilesDashboard(): JSX.Element {
+  const [selectedFile, setSelectedFile] = useState<FileRef | null>(null);
   const { contents } = useContext(FolderContext);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
@@ -24,9 +27,19 @@ export default function MyFilesDashboard(): JSX.Element {
             <Box key={k}>{folder.name}</Box>
           ))}
           {contents.files.map((file, k) => (
-            <FileTile key={k} file={file} />
+            <FileTile
+              key={k}
+              file={file}
+              onSelect={() => setSelectedFile(file)}
+            />
           ))}
         </SimpleGrid>
+        {selectedFile ? (
+          <ContentModal
+            selectedFile={selectedFile}
+            onClose={() => setSelectedFile(null)}
+          />
+        ) : null}
       </div>
     </div>
   );

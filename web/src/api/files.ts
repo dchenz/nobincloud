@@ -138,3 +138,21 @@ export async function getThumbnail(
   const dataURI = arrayBufferToString(thumbnailDataURI, "base64");
   return "data:image/jpeg;base64," + dataURI;
 }
+
+export async function getFileDownload(
+  file: FileRef,
+  accountKey: ArrayBuffer
+): Promise<ArrayBuffer> {
+  const url = `${ServerRoutes.download}/${file.id}`;
+  const responseBytes = await (await fetch(url)).arrayBuffer();
+  const fileKey = await decrypt(file.fileKey, accountKey);
+  if (!fileKey) {
+    throw new Error("key cannot be decrypted");
+  }
+  // TODO: Find a new scheme to decrypt chunked large files.
+  const fileBytes = await decrypt(responseBytes, fileKey);
+  if (!fileBytes) {
+    throw new Error("file cannot be decrypted");
+  }
+  return fileBytes;
+}

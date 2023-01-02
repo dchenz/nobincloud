@@ -15,4 +15,5 @@ export const ServerRoutes = {
   uploadParts: "/api/upload/parts",
   listFolder: "/api/folder/list",
   thumbnail: "/api/thumbnail",
+  download: "/api/file",
 };

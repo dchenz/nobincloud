@@ -122,3 +122,11 @@ func (a *Database) GetThumbnail(userID int, file uuid.UUID) ([]byte, error) {
 	}
 	return thumbnail.Bytes, nil
 }
+
+func (a *Database) GetFileOwner(file uuid.UUID) (int, error) {
+	fileID, err := a.findFileID(file[:])
+	if err != nil {
+		return 0, err
+	}
+	return a.getFileOwner(fileID)
+}

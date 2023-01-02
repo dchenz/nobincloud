@@ -146,3 +146,13 @@ func (a *Database) getFileThumbnail(ownerID int, fileID int) (model.NullBytes, e
 	err := row.Scan(&b)
 	return b, err
 }
+
+func (a *Database) getFileOwner(fileID int) (int, error) {
+	q := `SELECT owner_id
+		  FROM files
+		  WHERE id = ?;`
+	row := a.conn.QueryRow(q, fileID)
+	var ownerID int
+	err := row.Scan(&ownerID)
+	return ownerID, err
+}
