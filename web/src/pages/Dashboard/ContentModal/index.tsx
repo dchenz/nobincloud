@@ -14,7 +14,7 @@ import { Download, Trash } from "react-bootstrap-icons";
 import { deleteFileOnServer, getFileDownload } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import FolderContext from "../../../context/FolderContext";
-import { saveFile } from "../../../misc/fileutils";
+import { isImage, isPDF, saveFile } from "../../../misc/fileutils";
 import { FileRef } from "../../../types/Files";
 import ImageModal from "./ImageModal";
 import PDFModal from "./PDFModal";
@@ -30,19 +30,27 @@ const ContentModal: React.FC<ContentModalProps> = ({
 }) => {
   const { deleteFile } = useContext(FolderContext);
   const [fileBytes, setFileBytes] = useState<ArrayBuffer | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getFileDownload(selectedFile)
-      .then((buf) => setFileBytes(buf))
-      .catch(console.error);
+    if (isImage(selectedFile) || isPDF(selectedFile)) {
+      setLoading(true);
+      getFileDownload(selectedFile)
+        .then((buf) => setFileBytes(buf))
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
   }, []);
 
-  const renderPreview = (bytes: ArrayBuffer, mimetype: string) => {
-    if (mimetype.startsWith("image/")) {
-      return <ImageModal file={selectedFile} bytes={bytes} />;
+  const renderPreview = () => {
+    if (!fileBytes) {
+      return null;
     }
-    if (mimetype === "application/pdf") {
-      return <PDFModal file={selectedFile} bytes={bytes} />;
+    if (isImage(selectedFile)) {
+      return <ImageModal file={selectedFile} bytes={fileBytes} />;
+    }
+    if (isPDF(selectedFile)) {
+      return <PDFModal file={selectedFile} bytes={fileBytes} />;
     }
     return null;
   };
@@ -60,10 +68,12 @@ const ContentModal: React.FC<ContentModalProps> = ({
     <Modal isOpen={true} onClose={onClose}>
       <ModalOverlay />
       <ModalContent maxW="80vw">
-        {fileBytes ? (
+        {loading ? (
+          <Spinner />
+        ) : (
           <Box display={{ md: "block", lg: "flex" }}>
             <Box flexGrow={1} h="80vh" overflowY="scroll">
-              {renderPreview(fileBytes, selectedFile.mimetype)}
+              {renderPreview()}
             </Box>
             <VStack
               px={4}
@@ -80,7 +90,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   title="Download"
                   icon={<Download />}
                   aria-label="download"
-                  onClick={() => saveFile(fileBytes, selectedFile.name)}
+                  onClick={() =>
+                    saveFile(fileBytes as ArrayBuffer, selectedFile.name)
+                  }
                 />
                 <ConfirmPopup prompt="Delete file?" onConfirm={onDeleteFile}>
                   <IconButton
@@ -92,8 +104,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
               </Box>
             </VStack>
           </Box>
-        ) : (
-          <Spinner />
         )}
       </ModalContent>
     </Modal>
