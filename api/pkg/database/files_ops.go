@@ -163,3 +163,36 @@ func (a *Database) deleteFile(ownerID int, fileID int) error {
 	_, err := a.conn.Exec(q, ownerID, fileID)
 	return err
 }
+
+func (a *Database) getFolder(ownerID int, folderID int) (dbmodel.Folder, error) {
+	q := `SELECT
+			id,
+			public_id,
+			name,
+			owner_id,
+			parent_folder_id,
+			color
+		  FROM folders
+		  WHERE owner_id = ? AND id = ?;`
+	row := a.conn.QueryRow(q, ownerID, folderID)
+	var f dbmodel.Folder
+	err := row.Scan(
+		&f.ID,
+		&f.PublicID,
+		&f.Name,
+		&f.Owner,
+		&f.ParentFolder,
+		&f.Color,
+	)
+	return f, err
+}
+
+func (a *Database) updateFolder(folder dbmodel.Folder) error {
+	q := `UPDATE folders
+	      SET name = ?,
+		      parent_folder_id = ?,
+			  color = ?
+		  WHERE owner_id = ? AND id = ?;`
+	_, err := a.conn.Exec(q, folder.Name, folder.ParentFolder, folder.Color, folder.Owner, folder.ID)
+	return err
+}

@@ -9,6 +9,7 @@ import {
   FileRef,
   FileUploadDetails,
   FolderContents,
+  FolderRef,
   UploadInitResponse,
   UploadPartsResponse,
   UUID,
@@ -146,6 +147,18 @@ export async function deleteFileOnServer(file: FileRef): Promise<null> {
   const url = `${ServerRoutes.file}/${file.id}`;
   const response: Response<null> = await jsonFetch(url, {
     method: "DELETE",
+  });
+  if (!response.success) {
+    throw new Error(response.data);
+  }
+  return response.data;
+}
+
+export async function createFolder(folder: FolderRef) {
+  const url = `${ServerRoutes.folder}/${folder.id}`;
+  const response: Response<null> = await jsonFetch(url, {
+    method: "PUT",
+    body: JSON.stringify(folder),
   });
   if (!response.success) {
     throw new Error(response.data);

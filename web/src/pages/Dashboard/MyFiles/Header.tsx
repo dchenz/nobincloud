@@ -1,15 +1,17 @@
-import { Box, Button, HStack, Icon } from "@chakra-ui/react";
-import React, { ChangeEvent, useContext } from "react";
-import { Upload } from "react-bootstrap-icons";
+import { Box, Button, HStack } from "@chakra-ui/react";
+import React, { ChangeEvent, useContext, useState } from "react";
+import { Folder2, Upload } from "react-bootstrap-icons";
 import { encryptAndUploadFile } from "../../../api/files";
+import NewFolderModal from "../../../components/NewFolderModal";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FileRef } from "../../../types/Files";
 import "./styles.scss";
 
 export default function Header(): JSX.Element {
+  const [isCreatingFolder, setCreatingFolder] = useState(false);
   const { accountKey } = useContext(AuthContext);
-  const { addFile } = useContext(FolderContext);
+  const { addFile, pwd } = useContext(FolderContext);
   // TODO: Improve the typescript types.
   if (!accountKey) {
     throw new Error();
@@ -37,13 +39,31 @@ export default function Header(): JSX.Element {
       }
     };
   };
+
   return (
     <Box className="file-browser-header">
       <HStack gap={2}>
-        <Button color="black" onClick={onUploadButtonClick}>
-          <Icon as={Upload}></Icon>&nbsp; Upload
+        <Button
+          leftIcon={<Upload />}
+          color="black"
+          onClick={onUploadButtonClick}
+        >
+          Upload
+        </Button>
+        <Button
+          leftIcon={<Folder2 />}
+          color="black"
+          onClick={() => setCreatingFolder(true)}
+        >
+          New
         </Button>
       </HStack>
+      {isCreatingFolder ? (
+        <NewFolderModal
+          onClose={() => setCreatingFolder(false)}
+          parentFolder={pwd.current.id}
+        />
+      ) : null}
     </Box>
   );
 }

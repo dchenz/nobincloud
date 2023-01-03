@@ -91,21 +91,39 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 	})
 }
 
-func (a *Database) CreateFolder(userID int, folder model.Folder) error {
-	folderID, err := a.sqlFolderID(folder.ParentFolder.Value)
+func (a *Database) UpsertFolder(userID int, folder model.Folder) error {
+	parentFolderID, err := a.sqlFolderID(folder.ParentFolder.Value)
 	if err != nil {
 		return err
 	}
-	return a.insertFolder(dbmodel.Folder{
+	existingFolderID, err := a.sqlFolderID(folder.ID)
+	if err == sql.ErrNoRows {
+		return a.insertFolder(dbmodel.Folder{
+			PublicID:     folder.ID[:],
+			Name:         folder.Name,
+			Owner:        userID,
+			ParentFolder: parentFolderID,
+			Color: sql.NullInt32{
+				Valid: folder.Color.Valid,
+				Int32: int32(folder.Color.Value),
+			},
+		})
+	}
+	if err != nil {
+		return err
+	}
+	updatedFolder := dbmodel.Folder{
+		ID:           int(existingFolderID.Int32),
 		PublicID:     folder.ID[:],
 		Name:         folder.Name,
 		Owner:        userID,
-		ParentFolder: folderID,
+		ParentFolder: parentFolderID,
 		Color: sql.NullInt32{
 			Valid: folder.Color.Valid,
 			Int32: int32(folder.Color.Value),
 		},
-	})
+	}
+	return a.updateFolder(updatedFolder)
 }
 
 func (a *Database) GetThumbnail(userID int, file uuid.UUID) ([]byte, error) {
@@ -137,4 +155,36 @@ func (a *Database) DeleteFile(userID int, file uuid.UUID) error {
 		return err
 	}
 	return a.deleteFile(userID, fileID)
+}
+
+func (a *Database) GetFolder(userID int, folder uuid.UUID) (*model.Folder, error) {
+	folderID, err := a.sqlFolderID(folder)
+	if err != nil {
+		return nil, err
+	}
+	if !folderID.Valid {
+		return nil, &ErrFolderNotFound{ID: folder}
+	}
+	f, err := a.getFolder(userID, int(folderID.Int32))
+	if err != nil {
+		return nil, err
+	}
+	var parentFolder model.JSON[uuid.UUID]
+	if f.ParentFolder.Valid {
+		pf, err := a.findFolderUUID(int(f.ParentFolder.Int32))
+		if err != nil {
+			return nil, err
+		}
+		parentFolder.Valid = true
+		parentFolder.Value = pf
+	}
+	return &model.Folder{
+		ID:           folder,
+		Name:         f.Name,
+		ParentFolder: parentFolder,
+		Color: model.JSON[model.Color]{
+			Valid: f.Color.Valid,
+			Value: model.Color(f.Color.Int32),
+		},
+	}, nil
 }

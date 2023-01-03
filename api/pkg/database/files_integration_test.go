@@ -4,8 +4,8 @@
 package database_test
 
 import (
+	"database/sql"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/dchenz/nobincloud/pkg/model"
@@ -79,7 +79,7 @@ func TestListingFilesAndFolders(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create folder: /videos
-	err = db.CreateFolder(userID, videosFolder)
+	err = db.UpsertFolder(userID, videosFolder)
 	assert.NoError(t, err)
 
 	// Create file: /videos/hello.mp4
@@ -91,7 +91,7 @@ func TestListingFilesAndFolders(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create folder: /my_files
-	err = db.CreateFolder(userID, myFolder)
+	err = db.UpsertFolder(userID, myFolder)
 	assert.NoError(t, err)
 
 	// List files in /videos
@@ -127,9 +127,9 @@ func TestListingFilesAndFolders(t *testing.T) {
 	// List unknown folder and get an error
 	unknownFolderID := uuid.New()
 	_, err = db.GetFilesInFolder(userID, unknownFolderID)
-	assert.EqualError(t, err, fmt.Sprintf("folder '%s' not found", unknownFolderID))
+	assert.ErrorIs(t, err, sql.ErrNoRows)
 	_, err = db.GetFoldersInFolder(userID, unknownFolderID)
-	assert.EqualError(t, err, fmt.Sprintf("folder '%s' not found", unknownFolderID))
+	assert.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 func TestJSONFilesAndFolders(t *testing.T) {
@@ -236,4 +236,55 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			assert.Equal(t, tc.obj, v)
 		}
 	}
+}
+
+func TestFolderUpsert(t *testing.T) {
+	db := createMockDB()
+	defer destroyMockDB()
+
+	// Register account.
+	err := db.CreateUserAccount(model.NewUserRequest{
+		Email:                "example@example.com",
+		Nickname:             "test",
+		PasswordHash:         "abcdefabcdef",
+		AccountEncryptionKey: "aaaaaaaaaaaa",
+	})
+	assert.NoError(t, err)
+
+	userID, err := db.ResolveAccountID("example@example.com")
+	assert.NoError(t, err)
+
+	// ---
+
+	f := model.Folder{
+		ID:   uuid.New(),
+		Name: "videos",
+		ParentFolder: model.JSON[uuid.UUID]{
+			Valid: false,
+		},
+	}
+
+	err = db.UpsertFolder(userID, f)
+	assert.NoError(t, err)
+	ff, err := db.GetFolder(userID, f.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, f, *ff)
+
+	f.Name = "images"
+	err = db.UpsertFolder(userID, f)
+	assert.NoError(t, err)
+	ff, err = db.GetFolder(userID, f.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, f, *ff)
+
+	f.Name = "images 123"
+	f.Color = model.JSON[model.Color]{
+		Valid: true,
+		Value: 1132131,
+	}
+	err = db.UpsertFolder(userID, f)
+	assert.NoError(t, err)
+	ff, err = db.GetFolder(userID, f.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, f, *ff)
 }
