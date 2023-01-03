@@ -47,7 +47,7 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DeleteFile))).Methods("DELETE")
 
 	d := r.PathPrefix("/folder").Subrouter()
-	d.Handle("/list", http.HandlerFunc(a.ListFolderContents)).Methods("GET")
+	d.Handle("/{id}/list", http.HandlerFunc(a.ListFolderContents)).Methods("GET")
 
 	t := r.PathPrefix("/thumbnail").Subrouter()
 	t.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.GetThumbnail))).Methods("GET")

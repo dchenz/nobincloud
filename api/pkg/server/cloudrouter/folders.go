@@ -5,21 +5,15 @@ import (
 
 	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/dchenz/nobincloud/pkg/utils"
-	"github.com/google/uuid"
 )
 
 func (a *CloudRouter) ListFolderContents(w http.ResponseWriter, r *http.Request) {
-	userID, _ := a.whoami(r)
-	folderIDStr := r.URL.Query().Get("id")
-	var folderID uuid.UUID
-	if folderIDStr != "" {
-		parsed, err := uuid.Parse(folderIDStr)
-		if err != nil {
-			utils.RespondFail(w, http.StatusBadRequest, "invalid folder ID")
-			return
-		}
-		folderID = parsed
+	folderID, err := utils.GetPathUUID(r, "id")
+	if err != nil {
+		utils.RespondFail(w, http.StatusBadRequest, "invalid folder ID")
+		return
 	}
+	userID, _ := a.whoami(r)
 	memberFiles, err := a.Database.GetFilesInFolder(userID, folderID)
 	if err != nil {
 		utils.RespondError(w, err.Error())

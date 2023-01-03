@@ -13,7 +13,7 @@ export const ServerRoutes = {
   whoami: "/api/user/whoami",
   uploadInit: "/api/upload/init",
   uploadParts: "/api/upload/parts",
-  listFolder: "/api/folder/list",
   thumbnail: "/api/thumbnail",
   file: "/api/file",
+  folder: "/api/folder",
 };

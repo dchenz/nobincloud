@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import { UUID } from "../types/Files";
 
 /**
  * Concatenate N ArrayBuffer into one ArrayBuffer.
@@ -39,6 +40,15 @@ export function randomBytes(n: number): ArrayBuffer {
  *
  * @returns UUID
  */
-export function uuid(): string {
+export function uuid(): UUID {
   return window.crypto.randomUUID();
+}
+
+/**
+ * Generate a UUID string with all zeroes.
+ *
+ * @returns UUID
+ */
+export function uuidZero(): UUID {
+  return "00000000-0000-0000-0000-000000000000";
 }

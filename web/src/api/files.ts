@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { ServerRoutes } from "../const";
 import { decrypt, encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
-import { arrayBufferToString, uuid } from "../crypto/utils";
+import { arrayBufferToString, uuid, uuidZero } from "../crypto/utils";
 import { createCustomFileThumbnail } from "../misc/thumbnails";
 import { Response } from "../types/API";
 import {
@@ -90,11 +90,10 @@ export async function getFolderContents(
   folderID: UUID | null,
   accountKey: ArrayBuffer
 ): Promise<FolderContents> {
-  let url = ServerRoutes.listFolder;
-  if (folderID) {
-    url += `?id=${folderID}`;
+  if (!folderID) {
+    folderID = uuidZero();
   }
-  const response = await jsonFetch(url);
+  const response = await jsonFetch(`${ServerRoutes.folder}/${folderID}/list`);
   if (!response.success) {
     throw new Error(response.data);
   }
