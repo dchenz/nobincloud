@@ -61,10 +61,6 @@ func (a *Database) GetFoldersInFolder(userID int, folder uuid.UUID) ([]model.Fol
 				Valid: dbFolder.ParentFolder.Valid,
 				Value: folder,
 			},
-			Color: model.JSON[model.Color]{
-				Valid: dbFolder.Color.Valid,
-				Value: model.Color(dbFolder.Color.Int32),
-			},
 		}
 		res = append(res, d)
 	}
@@ -103,10 +99,6 @@ func (a *Database) UpsertFolder(userID int, folder model.Folder) error {
 			Name:         folder.Name,
 			Owner:        userID,
 			ParentFolder: parentFolderID,
-			Color: sql.NullInt32{
-				Valid: folder.Color.Valid,
-				Int32: int32(folder.Color.Value),
-			},
 		})
 	}
 	if err != nil {
@@ -118,10 +110,6 @@ func (a *Database) UpsertFolder(userID int, folder model.Folder) error {
 		Name:         folder.Name,
 		Owner:        userID,
 		ParentFolder: parentFolderID,
-		Color: sql.NullInt32{
-			Valid: folder.Color.Valid,
-			Int32: int32(folder.Color.Value),
-		},
 	}
 	return a.updateFolder(updatedFolder)
 }
@@ -182,9 +170,5 @@ func (a *Database) GetFolder(userID int, folder uuid.UUID) (*model.Folder, error
 		ID:           folder,
 		Name:         f.Name,
 		ParentFolder: parentFolder,
-		Color: model.JSON[model.Color]{
-			Valid: f.Color.Valid,
-			Value: model.Color(f.Color.Int32),
-		},
 	}, nil
 }

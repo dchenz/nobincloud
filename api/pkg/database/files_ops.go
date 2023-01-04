@@ -58,8 +58,7 @@ func (a *Database) getFoldersByParentFolder(ownerID int, folderID sql.NullInt32)
 			public_id,
 			name,
 			owner_id,
-			parent_folder_id,
-			color
+			parent_folder_id
 		  FROM folders
 		  WHERE owner_id = ?`
 	var rows *sql.Rows
@@ -83,7 +82,6 @@ func (a *Database) getFoldersByParentFolder(ownerID int, folderID sql.NullInt32)
 			&f.Name,
 			&f.Owner,
 			&f.ParentFolder,
-			&f.Color,
 		)
 		if err != nil {
 			return nil, err
@@ -123,16 +121,14 @@ func (a *Database) insertFolder(folder dbmodel.Folder) error {
 			public_id,
 			name,
 			owner_id,
-			parent_folder_id,
-			color
-		  ) VALUES (?, ?, ?, ?, ?);`
+			parent_folder_id
+		  ) VALUES (?, ?, ?, ?);`
 	_, err := a.conn.Exec(
 		q,
 		folder.PublicID,
 		folder.Name,
 		folder.Owner,
 		folder.ParentFolder,
-		folder.Color,
 	)
 	return err
 }
@@ -170,8 +166,7 @@ func (a *Database) getFolder(ownerID int, folderID int) (dbmodel.Folder, error) 
 			public_id,
 			name,
 			owner_id,
-			parent_folder_id,
-			color
+			parent_folder_id
 		  FROM folders
 		  WHERE owner_id = ? AND id = ?;`
 	row := a.conn.QueryRow(q, ownerID, folderID)
@@ -182,7 +177,6 @@ func (a *Database) getFolder(ownerID int, folderID int) (dbmodel.Folder, error) 
 		&f.Name,
 		&f.Owner,
 		&f.ParentFolder,
-		&f.Color,
 	)
 	return f, err
 }
@@ -190,9 +184,8 @@ func (a *Database) getFolder(ownerID int, folderID int) (dbmodel.Folder, error) 
 func (a *Database) updateFolder(folder dbmodel.Folder) error {
 	q := `UPDATE folders
 	      SET name = ?,
-		      parent_folder_id = ?,
-			  color = ?
+		      parent_folder_id = ?
 		  WHERE owner_id = ? AND id = ?;`
-	_, err := a.conn.Exec(q, folder.Name, folder.ParentFolder, folder.Color, folder.Owner, folder.ID)
+	_, err := a.conn.Exec(q, folder.Name, folder.ParentFolder, folder.Owner, folder.ID)
 	return err
 }

@@ -171,8 +171,7 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			{
 				"id": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
 				"name": "videos",
-				"parentFolder": null,
-				"color": null
+				"parentFolder": null
 			}`,
 		},
 		{
@@ -205,17 +204,12 @@ func TestJSONFilesAndFolders(t *testing.T) {
 					Valid: true,
 					Value: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
 				},
-				Color: model.JSON[model.Color]{
-					Valid: true,
-					Value: 16750848,
-				},
 			},
 			json: `
 			{
 				"id": "151f87f0-e77b-4381-810e-6a18ba953b93",
 				"name": "my_files",
-				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
-				"color": "ff9900"
+				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
 			}`,
 		},
 	}
@@ -271,17 +265,6 @@ func TestFolderUpsert(t *testing.T) {
 	assert.Equal(t, f, *ff)
 
 	f.Name = "images"
-	err = db.UpsertFolder(userID, f)
-	assert.NoError(t, err)
-	ff, err = db.GetFolder(userID, f.ID)
-	assert.NoError(t, err)
-	assert.Equal(t, f, *ff)
-
-	f.Name = "images 123"
-	f.Color = model.JSON[model.Color]{
-		Valid: true,
-		Value: 1132131,
-	}
 	err = db.UpsertFolder(userID, f)
 	assert.NoError(t, err)
 	ff, err = db.GetFolder(userID, f.ID)

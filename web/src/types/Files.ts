@@ -24,9 +24,7 @@ export type FileRef = BaseFolderObject & {
   mimetype: string;
 };
 
-export type FolderRef = BaseFolderObject & {
-  color: string | null;
-};
+export type FolderRef = BaseFolderObject;
 
 export type FilePath = {
   parents: FolderRef[];

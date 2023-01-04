@@ -24,5 +24,4 @@ type Folder struct {
 	Name         string
 	Owner        int
 	ParentFolder sql.NullInt32
-	Color        sql.NullInt32
 }

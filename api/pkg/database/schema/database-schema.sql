@@ -39,9 +39,7 @@ CREATE TABLE `folders` (
     public_id BINARY(16) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
     owner_id INTEGER NOT NULL REFERENCES user_accounts(id),
-    parent_folder_id INTEGER REFERENCES folders(id),
-    -- Folder-specific fields.
-    color INTEGER
+    parent_folder_id INTEGER REFERENCES folders(id)
 );
 DROP TABLE IF EXISTS `files`;
 CREATE TABLE `files` (

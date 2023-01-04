@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Input,
   Modal,
@@ -8,14 +7,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
-import { SquareFill } from "react-bootstrap-icons";
-import { CompactPicker } from "react-color";
 import { createFolder } from "../api/files";
 import FolderContext from "../context/FolderContext";
 import { uuid } from "../crypto/utils";
@@ -31,14 +24,12 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
   parentFolder,
 }) => {
   const [name, setName] = useState("");
-  const [color, setColor] = useState<string>("#000000");
   const { addFolder } = useContext(FolderContext);
 
   const onSubmit = () => {
     const newFolder = {
       id: uuid(),
       name,
-      color: color.substring(1), // Remove leading # from hex
       parentFolder,
     };
     createFolder(newFolder)
@@ -63,25 +54,6 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
           />
         </ModalBody>
         <ModalFooter>
-          <Popover>
-            <PopoverTrigger>
-              <Button
-                leftIcon={<SquareFill color={color} />}
-                fontFamily="monospace"
-              >
-                {color}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <PopoverBody>
-                <CompactPicker
-                  color={color}
-                  onChangeComplete={(c) => setColor(c.hex)}
-                />
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
-          <Box flexGrow={1}></Box>
           <Button type="submit" onClick={onSubmit}>
             Create
           </Button>
