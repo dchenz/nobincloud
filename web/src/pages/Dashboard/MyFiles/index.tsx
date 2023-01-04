@@ -1,10 +1,11 @@
-import { Box, SimpleGrid } from "@chakra-ui/react";
+import { SimpleGrid } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FileRef } from "../../../types/Files";
 import ContentModal from "../ContentModal";
 import FileTile from "./FileTile";
+import FolderTile from "./FolderTile";
 import Header from "./Header";
 import PathViewer from "./PathViewer";
 import "./styles.scss";
@@ -23,10 +24,14 @@ export default function MyFilesDashboard(): JSX.Element {
       <div className="file-browser-content">
         <PathViewer />
         <SimpleGrid columns={4} spacing={8}>
-          {contents.folders.map((folder, k) => (
-            <Box key={folder.id}>{folder.name}</Box>
+          {contents.folders.map((folder) => (
+            <FolderTile
+              key={folder.id}
+              folder={folder}
+              onSelect={() => undefined}
+            />
           ))}
-          {contents.files.map((file, k) => (
+          {contents.files.map((file) => (
             <FileTile
               key={file.id}
               file={file}
