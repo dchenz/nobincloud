@@ -6,7 +6,8 @@ import "./styles.scss";
 type NavListProps = {
   routes: {
     name: string;
-    href: string;
+    href?: string;
+    onClick?: () => void;
   }[];
 };
 
@@ -16,9 +17,23 @@ export default function NavList(props: NavListProps): JSX.Element {
       {props.routes.map((route, k) => (
         <React.Fragment key={k}>
           {k > 0 ? <Divider /> : null}
-          <Link to={route.href}>
-            <Box className="nav-list-item">{route.name}</Box>
-          </Link>
+          {route.href ? (
+            <Link to={route.href}>
+              {
+                <Box className="nav-list-item" onClick={route.onClick}>
+                  {route.name}
+                </Box>
+              }
+            </Link>
+          ) : (
+            <Box
+              className="nav-list-item"
+              onClick={route.onClick}
+              cursor="pointer"
+            >
+              {route.name}
+            </Box>
+          )}
         </React.Fragment>
       ))}
       <Box></Box>

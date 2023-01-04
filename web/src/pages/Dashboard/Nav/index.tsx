@@ -4,18 +4,22 @@ import { BoxArrowRight } from "react-bootstrap-icons";
 import { useCookies } from "react-cookie";
 import { logoutAccount } from "../../../api/logoutAccount";
 import AuthContext from "../../../context/AuthContext";
+import FolderContext, { initState } from "../../../context/FolderContext";
 import NavBrand from "./NavBrand";
 import NavList from "./NavList";
 import "./styles.scss";
 
 export default function DashboardPage(): JSX.Element {
   const { setLoggedIn, setAccountKey } = useContext(AuthContext);
+  const { setPwd } = useContext(FolderContext);
   const clearCookies = useCookies(["session", "signed_in"])[2];
   return (
     <div className="nav-drawer">
       <Stack as="nav" gap={2} flexGrow={1}>
         <NavBrand />
-        <NavList routes={[{ name: "My Files", href: "me" }]} />
+        <NavList
+          routes={[{ name: "My Files", onClick: () => setPwd(initState.pwd) }]}
+        />
       </Stack>
       <Box p={3}>
         <Tooltip label="Logout">
