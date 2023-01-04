@@ -12,7 +12,7 @@ import "./styles.scss";
 
 export default function MyFilesDashboard(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<FileRef | null>(null);
-  const { contents } = useContext(FolderContext);
+  const { contents, pwd, setPwd } = useContext(FolderContext);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -28,7 +28,13 @@ export default function MyFilesDashboard(): JSX.Element {
             <FolderTile
               key={folder.id}
               folder={folder}
-              onSelect={() => undefined}
+              onSelect={() =>
+                setPwd({
+                  ...pwd,
+                  parents: [...pwd.parents, pwd.current],
+                  current: folder,
+                })
+              }
             />
           ))}
           {contents.files.map((file) => (
