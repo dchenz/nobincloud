@@ -33,7 +33,7 @@ export default function Header(): JSX.Element {
       if (e.target.files && e.target.files[0]) {
         const uploadRequest = {
           file: e.target.files[0],
-          parentFolder: null,
+          parentFolder: pwd.current.id,
         };
         encryptAndUploadFile(uploadRequest, accountKey, onProgress, onComplete);
       }

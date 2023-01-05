@@ -1,6 +1,6 @@
 export type FileUploadDetails = {
   file: File;
-  parentFolder: string | null;
+  parentFolder: UUID | null;
 };
 
 export type UploadInitResponse = {
