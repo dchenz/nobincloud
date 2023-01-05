@@ -24,7 +24,7 @@ export default function MyFilesDashboard(): JSX.Element {
       <div className="file-browser-content">
         <PathViewer />
         <Divider my={2} />
-        <SimpleGrid columns={4} spacing={8}>
+        <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} spacing={8}>
           {contents.folders.map((folder) => (
             <FolderTile
               key={folder.id}
