@@ -2,19 +2,43 @@ import { Button, HStack, Text } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { ChevronRight } from "react-bootstrap-icons";
 import FolderContext from "../../../context/FolderContext";
+import { uuidZero } from "../../../crypto/utils";
+import { FolderRef } from "../../../types/Files";
 
 const PathViewer: React.FC = () => {
-  const { pwd } = useContext(FolderContext);
+  const { pwd, setPwd } = useContext(FolderContext);
+
+  const changeToPreviousFolder = (folder: FolderRef) => {
+    // Folder should be one of the parent folders.
+    const parents = [];
+    for (const f of pwd.parents) {
+      if (f.id === folder.id) {
+        break;
+      }
+      parents.push(f);
+    }
+    setPwd({ parents, current: folder });
+  };
+
   return (
-    <HStack>
+    <HStack minHeight="40px">
       {pwd.parents.map((folder, k) => (
         <React.Fragment key={k}>
-          {k > 0 ? <ChevronRight /> : null}
-          <Button variant="link">
-            <Text fontSize="xl">{folder.name === "" ? "/" : folder.name}</Text>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => changeToPreviousFolder(folder)}
+          >
+            <Text fontSize="xl">
+              {folder.id === uuidZero() ? "My Files" : folder.name}
+            </Text>
           </Button>
+          <ChevronRight />
         </React.Fragment>
       ))}
+      <Text fontSize="xl">
+        {pwd.current.id === uuidZero() ? "My Files" : pwd.current.name}
+      </Text>
     </HStack>
   );
 };

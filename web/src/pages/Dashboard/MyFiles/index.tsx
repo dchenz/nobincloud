@@ -1,4 +1,4 @@
-import { SimpleGrid } from "@chakra-ui/react";
+import { Divider, SimpleGrid } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
@@ -23,6 +23,7 @@ export default function MyFilesDashboard(): JSX.Element {
       <Header />
       <div className="file-browser-content">
         <PathViewer />
+        <Divider my={2} />
         <SimpleGrid columns={4} spacing={8}>
           {contents.folders.map((folder) => (
             <FolderTile
