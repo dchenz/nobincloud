@@ -26,10 +26,15 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
   const [name, setName] = useState("");
   const { addFolder } = useContext(FolderContext);
 
+  const canSubmit = name.trim().length > 0;
+
   const onSubmit = () => {
+    if (!canSubmit) {
+      return;
+    }
     const newFolder = {
       id: uuid(),
-      name,
+      name: name.trim(),
       parentFolder,
     };
     createFolder(newFolder)
@@ -54,7 +59,7 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
           />
         </ModalBody>
         <ModalFooter>
-          <Button type="submit" onClick={onSubmit}>
+          <Button type="submit" onClick={onSubmit} disabled={!canSubmit}>
             Create
           </Button>
         </ModalFooter>
