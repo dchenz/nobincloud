@@ -25,8 +25,8 @@ func (a *Database) GetFilesInFolder(userID int, folder uuid.UUID) ([]model.File,
 		}
 		f := model.File{
 			ID:            id,
-			Name:          model.Hexadecimal{Bytes: dbFile.Name},
-			EncryptionKey: model.Hexadecimal{Bytes: dbFile.EncryptionKey},
+			Name:          model.Bytes{Bytes: dbFile.Name},
+			EncryptionKey: model.Bytes{Bytes: dbFile.EncryptionKey},
 			ParentFolder: model.JSON[uuid.UUID]{
 				Valid: dbFile.ParentFolder.Valid,
 				Value: folder,

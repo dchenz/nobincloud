@@ -43,10 +43,10 @@ export async function encryptAndUploadFile(
         metadata: {
           parent_folder: fileUpload.parentFolder,
           thumbnail: thumbnail
-            ? arrayBufferToString(await encrypt(thumbnail, fileKey), "hex")
+            ? arrayBufferToString(await encrypt(thumbnail, fileKey), "base64")
             : null,
-          key: arrayBufferToString(encryptedFileKey, "hex"),
-          name: arrayBufferToString(encryptedFileName, "hex"),
+          key: arrayBufferToString(encryptedFileKey, "base64"),
+          name: arrayBufferToString(encryptedFileName, "base64"),
           type: fileUpload.file.type,
           id: fileID,
         },
@@ -99,12 +99,12 @@ export async function getFolderContents(
     throw new Error(response.data);
   }
   for (const f of response.data.files) {
-    const fileKey = await decrypt(Buffer.from(f.fileKey, "hex"), accountKey);
+    const fileKey = await decrypt(Buffer.from(f.fileKey, "base64"), accountKey);
     if (!fileKey) {
       throw new Error("key cannot be decrypted");
     }
     f.fileKey = fileKey;
-    const fileName = await decrypt(Buffer.from(f.name, "hex"), fileKey);
+    const fileName = await decrypt(Buffer.from(f.name, "base64"), fileKey);
     if (!fileName) {
       throw new Error("file name cannot be decrypted");
     }
@@ -123,7 +123,7 @@ export async function getThumbnail(file: FileRef): Promise<string | null> {
   if (!response.data) {
     return null; // No thumbnail
   }
-  const encryptedThumbnail = Buffer.from(response.data, "hex");
+  const encryptedThumbnail = Buffer.from(response.data, "base64");
   const thumbnailDataURI = await decrypt(encryptedThumbnail, file.fileKey);
   if (!thumbnailDataURI) {
     throw new Error("file cannot be decrypted");

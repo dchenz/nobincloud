@@ -31,11 +31,11 @@ export async function loginAccount(
     },
     body: JSON.stringify({
       email: details.email,
-      passwordHash: arrayBufferToString(passwordHash, "hex"),
+      passwordHash: arrayBufferToString(passwordHash, "base64"),
     }),
   });
   if (response.success) {
-    response.data.accountKey = Buffer.from(response.data.accountKey, "hex");
+    response.data.accountKey = Buffer.from(response.data.accountKey, "base64");
     response.data.passwordKey = passwordKey;
   }
   return response;
@@ -56,11 +56,11 @@ export async function unlockAccount(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      passwordHash: arrayBufferToString(passwordHash, "hex"),
+      passwordHash: arrayBufferToString(passwordHash, "base64"),
     }),
   });
   if (response.success) {
-    response.data.accountKey = Buffer.from(response.data.accountKey, "hex");
+    response.data.accountKey = Buffer.from(response.data.accountKey, "base64");
     response.data.passwordKey = passwordKey;
   }
   return response;

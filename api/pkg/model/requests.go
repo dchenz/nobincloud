@@ -10,15 +10,15 @@ type Response struct {
 type NewUserRequest struct {
 	Email                string `json:"email" validate:"required,email"`
 	Nickname             string `json:"nickname" validate:"required"`
-	PasswordHash         string `json:"passwordHash" validate:"required,sha512"`
-	AccountEncryptionKey string `json:"accountKey" validate:"required,hexadecimal"`
+	PasswordHash         string `json:"passwordHash" validate:"required,base64"`
+	AccountEncryptionKey string `json:"accountKey" validate:"required,base64"`
 }
 
 type LoginRequest struct {
 	Email        string `json:"email" validate:"required,email"`
-	PasswordHash string `json:"passwordHash" validate:"required,sha512"`
+	PasswordHash string `json:"passwordHash" validate:"required,base64"`
 }
 
 type LockedLoginRequest struct {
-	PasswordHash string `json:"passwordHash" validate:"required,sha512"`
+	PasswordHash string `json:"passwordHash" validate:"required,base64"`
 }

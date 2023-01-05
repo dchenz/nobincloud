@@ -19,5 +19,5 @@ func (a *CloudRouter) GetThumbnail(w http.ResponseWriter, r *http.Request) {
 		utils.RespondFail(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.ResponseSuccess(w, model.Hexadecimal{Bytes: thumbnail})
+	utils.ResponseSuccess(w, model.Bytes{Bytes: thumbnail})
 }

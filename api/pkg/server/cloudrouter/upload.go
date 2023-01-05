@@ -1,7 +1,7 @@
 package cloudrouter
 
 import (
-	"encoding/hex"
+	"encoding/base64"
 	"net/http"
 
 	"github.com/dchenz/go-assemble"
@@ -19,7 +19,7 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 		assemble.RejectFile(r, http.StatusBadRequest, "missing file ID")
 		return
 	}
-	fileKey, err := utils.GetFileMetadataHex(r, "key")
+	fileKey, err := utils.GetFileMetadataBase64(r, "key")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
 		return
@@ -28,7 +28,7 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 		assemble.RejectFile(r, http.StatusBadRequest, "missing file key")
 		return
 	}
-	fileName, err := utils.GetFileMetadataHex(r, "name")
+	fileName, err := utils.GetFileMetadataBase64(r, "name")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
 		return
@@ -58,7 +58,7 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 	}
 	var thumbnail model.JSON[[]byte]
 	if thumbnailStr.Valid {
-		b, err := hex.DecodeString(thumbnailStr.Value)
+		b, err := base64.StdEncoding.DecodeString(thumbnailStr.Value)
 		if err != nil {
 			assemble.RejectFile(r, http.StatusBadRequest, err.Error())
 			return

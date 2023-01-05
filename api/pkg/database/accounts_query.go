@@ -3,7 +3,7 @@ package database
 import (
 	"crypto/sha512"
 	"database/sql"
-	"encoding/hex"
+	"encoding/base64"
 
 	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
@@ -32,7 +32,7 @@ func (a *Database) CreateUserAccount(user model.NewUserRequest) error {
 	if err != nil {
 		return err
 	}
-	storedEncryptionKey, err := hex.DecodeString(user.AccountEncryptionKey)
+	storedEncryptionKey, err := base64.StdEncoding.DecodeString(user.AccountEncryptionKey)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (a *Database) GetAccountEncryptionKey(email string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(key), nil
+	return base64.StdEncoding.EncodeToString(key), nil
 }
 
 func (a *Database) ResolveAccountID(email string) (int, error) {
@@ -73,8 +73,8 @@ func (a *Database) ResolveAccountID(email string) (int, error) {
 }
 
 func deriveStoredPassword(password string, salt []byte) ([]byte, error) {
-	// Convert hex password into bytes.
-	passwordBytes, err := hex.DecodeString(password)
+	// Convert base64 password into bytes.
+	passwordBytes, err := base64.StdEncoding.DecodeString(password)
 	if err != nil {
 		return nil, err
 	}

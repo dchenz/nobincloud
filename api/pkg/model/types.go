@@ -2,7 +2,7 @@ package model
 
 import (
 	"database/sql/driver"
-	"encoding/hex"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 )
@@ -55,18 +55,18 @@ func (s NullBytes) Value() (driver.Value, error) {
 	return s.Bytes, nil
 }
 
-type Hexadecimal struct {
+type Bytes struct {
 	Bytes []byte
 }
 
-func (s Hexadecimal) MarshalJSON() ([]byte, error) {
+func (s Bytes) MarshalJSON() ([]byte, error) {
 	if s.Bytes == nil {
 		return []byte("null"), nil
 	}
-	return json.Marshal(hex.EncodeToString(s.Bytes))
+	return json.Marshal(base64.StdEncoding.EncodeToString(s.Bytes))
 }
 
-func (s *Hexadecimal) UnmarshalJSON(b []byte) error {
+func (s *Bytes) UnmarshalJSON(b []byte) error {
 	if string(b) == "null" {
 		s.Bytes = nil
 		return nil
@@ -75,7 +75,7 @@ func (s *Hexadecimal) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &v); err != nil {
 		return err
 	}
-	decodedBytes, err := hex.DecodeString(v)
+	decodedBytes, err := base64.StdEncoding.DecodeString(v)
 	s.Bytes = decodedBytes
 	return err
 }

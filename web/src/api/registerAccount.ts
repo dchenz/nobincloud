@@ -35,8 +35,8 @@ export async function registerAccount(
     body: JSON.stringify({
       email: details.email,
       nickname: details.nickname,
-      passwordHash: arrayBufferToString(passwordHash, "hex"),
-      accountKey: arrayBufferToString(encryptedAccountKey, "hex"),
+      passwordHash: arrayBufferToString(passwordHash, "base64"),
+      accountKey: arrayBufferToString(encryptedAccountKey, "base64"),
     }),
   });
   if (response.success) {

@@ -98,21 +98,21 @@ func TestJSONBool(t *testing.T) {
 	}
 }
 
-func TestMarshalHexadecimal(t *testing.T) {
+func TestMarshalBytes(t *testing.T) {
 	testCases := []struct {
-		input    model.Hexadecimal
+		input    model.Bytes
 		expected string
 	}{
 		{
-			input:    model.Hexadecimal{Bytes: []byte("hello world")},
-			expected: "\"68656c6c6f20776f726c64\"",
+			input:    model.Bytes{Bytes: []byte("hello world")},
+			expected: "\"aGVsbG8gd29ybGQ=\"",
 		},
 		{
-			input:    model.Hexadecimal{Bytes: []byte("")},
+			input:    model.Bytes{Bytes: []byte("")},
 			expected: "\"\"",
 		},
 		{
-			input:    model.Hexadecimal{Bytes: nil},
+			input:    model.Bytes{Bytes: nil},
 			expected: "null",
 		},
 	}
@@ -123,31 +123,31 @@ func TestMarshalHexadecimal(t *testing.T) {
 	}
 }
 
-func TestUnmarshalHexadecimal(t *testing.T) {
+func TestUnmarshalBytes(t *testing.T) {
 	testCases := []struct {
 		input    string
-		expected model.Hexadecimal
+		expected model.Bytes
 		invalid  bool
 	}{
 		{
-			input:    "\"68656c6c6f20776f726c64\"",
-			expected: model.Hexadecimal{Bytes: []byte("hello world")},
+			input:    "\"aGVsbG8gd29ybGQ=\"",
+			expected: model.Bytes{Bytes: []byte("hello world")},
 		},
 		{
 			input:    "\"\"",
-			expected: model.Hexadecimal{Bytes: []byte{}},
+			expected: model.Bytes{Bytes: []byte{}},
 		},
 		{
 			input:    "null",
-			expected: model.Hexadecimal{Bytes: nil},
+			expected: model.Bytes{Bytes: nil},
 		},
 		{
-			input:   "\"68656c6c6f20776f726c6\"",
+			input:   "\"aGVsbG8gd29ybG-\"",
 			invalid: true,
 		},
 	}
 	for _, tc := range testCases {
-		var s model.Hexadecimal
+		var s model.Bytes
 		err := json.Unmarshal([]byte(tc.input), &s)
 		if tc.invalid {
 			assert.Error(t, err)
