@@ -5,9 +5,8 @@ import {
   generateWrappedKey,
 } from "../crypto/password";
 import { arrayBufferToString } from "../crypto/utils";
-import { AccountSignupDetails, SuccessfulSignupResult } from "../types/Account";
+import { AccountSignupDetails } from "../types/Account";
 import { Response } from "../types/API";
-import { jsonFetch } from "./helpers";
 
 /**
  * Send an API request to register a new account.
@@ -17,7 +16,7 @@ import { jsonFetch } from "./helpers";
  */
 export async function registerAccount(
   details: AccountSignupDetails
-): Promise<Response<SuccessfulSignupResult>> {
+): Promise<Response<ArrayBuffer>> {
   const passwordKey = derivePasswordKey(details.password, details.email);
   const passwordHash = await deriveServerPasswordHash(
     details.password,
@@ -26,21 +25,25 @@ export async function registerAccount(
   const [encryptedAccountKey, accountKey] = await generateWrappedKey(
     passwordKey
   );
-
-  const response = await jsonFetch(ServerRoutes.register, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: details.email,
-      nickname: details.nickname,
-      passwordHash: arrayBufferToString(passwordHash, "base64"),
-      accountKey: arrayBufferToString(encryptedAccountKey, "base64"),
-    }),
-  });
-  if (response.success) {
-    response.data = { accountKey };
+  const response: Response = await (
+    await fetch(ServerRoutes.register, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: details.email,
+        nickname: details.nickname,
+        passwordHash: arrayBufferToString(passwordHash, "base64"),
+        accountKey: arrayBufferToString(encryptedAccountKey, "base64"),
+      }),
+    })
+  ).json();
+  if (!response.success) {
+    return response;
   }
-  return response;
+  return {
+    success: true,
+    data: accountKey,
+  };
 }

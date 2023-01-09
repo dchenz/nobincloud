@@ -83,7 +83,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
               width={{ md: "100%", lg: "300px" }}
               alignItems="self-start"
             >
-              <Text>{selectedFile.name}</Text>
+              <Text>{selectedFile.metadata.name}</Text>
               <Divider />
               <Box>
                 <IconButton
@@ -91,7 +91,10 @@ const ContentModal: React.FC<ContentModalProps> = ({
                   icon={<Download />}
                   aria-label="download"
                   onClick={() =>
-                    saveFile(fileBytes as ArrayBuffer, selectedFile.name)
+                    saveFile(
+                      fileBytes as ArrayBuffer,
+                      selectedFile.metadata.name
+                    )
                   }
                 />
                 <ConfirmPopup prompt="Delete file?" onConfirm={onDeleteFile}>

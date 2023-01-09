@@ -17,10 +17,14 @@ export const initState: FolderCtxType = {
   pwd: {
     current: {
       id: "00000000-0000-0000-0000-000000000000",
-      name: "",
       parentFolder: null,
-      fileKey: new ArrayBuffer(0),
-      mimetype: "",
+      encryptionKey: new ArrayBuffer(0),
+      metadata: {
+        name: "",
+        type: "",
+        size: 0,
+        thumbnail: null,
+      },
     },
     parents: [],
   },

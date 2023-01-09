@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { unlockAccount } from "../../api/loginAccount";
 import { PageRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
-import { decrypt } from "../../crypto/cipher";
 
 const LockedOutForm: React.FC = () => {
   const ctx = useContext(AuthContext);
@@ -25,16 +24,8 @@ const LockedOutForm: React.FC = () => {
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     unlockAccount(password)
-      .then(async (result) => {
-        if (result.success) {
-          const decryptedAccountKey = await decrypt(
-            result.data.accountKey,
-            result.data.passwordKey
-          );
-          if (!decryptedAccountKey) {
-            setFailedLogin("Could not retrieve your keys.");
-            throw new Error("Could not retrieve your keys.");
-          }
+      .then(async (decryptedAccountKey) => {
+        if (decryptedAccountKey) {
           // Store the decrypted AES key on successful login
           // as this will be used to encrypt/decrypt files.
           ctx.setAccountKey(decryptedAccountKey);

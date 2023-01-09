@@ -22,7 +22,6 @@ func TestListingFilesAndFolders(t *testing.T) {
 	// Register account.
 	err := db.CreateUserAccount(model.NewUserRequest{
 		Email:                "example@example.com",
-		Nickname:             "test",
 		PasswordHash:         "abcdefabcdef",
 		AccountEncryptionKey: "aaaaaaaaaaaa",
 	})
@@ -34,44 +33,46 @@ func TestListingFilesAndFolders(t *testing.T) {
 	// ---
 
 	imageFile := model.File{
-		ID:            uuid.New(),
-		Name:          model.Bytes{Bytes: []byte("image.png")},
-		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		ID: uuid.New(),
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: false,
 		},
+		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		Metadata:      model.Bytes{Bytes: []byte("test")},
 	}
 	videosFolder := model.Folder{
-		ID:   uuid.New(),
-		Name: "videos",
+		ID: uuid.New(),
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: false,
 		},
+		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		Metadata:      model.Bytes{Bytes: []byte("test")},
 	}
 	helloFile := model.File{
-		ID:            uuid.New(),
-		Name:          model.Bytes{Bytes: []byte("hello.mp4")},
-		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		ID: uuid.New(),
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: true,
 			Value: videosFolder.ID,
 		},
+		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		Metadata:      model.Bytes{Bytes: []byte("test")},
 	}
 	worldFile := model.File{
-		ID:            uuid.New(),
-		Name:          model.Bytes{Bytes: []byte("world.mp4")},
-		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		ID: uuid.New(),
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: true,
 			Value: videosFolder.ID,
 		},
+		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		Metadata:      model.Bytes{Bytes: []byte("test")},
 	}
 	myFolder := model.Folder{
-		ID:   uuid.New(),
-		Name: "my_files",
+		ID: uuid.New(),
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: false,
 		},
+		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		Metadata:      model.Bytes{Bytes: []byte("test")},
 	}
 
 	// Create file: /image.png
@@ -141,75 +142,75 @@ func TestJSONFilesAndFolders(t *testing.T) {
 		{
 			isFile: true,
 			obj: model.File{
-				ID:            uuid.MustParse("ff0d78a8-deca-4e6c-be70-e3eaec197578"),
-				Name:          model.Bytes{Bytes: []byte("image.png")},
-				EncryptionKey: model.Bytes{Bytes: []byte("test")},
+				ID: uuid.MustParse("ff0d78a8-deca-4e6c-be70-e3eaec197578"),
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: false,
 				},
-				MimeType: "image/png",
+				EncryptionKey: model.Bytes{Bytes: []byte("test")},
+				Metadata:      model.Bytes{Bytes: []byte("hello world")},
 			},
 			json: `
 			{
 				"id": "ff0d78a8-deca-4e6c-be70-e3eaec197578",
-				"name": "aW1hZ2UucG5n",
-				"fileKey": "dGVzdA==",
 				"parentFolder": null,
-				"mimetype": "image/png"
+				"encryptionKey": "dGVzdA==",
+				"metadata": "aGVsbG8gd29ybGQ="
 			}`,
 		},
 		{
 			isFile: false,
 			obj: model.Folder{
-				ID:   uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
-				Name: "videos",
+				ID: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: false,
 				},
+				EncryptionKey: model.Bytes{Bytes: []byte("test")},
+				Metadata:      model.Bytes{Bytes: []byte("hello world")},
 			},
 			json: `
 			{
 				"id": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
-				"name": "videos",
-				"parentFolder": null
+				"parentFolder": null,
+				"encryptionKey": "dGVzdA==",
+				"metadata": "aGVsbG8gd29ybGQ="
 			}`,
 		},
 		{
 			isFile: true,
 			obj: model.File{
-				ID:            uuid.MustParse("8a79610b-7eb0-4038-9846-12e2d5891ddc"),
-				Name:          model.Bytes{Bytes: []byte("hello.mp4")},
-				EncryptionKey: model.Bytes{Bytes: []byte("test")},
+				ID: uuid.MustParse("8a79610b-7eb0-4038-9846-12e2d5891ddc"),
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: true,
 					Value: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
 				},
-				MimeType: "video/mp4",
+				EncryptionKey: model.Bytes{Bytes: []byte("test")},
+				Metadata:      model.Bytes{Bytes: []byte("hello world")},
 			},
 			json: `
 			{
 				"id": "8a79610b-7eb0-4038-9846-12e2d5891ddc",
-				"name": "aGVsbG8ubXA0",
-				"fileKey": "dGVzdA==",
 				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
-				"mimetype": "video/mp4"
+				"encryptionKey": "dGVzdA==",
+				"metadata": "aGVsbG8gd29ybGQ="
 			}`,
 		},
 		{
 			isFile: false,
 			obj: model.Folder{
-				ID:   uuid.MustParse("151f87f0-e77b-4381-810e-6a18ba953b93"),
-				Name: "my_files",
+				ID: uuid.MustParse("151f87f0-e77b-4381-810e-6a18ba953b93"),
 				ParentFolder: model.JSON[uuid.UUID]{
 					Valid: true,
 					Value: uuid.MustParse("acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"),
 				},
+				EncryptionKey: model.Bytes{Bytes: []byte("test")},
+				Metadata:      model.Bytes{Bytes: []byte("hello world")},
 			},
 			json: `
 			{
 				"id": "151f87f0-e77b-4381-810e-6a18ba953b93",
-				"name": "my_files",
-				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba"
+				"parentFolder": "acf4a06f-80e5-4418-991d-fb5d8ed1d3ba",
+				"encryptionKey": "dGVzdA==",
+				"metadata": "aGVsbG8gd29ybGQ="
 			}`,
 		},
 	}
@@ -239,7 +240,6 @@ func TestFolderUpsert(t *testing.T) {
 	// Register account.
 	err := db.CreateUserAccount(model.NewUserRequest{
 		Email:                "example@example.com",
-		Nickname:             "test",
 		PasswordHash:         "abcdefabcdef",
 		AccountEncryptionKey: "aaaaaaaaaaaa",
 	})
@@ -251,11 +251,12 @@ func TestFolderUpsert(t *testing.T) {
 	// ---
 
 	f := model.Folder{
-		ID:   uuid.New(),
-		Name: "videos",
+		ID: uuid.New(),
 		ParentFolder: model.JSON[uuid.UUID]{
 			Valid: false,
 		},
+		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
+		Metadata:      model.Bytes{Bytes: []byte("test")},
 	}
 
 	err = db.UpsertFolder(userID, f)
@@ -264,7 +265,7 @@ func TestFolderUpsert(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, f, *ff)
 
-	f.Name = "images"
+	f.Metadata.Bytes = []byte("test 123")
 	err = db.UpsertFolder(userID, f)
 	assert.NoError(t, err)
 	ff, err = db.GetFolder(userID, f.ID)

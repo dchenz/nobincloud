@@ -30,14 +30,14 @@ const PathViewer: React.FC = () => {
             onClick={() => changeToPreviousFolder(folder)}
           >
             <Text fontSize="xl">
-              {folder.id === uuidZero() ? "My Files" : folder.name}
+              {folder.id === uuidZero() ? "My Files" : folder.metadata.name}
             </Text>
           </Button>
           <ChevronRight />
         </React.Fragment>
       ))}
       <Text fontSize="xl">
-        {pwd.current.id === uuidZero() ? "My Files" : pwd.current.name}
+        {pwd.current.id === uuidZero() ? "My Files" : pwd.current.metadata.name}
       </Text>
     </HStack>
   );

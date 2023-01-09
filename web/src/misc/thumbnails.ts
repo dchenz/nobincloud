@@ -1,4 +1,3 @@
-import { getThumbnail } from "../api/files";
 import { FileRef } from "../types/Files";
 
 const THUMBNAIL_SIZE = 64;
@@ -28,14 +27,13 @@ export async function createCustomFileThumbnail(
  * @returns Returns the src attribute for a thumbnail image
  */
 export async function loadFileThumbnail(file: FileRef): Promise<string> {
-  const thumbnail = await getThumbnail(file);
-  if (thumbnail) {
-    return thumbnail;
+  if (file.metadata.thumbnail) {
+    return "data:image/jpeg;base64," + file.metadata.thumbnail;
   }
-  if (file.mimetype.startsWith("video/")) {
+  if (file.metadata.type.startsWith("video/")) {
     return "/static/media/video-icon.png";
   }
-  if (file.mimetype === "application/pdf") {
+  if (file.metadata.type === "application/pdf") {
     return "/static/media/pdf-icon.png";
   }
   return "/static/media/file-icon.png";

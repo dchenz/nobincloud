@@ -1,7 +1,6 @@
 package cloudrouter
 
 import (
-	"encoding/base64"
 	"net/http"
 
 	"github.com/dchenz/go-assemble"
@@ -19,52 +18,28 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 		assemble.RejectFile(r, http.StatusBadRequest, "missing file ID")
 		return
 	}
-	fileKey, err := utils.GetFileMetadataBase64(r, "key")
+	encryptionKey, err := utils.GetFileMetadataBase64(r, "encryptionKey")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
 		return
 	}
-	if !fileKey.Valid {
-		assemble.RejectFile(r, http.StatusBadRequest, "missing file key")
+	if !encryptionKey.Valid {
+		assemble.RejectFile(r, http.StatusBadRequest, "missing encryption key")
 		return
 	}
-	fileName, err := utils.GetFileMetadataBase64(r, "name")
+	encryptedFileMetadata, err := utils.GetFileMetadataBase64(r, "metadata")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
 		return
 	}
-	if !fileName.Valid {
-		assemble.RejectFile(r, http.StatusBadRequest, "missing file name")
+	if !encryptedFileMetadata.Valid {
+		assemble.RejectFile(r, http.StatusBadRequest, "missing file metadata")
 		return
 	}
-	fileType, err := utils.GetFileMetadataString(r, "type")
+	parentFolder, err := utils.GetFileMetadataUUID(r, "parentFolder")
 	if err != nil {
 		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
 		return
-	}
-	if !fileType.Valid {
-		fileType.Valid = true
-		fileType.Value = "application/octet-stream"
-	}
-	parentFolder, err := utils.GetFileMetadataUUID(r, "parent_folder")
-	if err != nil {
-		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
-		return
-	}
-	thumbnailStr, err := utils.GetFileMetadataString(r, "thumbnail")
-	if err != nil {
-		assemble.RejectFile(r, http.StatusBadRequest, err.Error())
-		return
-	}
-	var thumbnail model.JSON[[]byte]
-	if thumbnailStr.Valid {
-		b, err := base64.StdEncoding.DecodeString(thumbnailStr.Value)
-		if err != nil {
-			assemble.RejectFile(r, http.StatusBadRequest, err.Error())
-			return
-		}
-		thumbnail.Valid = true
-		thumbnail.Value = b
 	}
 	filePath, err := a.Files.Save(fileID.Value, r.Body)
 	if err != nil {
@@ -74,12 +49,10 @@ func (a *CloudRouter) UploadFile(_ http.ResponseWriter, r *http.Request) {
 	userID, _ := a.whoami(r)
 	f := model.File{
 		ID:            fileID.Value,
-		Name:          fileName.Value,
 		ParentFolder:  parentFolder,
-		EncryptionKey: fileKey.Value,
+		EncryptionKey: encryptionKey.Value,
+		Metadata:      encryptedFileMetadata.Value,
 		SavedLocation: filePath,
-		Thumbnail:     thumbnail,
-		MimeType:      fileType.Value,
 	}
 	if err := a.Database.CreateFile(userID, f); err != nil {
 		assemble.RejectFile(r, http.StatusInternalServerError, err.Error())

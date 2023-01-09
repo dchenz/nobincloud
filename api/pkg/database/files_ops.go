@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 
-	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
 )
 
@@ -11,12 +10,11 @@ func (a *Database) getFilesByParentFolder(ownerID int, folderID sql.NullInt32) (
 	q := `SELECT
 		  	id,
 			public_id,
-			name,
 			owner_id,
-			encryption_key,
 			parent_folder_id,
-			saved_location,
-			mimetype
+			encryption_key,
+			metadata,
+			saved_location
 		  FROM files
 		  WHERE owner_id = ?`
 	var rows *sql.Rows
@@ -37,12 +35,11 @@ func (a *Database) getFilesByParentFolder(ownerID int, folderID sql.NullInt32) (
 		err := rows.Scan(
 			&f.ID,
 			&f.PublicID,
-			&f.Name,
 			&f.Owner,
-			&f.EncryptionKey,
 			&f.ParentFolder,
+			&f.EncryptionKey,
+			&f.Metadata,
 			&f.SavedLocation,
-			&f.MimeType,
 		)
 		if err != nil {
 			return nil, err
@@ -54,11 +51,12 @@ func (a *Database) getFilesByParentFolder(ownerID int, folderID sql.NullInt32) (
 
 func (a *Database) getFoldersByParentFolder(ownerID int, folderID sql.NullInt32) ([]dbmodel.Folder, error) {
 	q := `SELECT
-		  	id,
+			id,
 			public_id,
-			name,
 			owner_id,
-			parent_folder_id
+			parent_folder_id,
+			encryption_key,
+			metadata
 		  FROM folders
 		  WHERE owner_id = ?`
 	var rows *sql.Rows
@@ -79,9 +77,10 @@ func (a *Database) getFoldersByParentFolder(ownerID int, folderID sql.NullInt32)
 		err := rows.Scan(
 			&f.ID,
 			&f.PublicID,
-			&f.Name,
 			&f.Owner,
 			&f.ParentFolder,
+			&f.EncryptionKey,
+			&f.Metadata,
 		)
 		if err != nil {
 			return nil, err
@@ -94,24 +93,20 @@ func (a *Database) getFoldersByParentFolder(ownerID int, folderID sql.NullInt32)
 func (a *Database) insertFile(file dbmodel.File) error {
 	q := `INSERT INTO files (
 			public_id,
-			name,
 			owner_id,
-			encryption_key,
 			parent_folder_id,
-			saved_location,
-			thumbnail,
-			mimetype
-	  	  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
+			encryption_key,
+			metadata,
+			saved_location
+	  	  ) VALUES (?, ?, ?, ?, ?, ?);`
 	_, err := a.conn.Exec(
 		q,
 		file.PublicID,
-		file.Name,
 		file.Owner,
-		file.EncryptionKey,
 		file.ParentFolder,
+		file.EncryptionKey,
+		file.Metadata,
 		file.SavedLocation,
-		file.Thumbnail,
-		file.MimeType,
 	)
 	return err
 }
@@ -119,28 +114,20 @@ func (a *Database) insertFile(file dbmodel.File) error {
 func (a *Database) insertFolder(folder dbmodel.Folder) error {
 	q := `INSERT INTO folders (
 			public_id,
-			name,
 			owner_id,
-			parent_folder_id
-		  ) VALUES (?, ?, ?, ?);`
+			parent_folder_id,
+			encryption_key,
+			metadata
+	  	  ) VALUES (?, ?, ?, ?, ?);`
 	_, err := a.conn.Exec(
 		q,
 		folder.PublicID,
-		folder.Name,
 		folder.Owner,
 		folder.ParentFolder,
+		folder.EncryptionKey,
+		folder.Metadata,
 	)
 	return err
-}
-
-func (a *Database) getFileThumbnail(ownerID int, fileID int) (model.NullBytes, error) {
-	q := `SELECT thumbnail
-		  FROM files
-		  WHERE owner_id = ? AND id = ?;`
-	row := a.conn.QueryRow(q, ownerID, fileID)
-	var b model.NullBytes
-	err := row.Scan(&b)
-	return b, err
 }
 
 func (a *Database) getFileOwner(fileID int) (int, error) {
@@ -164,9 +151,10 @@ func (a *Database) getFolder(ownerID int, folderID int) (dbmodel.Folder, error) 
 	q := `SELECT
 			id,
 			public_id,
-			name,
 			owner_id,
-			parent_folder_id
+			parent_folder_id,
+			encryption_key,
+			metadata
 		  FROM folders
 		  WHERE owner_id = ? AND id = ?;`
 	row := a.conn.QueryRow(q, ownerID, folderID)
@@ -174,18 +162,27 @@ func (a *Database) getFolder(ownerID int, folderID int) (dbmodel.Folder, error) 
 	err := row.Scan(
 		&f.ID,
 		&f.PublicID,
-		&f.Name,
 		&f.Owner,
 		&f.ParentFolder,
+		&f.EncryptionKey,
+		&f.Metadata,
 	)
 	return f, err
 }
 
 func (a *Database) updateFolder(folder dbmodel.Folder) error {
 	q := `UPDATE folders
-	      SET name = ?,
+	      SET encryption_key = ?,
+		  	  metadata = ?,
 		      parent_folder_id = ?
 		  WHERE owner_id = ? AND id = ?;`
-	_, err := a.conn.Exec(q, folder.Name, folder.ParentFolder, folder.Owner, folder.ID)
+	_, err := a.conn.Exec(
+		q,
+		folder.EncryptionKey,
+		folder.Metadata,
+		folder.ParentFolder,
+		folder.Owner,
+		folder.ID,
+	)
 	return err
 }

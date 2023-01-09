@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { createFolder } from "../api/files";
+import AuthContext from "../context/AuthContext";
 import FolderContext from "../context/FolderContext";
-import { uuid } from "../crypto/utils";
 import { UUID } from "../types/Files";
 
 type NewFolderModalProps = {
@@ -25,6 +25,10 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
 }) => {
   const [name, setName] = useState("");
   const { addFolder } = useContext(FolderContext);
+  const { accountKey } = useContext(AuthContext);
+  if (!accountKey) {
+    throw new Error();
+  }
 
   const canSubmit = name.trim().length > 0;
 
@@ -33,13 +37,12 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
       return;
     }
     const newFolder = {
-      id: uuid(),
       name: name.trim(),
       parentFolder,
     };
-    createFolder(newFolder)
-      .then(() => {
-        addFolder(newFolder);
+    createFolder(newFolder, accountKey)
+      .then((result) => {
+        addFolder(result);
         onClose();
       })
       .catch(console.error);

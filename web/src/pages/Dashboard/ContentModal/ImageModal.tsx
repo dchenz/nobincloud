@@ -22,7 +22,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ file, bytes }) => {
       alignItems="center"
       justifyContent="center"
     >
-      <Image src={imageData} alt={file.name} maxW="100%" maxH="100%" />
+      <Image src={imageData} alt={file.metadata.name} maxW="100%" maxH="100%" />
     </Box>
   );
 };

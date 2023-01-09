@@ -11,9 +11,9 @@ export function saveFile(buf: ArrayBuffer, fileName: string) {
 }
 
 export function isImage(file: FileRef): boolean {
-  return file.mimetype.startsWith("image/");
+  return file.metadata.type.startsWith("image/");
 }
 
 export function isPDF(file: FileRef): boolean {
-  return file.mimetype === "application/pdf";
+  return file.metadata.type === "application/pdf";
 }

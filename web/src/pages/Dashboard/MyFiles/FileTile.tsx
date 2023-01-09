@@ -18,14 +18,19 @@ const FileTile: React.FC<FileTileProps> = ({ file, onSelect }) => {
 
   return (
     <Box
-      title={file.name}
+      title={file.metadata.name}
       style={{ width: 200 }}
       className="file-tile-container"
       onClick={onSelect}
     >
-      <Image src={thumbnail} alt={file.name} width="96px" margin="0 auto" />
+      <Image
+        src={thumbnail}
+        alt={file.metadata.name}
+        width="96px"
+        margin="0 auto"
+      />
       <Box p={3}>
-        <Text className="file-tile-name">{file.name}</Text>
+        <Text className="file-tile-name">{file.metadata.name}</Text>
       </Box>
     </Box>
   );

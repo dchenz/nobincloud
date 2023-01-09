@@ -3,28 +3,35 @@ export type FileUploadDetails = {
   parentFolder: UUID | null;
 };
 
-export type UploadInitResponse = {
-  id: number;
-};
-
-export type UploadPartsResponse = {
-  have: number;
-  want: number;
-  error?: string;
-};
-
-type BaseFolderObject = {
-  id: UUID;
+export type FolderCreationDetails = {
   name: string;
   parentFolder: UUID | null;
 };
 
-export type FileRef = BaseFolderObject & {
-  fileKey: ArrayBuffer;
-  mimetype: string;
+export type FileMetadata = {
+  name: string;
+  type: string;
+  size: number;
+  thumbnail: string | null;
 };
 
-export type FolderRef = BaseFolderObject;
+export type FolderMetadata = {
+  name: string;
+};
+
+type BaseFolderObject = {
+  id: UUID;
+  parentFolder: UUID | null;
+  encryptionKey: ArrayBuffer;
+};
+
+export type FileRef = BaseFolderObject & {
+  metadata: FileMetadata;
+};
+
+export type FolderRef = BaseFolderObject & {
+  metadata: FolderMetadata;
+};
 
 export type FilePath = {
   parents: FolderRef[];

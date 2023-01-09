@@ -33,7 +33,7 @@ export default function RegisterPage(): JSX.Element {
         if (result.success) {
           // Store the decrypted AES key on successful login
           // as this will be used to encrypt/decrypt files.
-          ctx.setAccountKey(result.data.accountKey);
+          ctx.setAccountKey(result.data);
           ctx.setLoggedIn(true);
           // Redirect to personal dashboard.
           navigate(PageRoutes.dashboard);

@@ -4,17 +4,20 @@ import { decrypt, encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
 import { arrayBufferToString, uuid, uuidZero } from "../crypto/utils";
 import { createCustomFileThumbnail } from "../misc/thumbnails";
-import { Response } from "../types/API";
+import {
+  FolderContentsResponse,
+  UploadInitResponse,
+  UploadPartsResponse,
+} from "../types/API";
 import {
   FileRef,
   FileUploadDetails,
   FolderContents,
+  FolderCreationDetails,
   FolderRef,
-  UploadInitResponse,
-  UploadPartsResponse,
   UUID,
 } from "../types/Files";
-import { jsonFetch } from "./helpers";
+import { decryptFileObject, decryptFolderObject, jsonFetch } from "./helpers";
 
 const CHUNK_SIZE = 2 ** 24;
 
@@ -27,11 +30,17 @@ export async function encryptAndUploadFile(
   const [encryptedFileKey, fileKey] = await generateWrappedKey(accountKey);
   const totalChunks = Math.ceil(fileUpload.file.size / CHUNK_SIZE);
   const fileID = uuid();
-  const encryptedFileName = await encrypt(
-    Buffer.from(fileUpload.file.name, "utf-8"),
+  const thumbnail = await createCustomFileThumbnail(fileUpload.file);
+  const fileMetadata = {
+    name: fileUpload.file.name,
+    type: fileUpload.file.type,
+    size: fileUpload.file.size,
+    thumbnail: thumbnail ? arrayBufferToString(thumbnail, "base64") : null,
+  };
+  const encryptedFileMetadata = await encrypt(
+    Buffer.from(JSON.stringify(fileMetadata)),
     fileKey
   );
-  const thumbnail = await createCustomFileThumbnail(fileUpload.file);
   const initResponse: UploadInitResponse = await (
     await fetch(ServerRoutes.uploadInit, {
       method: "POST",
@@ -41,14 +50,10 @@ export async function encryptAndUploadFile(
       body: JSON.stringify({
         total_chunks: totalChunks,
         metadata: {
-          parent_folder: fileUpload.parentFolder,
-          thumbnail: thumbnail
-            ? arrayBufferToString(await encrypt(thumbnail, fileKey), "base64")
-            : null,
-          key: arrayBufferToString(encryptedFileKey, "base64"),
-          name: arrayBufferToString(encryptedFileName, "base64"),
-          type: fileUpload.file.type,
           id: fileID,
+          encryptionKey: arrayBufferToString(encryptedFileKey, "base64"),
+          parentFolder: fileUpload.parentFolder,
+          metadata: arrayBufferToString(encryptedFileMetadata, "base64"),
         },
       }),
     })
@@ -77,10 +82,9 @@ export async function encryptAndUploadFile(
         if (resp.have === resp.want) {
           onComplete({
             id: fileID,
-            name: fileUpload.file.name,
+            encryptionKey: encryptedFileKey,
             parentFolder: fileUpload.parentFolder,
-            mimetype: fileUpload.file.type,
-            fileKey,
+            metadata: fileMetadata,
           });
         }
       });
@@ -94,49 +98,28 @@ export async function getFolderContents(
   if (!folderID) {
     folderID = uuidZero();
   }
-  const response = await jsonFetch(`${ServerRoutes.folder}/${folderID}/list`);
-  if (!response.success) {
-    throw new Error(response.data);
-  }
-  for (const f of response.data.files) {
-    const fileKey = await decrypt(Buffer.from(f.fileKey, "base64"), accountKey);
-    if (!fileKey) {
-      throw new Error("key cannot be decrypted");
-    }
-    f.fileKey = fileKey;
-    const fileName = await decrypt(Buffer.from(f.name, "base64"), fileKey);
-    if (!fileName) {
-      throw new Error("file name cannot be decrypted");
-    }
-    f.name = arrayBufferToString(fileName, "utf-8");
-  }
-  return response.data;
-}
-
-export async function getThumbnail(file: FileRef): Promise<string | null> {
-  const response: Response<string | null> = await jsonFetch(
-    `${ServerRoutes.thumbnail}/${file.id}`
+  const contents = await jsonFetch<FolderContentsResponse>(
+    `${ServerRoutes.folder}/${folderID}/list`
   );
-  if (!response.success) {
-    throw new Error(response.data);
+  const files = [];
+  const folders = [];
+  for (const f of contents.files) {
+    files.push(await decryptFileObject(f, accountKey));
   }
-  if (!response.data) {
-    return null; // No thumbnail
+  for (const f of contents.folders) {
+    folders.push(await decryptFolderObject(f, accountKey));
   }
-  const encryptedThumbnail = Buffer.from(response.data, "base64");
-  const thumbnailDataURI = await decrypt(encryptedThumbnail, file.fileKey);
-  if (!thumbnailDataURI) {
-    throw new Error("file cannot be decrypted");
-  }
-  const dataURI = arrayBufferToString(thumbnailDataURI, "base64");
-  return "data:image/jpeg;base64," + dataURI;
+  return {
+    files,
+    folders,
+  };
 }
 
 export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
   const url = `${ServerRoutes.file}/${file.id}`;
   const responseBytes = await (await fetch(url)).arrayBuffer();
   // TODO: Find a new scheme to decrypt chunked large files.
-  const fileBytes = await decrypt(responseBytes, file.fileKey);
+  const fileBytes = await decrypt(responseBytes, file.encryptionKey);
   if (!fileBytes) {
     throw new Error("file cannot be decrypted");
   }
@@ -145,23 +128,38 @@ export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
 
 export async function deleteFileOnServer(file: FileRef): Promise<null> {
   const url = `${ServerRoutes.file}/${file.id}`;
-  const response: Response<null> = await jsonFetch(url, {
+  return await jsonFetch<null>(url, {
     method: "DELETE",
   });
-  if (!response.success) {
-    throw new Error(response.data);
-  }
-  return response.data;
 }
 
-export async function createFolder(folder: FolderRef) {
-  const url = `${ServerRoutes.folder}/${folder.id}`;
-  const response: Response<null> = await jsonFetch(url, {
+export async function createFolder(
+  folder: FolderCreationDetails,
+  accountKey: ArrayBuffer
+): Promise<FolderRef> {
+  const id = uuid();
+  const url = `${ServerRoutes.folder}/${id}`;
+  const [encryptedFolderKey, folderKey] = await generateWrappedKey(accountKey);
+  const folderMetadata = {
+    name: folder.name,
+  };
+  const encryptedFolderMetadata = await encrypt(
+    Buffer.from(JSON.stringify(folderMetadata)),
+    folderKey
+  );
+  await jsonFetch(url, {
     method: "PUT",
-    body: JSON.stringify(folder),
+    body: JSON.stringify({
+      id,
+      encryptionKey: arrayBufferToString(encryptedFolderKey, "base64"),
+      parentFolder: folder.parentFolder,
+      metadata: arrayBufferToString(encryptedFolderMetadata, "base64"),
+    }),
   });
-  if (!response.success) {
-    throw new Error(response.data);
-  }
-  return response.data;
+  return {
+    id,
+    encryptionKey: folderKey,
+    parentFolder: folder.parentFolder,
+    metadata: folderMetadata,
+  };
 }

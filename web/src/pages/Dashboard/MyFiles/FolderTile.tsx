@@ -10,19 +10,19 @@ type FolderTileProps = {
 const FolderTile: React.FC<FolderTileProps> = ({ folder, onSelect }) => {
   return (
     <Box
-      title={folder.name}
+      title={folder.metadata.name}
       style={{ width: 200 }}
       className="file-tile-container"
       onClick={onSelect}
     >
       <Image
         src="/static/media/folder-icon.png"
-        alt={folder.name}
+        alt={folder.metadata.name}
         width="96px"
         margin="0 auto"
       />
       <Box p={3}>
-        <Text className="file-tile-name">{folder.name}</Text>
+        <Text className="file-tile-name">{folder.metadata.name}</Text>
       </Box>
     </Box>
   );

@@ -10,16 +10,15 @@ type FileRef struct {
 
 type File struct {
 	ID            uuid.UUID       `json:"id"`
-	Name          Bytes           `json:"name"`
+	EncryptionKey Bytes           `json:"encryptionKey"`
 	ParentFolder  JSON[uuid.UUID] `json:"parentFolder,omitempty"`
-	EncryptionKey Bytes           `json:"fileKey"`
+	Metadata      Bytes           `json:"metadata"`
 	SavedLocation string          `json:"-"`
-	Thumbnail     JSON[[]byte]    `json:"-"`
-	MimeType      string          `json:"mimetype"`
 }
 
 type Folder struct {
-	ID           uuid.UUID       `json:"id"`
-	Name         string          `json:"name"`
-	ParentFolder JSON[uuid.UUID] `json:"parentFolder,omitempty"`
+	ID            uuid.UUID       `json:"id"`
+	EncryptionKey Bytes           `json:"encryptionKey"`
+	ParentFolder  JSON[uuid.UUID] `json:"parentFolder,omitempty"`
+	Metadata      Bytes           `json:"metadata"`
 }

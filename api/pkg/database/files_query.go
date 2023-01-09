@@ -25,14 +25,13 @@ func (a *Database) GetFilesInFolder(userID int, folder uuid.UUID) ([]model.File,
 		}
 		f := model.File{
 			ID:            id,
-			Name:          model.Bytes{Bytes: dbFile.Name},
 			EncryptionKey: model.Bytes{Bytes: dbFile.EncryptionKey},
 			ParentFolder: model.JSON[uuid.UUID]{
 				Valid: dbFile.ParentFolder.Valid,
 				Value: folder,
 			},
+			Metadata:      model.Bytes{Bytes: dbFile.Metadata},
 			SavedLocation: dbFile.SavedLocation,
-			MimeType:      dbFile.MimeType,
 		}
 		res = append(res, f)
 	}
@@ -55,12 +54,13 @@ func (a *Database) GetFoldersInFolder(userID int, folder uuid.UUID) ([]model.Fol
 			return nil, err
 		}
 		d := model.Folder{
-			ID:   id,
-			Name: dbFolder.Name,
+			ID: id,
 			ParentFolder: model.JSON[uuid.UUID]{
 				Valid: dbFolder.ParentFolder.Valid,
 				Value: folder,
 			},
+			EncryptionKey: model.Bytes{Bytes: dbFolder.EncryptionKey},
+			Metadata:      model.Bytes{Bytes: dbFolder.Metadata},
 		}
 		res = append(res, d)
 	}
@@ -74,16 +74,11 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 	}
 	return a.insertFile(dbmodel.File{
 		PublicID:      file.ID[:],
-		Name:          file.Name.Bytes,
 		Owner:         userID,
 		ParentFolder:  folderID,
 		EncryptionKey: file.EncryptionKey.Bytes,
+		Metadata:      file.Metadata.Bytes,
 		SavedLocation: file.SavedLocation,
-		Thumbnail: model.NullBytes{
-			Valid: file.Thumbnail.Valid,
-			Bytes: file.Thumbnail.Value,
-		},
-		MimeType: file.MimeType,
 	})
 }
 
@@ -95,38 +90,25 @@ func (a *Database) UpsertFolder(userID int, folder model.Folder) error {
 	existingFolderID, err := a.sqlFolderID(folder.ID)
 	if err == sql.ErrNoRows {
 		return a.insertFolder(dbmodel.Folder{
-			PublicID:     folder.ID[:],
-			Name:         folder.Name,
-			Owner:        userID,
-			ParentFolder: parentFolderID,
+			PublicID:      folder.ID[:],
+			Owner:         userID,
+			ParentFolder:  parentFolderID,
+			EncryptionKey: folder.EncryptionKey.Bytes,
+			Metadata:      folder.Metadata.Bytes,
 		})
 	}
 	if err != nil {
 		return err
 	}
 	updatedFolder := dbmodel.Folder{
-		ID:           int(existingFolderID.Int32),
-		PublicID:     folder.ID[:],
-		Name:         folder.Name,
-		Owner:        userID,
-		ParentFolder: parentFolderID,
+		ID:            int(existingFolderID.Int32),
+		PublicID:      folder.ID[:],
+		Owner:         userID,
+		ParentFolder:  parentFolderID,
+		EncryptionKey: folder.EncryptionKey.Bytes,
+		Metadata:      folder.Metadata.Bytes,
 	}
 	return a.updateFolder(updatedFolder)
-}
-
-func (a *Database) GetThumbnail(userID int, file uuid.UUID) ([]byte, error) {
-	fileID, err := a.findFileID(file[:])
-	if err != nil {
-		return nil, err
-	}
-	thumbnail, err := a.getFileThumbnail(userID, fileID)
-	if err != nil {
-		return nil, err
-	}
-	if !thumbnail.Valid {
-		return nil, nil
-	}
-	return thumbnail.Bytes, nil
 }
 
 func (a *Database) GetFileOwner(file uuid.UUID) (int, error) {
@@ -167,8 +149,9 @@ func (a *Database) GetFolder(userID int, folder uuid.UUID) (*model.Folder, error
 		parentFolder.Value = pf
 	}
 	return &model.Folder{
-		ID:           folder,
-		Name:         f.Name,
-		ParentFolder: parentFolder,
+		ID:            folder,
+		ParentFolder:  parentFolder,
+		EncryptionKey: model.Bytes{Bytes: f.EncryptionKey},
+		Metadata:      model.Bytes{Bytes: f.Metadata},
 	}, nil
 }
