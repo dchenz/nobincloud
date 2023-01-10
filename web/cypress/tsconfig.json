@@ -8,10 +8,11 @@
     "strict": true,
     "skipLibCheck": true,
     "types": [
-      "cypress"
+      "cypress",
+      "./support"
     ]
   },
   "include": [
-    "./**/*.cy.ts"
+    "./**/*.ts"
   ]
 }

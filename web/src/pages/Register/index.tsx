@@ -25,8 +25,13 @@ export default function RegisterPage(): JSX.Element {
   const [password, setPassword] = useState<string>("");
   const [failedSignup, setFailedSignup] = useState<string>("");
 
+  const canSubmit = email !== "" && nickname.trim() !== "" && password !== "";
+
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!canSubmit) {
+      return;
+    }
     const newUser = { email, nickname, password };
     registerAccount(newUser)
       .then((result) => {
@@ -78,7 +83,9 @@ export default function RegisterPage(): JSX.Element {
                 All account data is lost if you forget your password.
               </FormHelperText>
             </FormControl>
-            <Button type="submit">Create</Button>
+            <Button type="submit" disabled={!canSubmit}>
+              Create
+            </Button>
             {failedSignup ? (
               <Alert status="warning">{failedSignup}</Alert>
             ) : null}

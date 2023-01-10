@@ -54,6 +54,7 @@ const LoginFullForm: React.FC = () => {
                   setEmail(e.target.value);
                   setFailedLogin("");
                 }}
+                data-test-id="login-email"
               />
             </FormControl>
             <FormControl>
@@ -65,6 +66,7 @@ const LoginFullForm: React.FC = () => {
                   setPassword(e.target.value);
                   setFailedLogin("");
                 }}
+                data-test-id="login-password"
               />
             </FormControl>
             <Button type="submit">Submit</Button>
