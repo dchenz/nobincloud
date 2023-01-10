@@ -57,17 +57,22 @@ export default function RegisterPage(): JSX.Element {
                   setEmail(e.target.value);
                   setFailedSignup("");
                 }}
+                data-test-id="register-email"
               />
             </FormControl>
             <FormControl>
               <FormLabel>Nickname</FormLabel>
-              <Input onChange={(e) => setNickname(e.target.value)} />
+              <Input
+                onChange={(e) => setNickname(e.target.value)}
+                data-test-id="register-nickname"
+              />
             </FormControl>
             <FormControl>
               <FormLabel>Password</FormLabel>
               <Input
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
+                data-test-id="register-password"
               />
               <FormHelperText>
                 All account data is lost if you forget your password.

@@ -2,6 +2,7 @@ package cloudrouter
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/dchenz/nobincloud/pkg/database"
 	"github.com/dchenz/nobincloud/pkg/model"
@@ -38,5 +39,14 @@ func (a *CloudRouter) SignUpNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 	a.SessionManager.Put(r.Context(), "current_user_id", accountID)
 	a.SessionManager.Put(r.Context(), "current_user_email", user.Email)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "signed_in",
+		Value:    "true",
+		Path:     a.SessionManager.Cookie.Path,
+		Domain:   a.SessionManager.Cookie.Domain,
+		Expires:  time.Now().Add(a.SessionManager.Lifetime),
+		SameSite: a.SessionManager.Cookie.SameSite,
+		HttpOnly: false,
+	})
 	utils.ResponseSuccess(w, nil)
 }
