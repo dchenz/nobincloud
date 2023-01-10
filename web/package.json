@@ -27,7 +27,7 @@
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "lint": "prettier --check src",
     "test": "jest --maxWorkers 1",
-    "test:cypress": "cypress run --config video=false",
+    "test:cypress": "bash ../docker/test-cypress.sh",
     "codecheck": "yarn lint && yarn test",
     "eject": "react-scripts eject"
   },
