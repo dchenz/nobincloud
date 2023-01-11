@@ -17,3 +17,19 @@ export function isImage(file: FileRef): boolean {
 export function isPDF(file: FileRef): boolean {
   return file.metadata.type === "application/pdf";
 }
+
+export function formatBinarySize(n: number): string {
+  if (n < 1024) {
+    return `${n.toFixed(2)} B`;
+  }
+  n /= 1024;
+  if (n < 1024) {
+    return `${n.toFixed(2)} KB`;
+  }
+  n /= 1024;
+  if (n < 1024) {
+    return `${n.toFixed(2)} MB`;
+  }
+  n /= 1024;
+  return `${n.toFixed(2)} GB`;
+}

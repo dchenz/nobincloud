@@ -14,10 +14,16 @@ import { Download, Trash } from "react-bootstrap-icons";
 import { deleteFileOnServer, getFileDownload } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import FolderContext from "../../../context/FolderContext";
-import { isImage, isPDF, saveFile } from "../../../misc/fileutils";
+import {
+  formatBinarySize,
+  isImage,
+  isPDF,
+  saveFile,
+} from "../../../misc/fileutils";
 import { FileRef } from "../../../types/Files";
 import ImageModal from "./ImageModal";
 import PDFModal from "./PDFModal";
+import "./styles.scss";
 
 type ContentModalProps = {
   selectedFile: FileRef;
@@ -84,6 +90,9 @@ const ContentModal: React.FC<ContentModalProps> = ({
               alignItems="self-start"
             >
               <Text>{selectedFile.metadata.name}</Text>
+              <div className="file-detail-item">
+                {formatBinarySize(selectedFile.metadata.size)}
+              </div>
               <Divider />
               <Box>
                 <IconButton
