@@ -54,6 +54,7 @@ export default function Header(): JSX.Element {
           leftIcon={<Folder2 />}
           color="black"
           onClick={() => setCreatingFolder(true)}
+          data-test-id="create-folder"
         >
           New
         </Button>

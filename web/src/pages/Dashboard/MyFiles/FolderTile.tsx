@@ -14,6 +14,7 @@ const FolderTile: React.FC<FolderTileProps> = ({ folder, onSelect }) => {
       style={{ width: 200 }}
       className="file-tile-container"
       onClick={onSelect}
+      data-test-id={`folder_${folder.id}`}
     >
       <Image
         src="/static/media/folder-icon.png"

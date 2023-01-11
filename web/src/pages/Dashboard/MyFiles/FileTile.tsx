@@ -22,6 +22,7 @@ const FileTile: React.FC<FileTileProps> = ({ file, onSelect }) => {
       style={{ width: 200 }}
       className="file-tile-container"
       onClick={onSelect}
+      data-test-id={`file_${file.id}`}
     >
       <Image
         src={thumbnail}
