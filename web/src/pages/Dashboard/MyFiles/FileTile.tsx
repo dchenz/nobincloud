@@ -1,5 +1,5 @@
 import { Box, Image, Text } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { loadFileThumbnail } from "../../../misc/thumbnails";
 import { FileRef } from "../../../types/Files";
 import "./styles.scss";
@@ -10,12 +10,6 @@ type FileTileProps = {
 };
 
 const FileTile: React.FC<FileTileProps> = ({ file, onSelect }) => {
-  const [thumbnail, setThumbnail] = useState<string>("");
-
-  useEffect(() => {
-    loadFileThumbnail(file).then((t) => setThumbnail(t ?? ""));
-  }, []);
-
   return (
     <Box
       title={file.metadata.name}
@@ -25,7 +19,7 @@ const FileTile: React.FC<FileTileProps> = ({ file, onSelect }) => {
       data-test-id={`file_${file.id}`}
     >
       <Image
-        src={thumbnail}
+        src={loadFileThumbnail(file)}
         alt={file.metadata.name}
         width="96px"
         margin="0 auto"

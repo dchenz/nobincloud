@@ -7,6 +7,7 @@ import {
   PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
+  PopoverProps,
   PopoverTrigger,
 } from "@chakra-ui/react";
 import React from "react";
@@ -17,11 +18,6 @@ type ConfirmDeleteProps = {
   onCancel?: () => void;
   // Should be whatever triggers this popup.
   children: React.ReactNode;
-};
-
-type PopoverProps = {
-  isOpen: boolean;
-  onClose: () => void;
 };
 
 const ConfirmPopup: React.FC<ConfirmDeleteProps> = (props) => (
@@ -39,7 +35,9 @@ const ConfirmPopup: React.FC<ConfirmDeleteProps> = (props) => (
                 width="100%"
                 onClick={() => {
                   props.onConfirm();
-                  onClose();
+                  if (onClose) {
+                    onClose();
+                  }
                 }}
               >
                 OK
@@ -50,7 +48,9 @@ const ConfirmPopup: React.FC<ConfirmDeleteProps> = (props) => (
                   if (props.onCancel) {
                     props.onCancel();
                   }
-                  onClose();
+                  if (onClose) {
+                    onClose();
+                  }
                 }}
               >
                 Cancel

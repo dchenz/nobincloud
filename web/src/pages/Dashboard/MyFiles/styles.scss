@@ -5,6 +5,7 @@ $headerHeight: 60px;
 
   .file-browser-header {
     padding: 0 1.5em;
+    width: 100%;
     height: $headerHeight;
     display: flex;
     align-items: center;
@@ -28,6 +29,27 @@ $headerHeight: 60px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+    }
+
+    .file-list-item {
+      cursor: pointer;
+      transition: background-color 300ms;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      & > td {
+        padding: 0.5rem;
+      }
+
+      .file-list-item-icon img {
+        width: 32px;
+      }
+
+      .file-list-item-size {
+        text-align: right;
       }
     }
   }

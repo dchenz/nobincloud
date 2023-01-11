@@ -26,7 +26,7 @@ export async function createCustomFileThumbnail(
  * @param file File object
  * @returns Returns the src attribute for a thumbnail image
  */
-export async function loadFileThumbnail(file: FileRef): Promise<string> {
+export function loadFileThumbnail(file: FileRef): string {
   if (file.metadata.thumbnail) {
     return "data:image/jpeg;base64," + file.metadata.thumbnail;
   }

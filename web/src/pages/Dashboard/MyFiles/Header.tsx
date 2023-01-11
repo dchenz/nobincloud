@@ -3,6 +3,7 @@ import React, { ChangeEvent, useContext, useState } from "react";
 import { Folder2, Upload } from "react-bootstrap-icons";
 import { encryptAndUploadFile } from "../../../api/files";
 import NewFolderModal from "../../../components/NewFolderModal";
+import ViewModeSelector from "../../../components/ViewModeSelector";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FileRef } from "../../../types/Files";
@@ -42,7 +43,7 @@ export default function Header(): JSX.Element {
 
   return (
     <Box className="file-browser-header">
-      <HStack gap={2}>
+      <HStack gap={2} width="100%">
         <Button
           leftIcon={<Upload />}
           color="black"
@@ -58,6 +59,8 @@ export default function Header(): JSX.Element {
         >
           New
         </Button>
+        <Box flexGrow={1}></Box>
+        <ViewModeSelector />
       </HStack>
       {isCreatingFolder ? (
         <NewFolderModal

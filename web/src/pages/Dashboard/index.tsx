@@ -26,6 +26,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
   const [pwd, setPwd] = useState<FilePath>(initState.pwd);
   const [contents, setContents] = useState<FolderContents>(initState.contents);
   const [loading, setLoading] = useState<boolean>(false);
+  const [viewingMode, setViewingMode] = useState<string>(initState.viewingMode);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -67,6 +68,8 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
         setContents,
         loading,
         setLoading,
+        viewingMode,
+        setViewingMode,
         addFile,
         addFolder,
         deleteFile,

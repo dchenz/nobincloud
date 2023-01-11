@@ -1,18 +1,18 @@
-import { Divider, SimpleGrid } from "@chakra-ui/react";
+import { Divider } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FileRef } from "../../../types/Files";
 import ContentModal from "../ContentModal";
-import FileTile from "./FileTile";
-import FolderTile from "./FolderTile";
+import GridView from "./GridView";
 import Header from "./Header";
+import ListView from "./ListView";
 import PathViewer from "./PathViewer";
 import "./styles.scss";
 
 export default function MyFilesDashboard(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<FileRef | null>(null);
-  const { contents, pwd, setPwd } = useContext(FolderContext);
+  const { viewingMode } = useContext(FolderContext);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -24,28 +24,11 @@ export default function MyFilesDashboard(): JSX.Element {
       <div className="file-browser-content">
         <PathViewer />
         <Divider my={2} />
-        <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} spacing={8}>
-          {contents.folders.map((folder) => (
-            <FolderTile
-              key={folder.id}
-              folder={folder}
-              onSelect={() =>
-                setPwd({
-                  ...pwd,
-                  parents: [...pwd.parents, pwd.current],
-                  current: folder,
-                })
-              }
-            />
-          ))}
-          {contents.files.map((file) => (
-            <FileTile
-              key={file.id}
-              file={file}
-              onSelect={() => setSelectedFile(file)}
-            />
-          ))}
-        </SimpleGrid>
+        {viewingMode === "grid" ? (
+          <GridView selectFile={setSelectedFile} />
+        ) : (
+          <ListView selectFile={setSelectedFile} />
+        )}
         {selectedFile ? (
           <ContentModal
             selectedFile={selectedFile}
