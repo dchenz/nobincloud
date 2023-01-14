@@ -1,4 +1,13 @@
-import { Image, Table, TableContainer, Tbody, Td, Tr } from "@chakra-ui/react";
+import {
+  Image,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
 import React, { useContext } from "react";
 import FolderContext from "../../../context/FolderContext";
 import { formatBinarySize, formatRelativeTime } from "../../../misc/fileutils";
@@ -15,6 +24,16 @@ const ListView: React.FC<ListViewProps> = ({ selectFile }) => {
   return (
     <TableContainer>
       <Table>
+        <Thead>
+          <Tr className="file-list-header">
+            <Th width="70px"></Th>
+            <Th>Name</Th>
+            <Th width="20%">Created</Th>
+            <Th width="10%" isNumeric>
+              Size
+            </Th>
+          </Tr>
+        </Thead>
         <Tbody>
           {contents.folders.map((folder) => (
             <Tr
@@ -33,7 +52,7 @@ const ListView: React.FC<ListViewProps> = ({ selectFile }) => {
               </Td>
               <Td>{folder.metadata.name}</Td>
               <Td>{formatRelativeTime(folder.metadata.createdAt)}</Td>
-              <Td></Td>
+              <Td isNumeric></Td>
             </Tr>
           ))}
           {contents.files.map((file) => (
@@ -47,9 +66,7 @@ const ListView: React.FC<ListViewProps> = ({ selectFile }) => {
               </Td>
               <Td>{file.metadata.name}</Td>
               <Td>{formatRelativeTime(file.metadata.createdAt)}</Td>
-              <Td className="file-list-item-size">
-                {formatBinarySize(file.metadata.size)}
-              </Td>
+              <Td isNumeric>{formatBinarySize(file.metadata.size)}</Td>
             </Tr>
           ))}
         </Tbody>
