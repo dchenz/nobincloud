@@ -10,6 +10,7 @@ export type FolderCreationDetails = {
 
 export type FileMetadata = {
   name: string;
+  createdAt: Date;
   type: string;
   size: number;
   thumbnail: string | null;
@@ -17,6 +18,7 @@ export type FileMetadata = {
 
 export type FolderMetadata = {
   name: string;
+  createdAt: Date;
 };
 
 type BaseFolderObject = {

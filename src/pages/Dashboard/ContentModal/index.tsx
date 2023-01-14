@@ -84,12 +84,14 @@ const ContentModal: React.FC<ContentModalProps> = ({
             <VStack
               px={4}
               py={8}
-              gap={2}
               backgroundColor="#f5f5f5"
               width={{ md: "100%", lg: "300px" }}
               alignItems="self-start"
             >
               <Text>{selectedFile.metadata.name}</Text>
+              <div className="file-detail-item">
+                {selectedFile.metadata.createdAt.toLocaleString()}
+              </div>
               <div className="file-detail-item">
                 {formatBinarySize(selectedFile.metadata.size)}
               </div>

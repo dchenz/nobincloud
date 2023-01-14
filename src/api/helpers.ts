@@ -34,7 +34,9 @@ export async function decryptFileObject(
   if (!metadataBytes) {
     throw new Error("could not decrypt file metadata");
   }
+  // Every file should have a creation date.
   const metadata = JSON.parse(arrayBufferToString(metadataBytes, "utf-8"));
+  metadata.createdAt = new Date(metadata.createdAt);
   return {
     ...resp,
     encryptionKey: fileKey,
@@ -60,7 +62,9 @@ export async function decryptFolderObject(
   if (!metadataBytes) {
     throw new Error("could not decrypt folder metadata");
   }
+  // Every folder should have a creation date.
   const metadata = JSON.parse(arrayBufferToString(metadataBytes, "utf-8"));
+  metadata.createdAt = new Date(metadata.createdAt);
   return {
     ...resp,
     encryptionKey: folderKey,

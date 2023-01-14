@@ -33,6 +33,7 @@ export async function encryptAndUploadFile(
   const thumbnail = await createCustomFileThumbnail(fileUpload.file);
   const fileMetadata = {
     name: fileUpload.file.name,
+    createdAt: new Date(), // Will show time when the upload started
     type: fileUpload.file.type,
     size: fileUpload.file.size,
     thumbnail: thumbnail ? arrayBufferToString(thumbnail, "base64") : null,
@@ -142,6 +143,7 @@ export async function createFolder(
   const [encryptedFolderKey, folderKey] = await generateWrappedKey(accountKey);
   const folderMetadata = {
     name: folder.name,
+    createdAt: new Date(),
   };
   const encryptedFolderMetadata = await encrypt(
     Buffer.from(JSON.stringify(folderMetadata)),

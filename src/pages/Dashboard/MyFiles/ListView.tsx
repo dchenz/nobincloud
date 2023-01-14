@@ -1,7 +1,7 @@
 import { Image, Table, TableContainer, Tbody, Td, Tr } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import FolderContext from "../../../context/FolderContext";
-import { formatBinarySize } from "../../../misc/fileutils";
+import { formatBinarySize, formatRelativeTime } from "../../../misc/fileutils";
 import { loadFileThumbnail } from "../../../misc/thumbnails";
 import { FileRef } from "../../../types/Files";
 import "./styles.sass";
@@ -32,6 +32,7 @@ const ListView: React.FC<ListViewProps> = ({ selectFile }) => {
                 <Image src="/static/media/folder-icon.png" />
               </Td>
               <Td>{folder.metadata.name}</Td>
+              <Td>{formatRelativeTime(folder.metadata.createdAt)}</Td>
               <Td></Td>
             </Tr>
           ))}
@@ -45,6 +46,7 @@ const ListView: React.FC<ListViewProps> = ({ selectFile }) => {
                 <Image src={loadFileThumbnail(file)} />
               </Td>
               <Td>{file.metadata.name}</Td>
+              <Td>{formatRelativeTime(file.metadata.createdAt)}</Td>
               <Td className="file-list-item-size">
                 {formatBinarySize(file.metadata.size)}
               </Td>

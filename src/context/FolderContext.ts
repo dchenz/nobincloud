@@ -23,6 +23,7 @@ export const initState: FolderCtxType = {
       encryptionKey: new ArrayBuffer(0),
       metadata: {
         name: "",
+        createdAt: new Date(),
         type: "",
         size: 0,
         thumbnail: null,
