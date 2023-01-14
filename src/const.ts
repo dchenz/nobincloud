@@ -17,3 +17,7 @@ export const ServerRoutes = {
   file: "/api/file",
   folder: "/api/folder",
 };
+
+export const LocalStorageKeys = {
+  viewingMode: "file-viewing-mode",
+};
