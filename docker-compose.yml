@@ -6,12 +6,12 @@ services:
       - 8000:80
     volumes:
       - type: bind
-        source: ./docker/nginx.dev.conf
+        source: ./scripts/nginx.dev.conf
         target: /etc/nginx/nginx.conf
     depends_on:
-      - web
-      - api
-  web:
+      - frontend
+      - backend
+  frontend:
     image: node:18.7.0-slim
     working_dir: /src
     command: yarn start
@@ -19,11 +19,10 @@ services:
       - WATCHPACK_POLLING=true
       - WDS_SOCKET_PORT=8000
     volumes:
-      - ./web:/src
-  api:
+      - .:/src
+  backend:
     build:
-      context: ./api
-      dockerfile: ../docker/api.Dockerfile
+      context: ./backend
     env_file: ./.env
     environment:
       - SERVER_HOSTNAME=0.0.0.0
@@ -41,4 +40,4 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=test123
     volumes:
-      - ./api/pkg/database/schema:/docker-entrypoint-initdb.d
+      - ./backend/pkg/database/schema:/docker-entrypoint-initdb.d

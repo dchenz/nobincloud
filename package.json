@@ -14,7 +14,6 @@
     "react-bootstrap-icons": "^1.9.1",
     "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
-    "react-google-recaptcha": "^2.1.0",
     "react-pdf": "^6.2.1",
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
@@ -25,10 +24,10 @@
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
-    "lint": "prettier --check src",
-    "test": "jest --maxWorkers 1",
-    "test:cypress": "bash ../docker/test-cypress.sh",
-    "codecheck": "yarn lint && yarn test",
+    "lint": "bash scripts/lint.sh",
+    "test:frontend": "jest --maxWorkers 1",
+    "test:backend": "bash scripts/test-backend-integration.sh",
+    "test:integration": "bash scripts/test-cypress.sh",
     "eject": "react-scripts eject"
   },
   "browserslist": {
@@ -47,7 +46,6 @@
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.8",
-    "@types/react-google-recaptcha": "^2.1.5",
     "@types/react-pdf": "^6.2.0",
     "@types/react-router-dom": "^5.3.3",
     "cypress": "^12.3.0",
