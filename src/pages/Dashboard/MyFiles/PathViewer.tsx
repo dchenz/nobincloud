@@ -1,9 +1,10 @@
-import { Button, HStack, Text } from "@chakra-ui/react";
+import { Box, Button, HStack } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { ChevronRight } from "react-bootstrap-icons";
 import FolderContext from "../../../context/FolderContext";
 import { uuidZero } from "../../../crypto/utils";
 import { FolderRef } from "../../../types/Files";
+import "./styles.sass";
 
 const PathViewer: React.FC = () => {
   const { pwd, setPwd } = useContext(FolderContext);
@@ -26,19 +27,24 @@ const PathViewer: React.FC = () => {
         <React.Fragment key={k}>
           <Button
             variant="link"
-            size="sm"
+            minWidth={0}
             onClick={() => changeToPreviousFolder(folder)}
           >
-            <Text fontSize="xl" data-test-id={`parent_${folder.id}`}>
+            <Box
+              className="path-viewer-item"
+              data-test-id={`parent_${folder.id}`}
+            >
               {folder.id === uuidZero() ? "My Files" : folder.metadata.name}
-            </Text>
+            </Box>
           </Button>
-          <ChevronRight />
+          <div>
+            <ChevronRight />
+          </div>
         </React.Fragment>
       ))}
-      <Text fontSize="xl" data-test-id={`pwd_${pwd.current.id}`}>
+      <Box className="path-viewer-item" data-test-id={`pwd_${pwd.current.id}`}>
         {pwd.current.id === uuidZero() ? "My Files" : pwd.current.metadata.name}
-      </Text>
+      </Box>
     </HStack>
   );
 };
