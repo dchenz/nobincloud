@@ -1,8 +1,12 @@
 import { Box, Icon, IconButton, Stack, Tooltip } from "@chakra-ui/react";
 import React, { useContext } from "react";
-import { BoxArrowRight } from "react-bootstrap-icons";
+import {
+  BoxArrowRight,
+  ChevronLeft,
+  ChevronRight,
+} from "react-bootstrap-icons";
 import FolderContext, { initState } from "../../../context/FolderContext";
-import { useLogout } from "../../../misc/hooks";
+import { useLocalStorageState, useLogout } from "../../../misc/hooks";
 import NavBrand from "./NavBrand";
 import NavList from "./NavList";
 import "./styles.sass";
@@ -10,8 +14,9 @@ import "./styles.sass";
 export default function DashboardPage(): JSX.Element {
   const logout = useLogout();
   const { setPwd } = useContext(FolderContext);
+  const [showNav, setShowNav] = useLocalStorageState("show-nav", true);
   return (
-    <div className="nav-drawer">
+    <div className={"nav-drawer" + (showNav ? "" : " collapsed")}>
       <Stack as="nav" gap={2} flexGrow={1}>
         <NavBrand />
         <NavList
@@ -25,6 +30,13 @@ export default function DashboardPage(): JSX.Element {
           </IconButton>
         </Tooltip>
       </Box>
+      <button
+        className={"toggle-nav-collapse" + (showNav ? "" : " collapsed")}
+        tabIndex={-1}
+        onClick={() => setShowNav(!showNav)}
+      >
+        {showNav ? <ChevronLeft color="grey" /> : <ChevronRight color="grey" />}
+      </button>
     </div>
   );
 }

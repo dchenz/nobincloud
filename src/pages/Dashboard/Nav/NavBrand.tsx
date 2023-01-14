@@ -6,7 +6,7 @@ import { PageRoutes } from "../../../const";
 export default function NavBrand(): JSX.Element {
   return (
     <Link to={PageRoutes.home}>
-      <Box className="nav-brand">
+      <Box p="1em" mb={4}>
         <Image src="/static/media/logo-white.png" height="32px" />
       </Box>
     </Link>
