@@ -1,4 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { useCookies } from "react-cookie";
+import { logoutAccount } from "../api/logoutAccount";
+import AuthContext from "../context/AuthContext";
 
 export function useLocalStorageState<T>(
   name: string,
@@ -38,4 +41,17 @@ export function useLocalStorageState<T>(
   );
 
   return [state, setNewState];
+}
+
+export function useLogout() {
+  const { setAccountKey, setLoggedIn } = useContext(AuthContext);
+  const clearCookies = useCookies(["session", "signed_in"])[2];
+  return () => {
+    logoutAccount().then(() => {
+      clearCookies("session");
+      clearCookies("signed_in");
+      setAccountKey(null);
+      setLoggedIn(false);
+    });
+  };
 }

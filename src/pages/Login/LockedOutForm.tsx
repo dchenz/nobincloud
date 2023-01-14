@@ -11,26 +11,29 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { Link, useNavigate } from "react-router-dom";
-import { jsonFetch } from "../../api/helpers";
 import { unlockAccount } from "../../api/loginAccount";
-import { logoutAccount } from "../../api/logoutAccount";
 import { PageRoutes, ServerRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
+import { useLogout } from "../../misc/hooks";
 
 const LockedOutForm: React.FC = () => {
+  const logout = useLogout();
   const ctx = useContext(AuthContext);
-  const clearCookies = useCookies(["session", "signed_in"])[2];
   const navigate = useNavigate();
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string>("");
   const [failedLogin, setFailedLogin] = useState<string>("");
 
   useEffect(() => {
-    jsonFetch<string>(ServerRoutes.whoami)
-      .then((resp) => setEmail(resp))
-      .catch(console.error);
+    (async () => {
+      const resp = await fetch(ServerRoutes.whoami);
+      if (resp.status === 401) {
+        logout();
+        return;
+      }
+      setEmail((await resp.json()).data);
+    })();
   }, []);
 
   if (!email) {
@@ -79,16 +82,7 @@ const LockedOutForm: React.FC = () => {
         <Box mt={8}>
           <Text>
             Not {email}? Click{" "}
-            <Link
-              to={PageRoutes.login}
-              onClick={async () => {
-                await logoutAccount();
-                clearCookies("session");
-                clearCookies("signed_in");
-                ctx.setAccountKey(null);
-                ctx.setLoggedIn(false);
-              }}
-            >
+            <Link to={PageRoutes.login} onClick={logout}>
               <u>here</u>
             </Link>{" "}
             to logout.
