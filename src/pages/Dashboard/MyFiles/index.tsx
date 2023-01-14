@@ -8,7 +8,7 @@ import GridView from "./GridView";
 import Header from "./Header";
 import ListView from "./ListView";
 import PathViewer from "./PathViewer";
-import "./styles.scss";
+import "./styles.sass";
 
 export default function MyFilesDashboard(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<FileRef | null>(null);

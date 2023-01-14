@@ -4,7 +4,7 @@ import FolderContext from "../../../context/FolderContext";
 import { formatBinarySize } from "../../../misc/fileutils";
 import { loadFileThumbnail } from "../../../misc/thumbnails";
 import { FileRef } from "../../../types/Files";
-import "./styles.scss";
+import "./styles.sass";
 
 type ListViewProps = {
   selectFile: (_: FileRef) => void;

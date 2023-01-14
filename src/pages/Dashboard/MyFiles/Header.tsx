@@ -7,7 +7,7 @@ import ViewModeSelector from "../../../components/ViewModeSelector";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FileRef } from "../../../types/Files";
-import "./styles.scss";
+import "./styles.sass";
 
 export default function Header(): JSX.Element {
   const [isCreatingFolder, setCreatingFolder] = useState(false);

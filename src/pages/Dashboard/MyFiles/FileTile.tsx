@@ -2,7 +2,7 @@ import { Box, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { loadFileThumbnail } from "../../../misc/thumbnails";
 import { FileRef } from "../../../types/Files";
-import "./styles.scss";
+import "./styles.sass";
 
 type FileTileProps = {
   file: FileRef;

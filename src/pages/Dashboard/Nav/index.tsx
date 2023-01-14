@@ -7,7 +7,7 @@ import AuthContext from "../../../context/AuthContext";
 import FolderContext, { initState } from "../../../context/FolderContext";
 import NavBrand from "./NavBrand";
 import NavList from "./NavList";
-import "./styles.scss";
+import "./styles.sass";
 
 export default function DashboardPage(): JSX.Element {
   const { setLoggedIn, setAccountKey } = useContext(AuthContext);

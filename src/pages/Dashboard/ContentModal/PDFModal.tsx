@@ -8,7 +8,7 @@ import {
 } from "react-bootstrap-icons";
 import { Document, Page, pdfjs } from "react-pdf";
 import { FileRef } from "../../../types/Files";
-import "./styles.scss";
+import "./styles.sass";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 

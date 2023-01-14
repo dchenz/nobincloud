@@ -23,7 +23,7 @@ import {
 import { FileRef } from "../../../types/Files";
 import ImageModal from "./ImageModal";
 import PDFModal from "./PDFModal";
-import "./styles.scss";
+import "./styles.sass";
 
 type ContentModalProps = {
   selectedFile: FileRef;
