@@ -8,23 +8,39 @@ import {
   Heading,
   Input,
   Stack,
+  Text,
 } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, useNavigate } from "react-router-dom";
+import { jsonFetch } from "../../api/helpers";
 import { unlockAccount } from "../../api/loginAccount";
-import { PageRoutes } from "../../const";
+import { logoutAccount } from "../../api/logoutAccount";
+import { PageRoutes, ServerRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
 
 const LockedOutForm: React.FC = () => {
   const ctx = useContext(AuthContext);
+  const clearCookies = useCookies(["session", "signed_in"])[2];
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
+  const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string>("");
   const [failedLogin, setFailedLogin] = useState<string>("");
+
+  useEffect(() => {
+    jsonFetch<string>(ServerRoutes.whoami)
+      .then((resp) => setEmail(resp))
+      .catch(console.error);
+  }, []);
+
+  if (!email) {
+    return <></>;
+  }
+
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    unlockAccount(password)
-      .then(async (decryptedAccountKey) => {
+    unlockAccount(email, password)
+      .then((decryptedAccountKey) => {
         if (decryptedAccountKey) {
           // Store the decrypted AES key on successful login
           // as this will be used to encrypt/decrypt files.
@@ -53,12 +69,31 @@ const LockedOutForm: React.FC = () => {
                   setPassword(e.target.value);
                   setFailedLogin("");
                 }}
+                data-test-id="login-password"
               />
             </FormControl>
             <Button type="submit">Submit</Button>
             {failedLogin ? <Alert status="warning">{failedLogin}</Alert> : null}
           </Stack>
         </form>
+        <Box mt={8}>
+          <Text>
+            Not {email}? Click{" "}
+            <Link
+              to={PageRoutes.login}
+              onClick={async () => {
+                await logoutAccount();
+                clearCookies("session");
+                clearCookies("signed_in");
+                ctx.setAccountKey(null);
+                ctx.setLoggedIn(false);
+              }}
+            >
+              <u>here</u>
+            </Link>{" "}
+            to logout.
+          </Text>
+        </Box>
       </Box>
     </Center>
   );

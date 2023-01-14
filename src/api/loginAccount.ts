@@ -8,7 +8,6 @@ import {
 import { arrayBufferToString } from "../crypto/utils";
 import { AccountLoginDetails } from "../types/Account";
 import { Response, SuccessfulLoginResponse } from "../types/API";
-import { jsonFetch } from "./helpers";
 
 /**
  * Send an API request to authenticate a login request.
@@ -53,14 +52,13 @@ export async function loginAccount(
 }
 
 export async function unlockAccount(
+  email: string,
   password: string
 ): Promise<ArrayBuffer | null> {
-  const emailResponse = await jsonFetch<string>(ServerRoutes.whoami);
-  const passwordKey = derivePasswordKey(password, emailResponse);
+  const passwordKey = derivePasswordKey(password, email);
   const passwordHash = await deriveServerPasswordHash(password, passwordKey);
-  const response = await jsonFetch<SuccessfulLoginResponse>(
-    ServerRoutes.unlock,
-    {
+  const response = await (
+    await fetch(ServerRoutes.unlock, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,10 +66,14 @@ export async function unlockAccount(
       body: JSON.stringify({
         passwordHash: arrayBufferToString(passwordHash, "base64"),
       }),
-    }
-  );
+    })
+  ).json();
 
-  const accountKey = Buffer.from(response.accountKey, "base64");
+  if (!response.success) {
+    return null;
+  }
+
+  const accountKey = Buffer.from(response.data.accountKey, "base64");
 
   const decryptedAccountKey = await decrypt(accountKey, passwordKey);
   if (!decryptedAccountKey) {

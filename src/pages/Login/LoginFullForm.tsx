@@ -80,13 +80,6 @@ const LoginFullForm: React.FC = () => {
               <u>Register here.</u>
             </Link>
           </Text>
-          <br />
-          <Text>
-            After logging in, do not refresh the page or navigate via the
-            address bar as you will be forced to re-enter your password.
-            Currently, your encryption keys are never put in browser storage
-            (in-memory) for security reasons.
-          </Text>
         </Box>
       </Box>
     </Center>
