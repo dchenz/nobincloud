@@ -1,5 +1,6 @@
 import { Image, Td, Tr } from "@chakra-ui/react";
-import React from "react";
+import React, { useContext, useMemo } from "react";
+import FolderContext from "../../context/FolderContext";
 import { formatBinarySize, formatRelativeTime } from "../../misc/fileutils";
 import { loadFileThumbnail } from "../../misc/thumbnails";
 import { FileRef, FILE_TYPE, FolderRef } from "../../types/Files";
@@ -11,30 +12,43 @@ type ListViewItemProps = {
   onItemOpen: () => void;
 };
 
-const ListViewItem: React.FC<ListViewItemProps> = ({ item, onItemOpen }) => (
-  <Tr className="file-list-item" data-test-id={`${item.type}_${item.id}`}>
-    <Td>
-      <FileSelectCheckbox item={item} />
-    </Td>
-    <Td className="file-list-item-icon" onClick={onItemOpen}>
-      <Image
-        src={
-          item.type === FILE_TYPE
-            ? loadFileThumbnail(item)
-            : "/static/media/folder-icon.png"
-        }
-      />
-    </Td>
-    <Td onClick={onItemOpen}>{item.metadata.name}</Td>
-    <Td onClick={onItemOpen}>
-      {item.type === FILE_TYPE
-        ? formatRelativeTime(item.metadata.createdAt)
-        : null}
-    </Td>
-    <Td onClick={onItemOpen} isNumeric>
-      {item.type === FILE_TYPE ? formatBinarySize(item.metadata.size) : null}
-    </Td>
-  </Tr>
-);
+const ListViewItem: React.FC<ListViewItemProps> = ({ item, onItemOpen }) => {
+  const { selectedItems, toggleSelectedItem } = useContext(FolderContext);
+
+  const selected = useMemo(() => {
+    const s = selectedItems.find((f) => f.id === item.id);
+    return s !== undefined;
+  }, [item, selectedItems]);
+
+  return (
+    <Tr className="file-list-item" data-test-id={`${item.type}_${item.id}`}>
+      <Td>
+        <FileSelectCheckbox
+          selected={selected}
+          onSelect={() => toggleSelectedItem(item)}
+          permanent={selectedItems.length > 0}
+        />
+      </Td>
+      <Td className="file-list-item-icon" onClick={onItemOpen}>
+        <Image
+          src={
+            item.type === FILE_TYPE
+              ? loadFileThumbnail(item)
+              : "/static/media/folder-icon.png"
+          }
+        />
+      </Td>
+      <Td onClick={onItemOpen}>{item.metadata.name}</Td>
+      <Td onClick={onItemOpen}>
+        {item.type === FILE_TYPE
+          ? formatRelativeTime(item.metadata.createdAt)
+          : null}
+      </Td>
+      <Td onClick={onItemOpen} isNumeric>
+        {item.type === FILE_TYPE ? formatBinarySize(item.metadata.size) : null}
+      </Td>
+    </Tr>
+  );
+};
 
 export default ListViewItem;
