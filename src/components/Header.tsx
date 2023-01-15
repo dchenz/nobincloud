@@ -1,8 +1,8 @@
-import { SettingsIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, IconButton, Image, Spacer } from "@chakra-ui/react";
+import { Box, Button, Flex, Image, Spacer } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import ProfileMenu from "./ProfileMenu";
 
 export default function Header(): JSX.Element {
   const { loggedIn } = useContext(AuthContext);
@@ -20,11 +20,7 @@ export default function Header(): JSX.Element {
       <Spacer />
       <Box>
         {loggedIn ? (
-          <IconButton
-            icon={<SettingsIcon />}
-            aria-label="Settings"
-            colorScheme="blackAlpha"
-          />
+          <ProfileMenu />
         ) : !onLoginOrRegisterPage ? (
           <Button as={Link} to="/login" size="sm" colorScheme="blackAlpha">
             Get Started

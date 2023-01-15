@@ -1,18 +1,14 @@
-import { Box, Icon, IconButton, Stack, Tooltip } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 import React, { useContext } from "react";
-import {
-  BoxArrowRight,
-  ChevronLeft,
-  ChevronRight,
-} from "react-bootstrap-icons";
+import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
+import ProfileMenu from "../../../components/ProfileMenu";
 import FolderContext, { initState } from "../../../context/FolderContext";
-import { useLocalStorageState, useLogout } from "../../../misc/hooks";
+import { useLocalStorageState } from "../../../misc/hooks";
 import NavBrand from "./NavBrand";
 import NavList from "./NavList";
 import "./styles.sass";
 
 export default function DashboardPage(): JSX.Element {
-  const logout = useLogout();
   const { setPwd } = useContext(FolderContext);
   const [showNav, setShowNav] = useLocalStorageState("show-nav", true);
   return (
@@ -24,11 +20,7 @@ export default function DashboardPage(): JSX.Element {
         />
       </Stack>
       <Box p={3}>
-        <Tooltip label="Logout">
-          <IconButton aria-label="logout" onClick={logout}>
-            <Icon as={BoxArrowRight} />
-          </IconButton>
-        </Tooltip>
+        <ProfileMenu />
       </Box>
       <button
         className={"toggle-nav-collapse" + (showNav ? "" : " collapsed")}

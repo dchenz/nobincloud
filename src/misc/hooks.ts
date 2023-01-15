@@ -1,6 +1,8 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 import { logoutAccount } from "../api/logoutAccount";
+import { PageRoutes } from "../const";
 import AuthContext from "../context/AuthContext";
 
 export function useLocalStorageState<T>(
@@ -43,15 +45,17 @@ export function useLocalStorageState<T>(
   return [state, setNewState];
 }
 
-export function useLogout() {
+export function useLogout(redirect?: string) {
   const { setAccountKey, setLoggedIn } = useContext(AuthContext);
   const clearCookies = useCookies(["session", "signed_in"])[2];
+  const navigate = useNavigate();
   return () => {
     logoutAccount().then(() => {
       clearCookies("session");
       clearCookies("signed_in");
       setAccountKey(null);
       setLoggedIn(false);
+      navigate(redirect ?? PageRoutes.login);
     });
   };
 }
