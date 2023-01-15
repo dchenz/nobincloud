@@ -15,6 +15,9 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     initState.viewingMode
   );
   const [activeFile, setActiveFile] = useState<FileRef | null>(null);
+  const [selectedItems, setSelectedItems] = useState<(FileRef | FolderRef)[]>(
+    []
+  );
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -47,11 +50,26 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     }));
   };
 
+  const changePwd = (item: FilePath) => {
+    // Selected items reset per folder.
+    setSelectedItems([]);
+    setPwd(item);
+  };
+
+  const toggleSelectedItem = (item: FileRef | FolderRef) => {
+    const s = [...selectedItems.filter((f) => f.id !== item.id)];
+    // Not selected yet, add the item.
+    if (s.length === selectedItems.length) {
+      s.push(item);
+    }
+    setSelectedItems(s);
+  };
+
   return (
     <FolderContext.Provider
       value={{
         pwd,
-        setPwd,
+        setPwd: changePwd,
         contents,
         setContents,
         loading,
@@ -60,6 +78,9 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
         setViewingMode,
         activeFile,
         setActiveFile,
+        selectedItems,
+        setSelectedItems,
+        toggleSelectedItem,
         addFile,
         addFolder,
         deleteFile,

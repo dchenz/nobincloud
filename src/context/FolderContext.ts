@@ -18,6 +18,9 @@ type FolderCtxType = {
   setViewingMode: (_: string) => void;
   activeFile: FileRef | null;
   setActiveFile: (_: FileRef | null) => void;
+  selectedItems: (FileRef | FolderRef)[];
+  setSelectedItems: (_: (FileRef | FolderRef)[]) => void;
+  toggleSelectedItem: (_: FileRef | FolderRef) => void;
   addFile: (_: FileRef) => void;
   addFolder: (_: FolderRef) => void;
   deleteFile: (_: FileRef) => void;
@@ -49,6 +52,9 @@ export const initState: FolderCtxType = {
   setViewingMode: (_) => undefined,
   activeFile: null,
   setActiveFile: (_) => undefined,
+  selectedItems: [],
+  setSelectedItems: (_) => undefined,
+  toggleSelectedItem: (_) => undefined,
   addFile: (_) => undefined,
   addFolder: (_) => undefined,
   deleteFile: (_) => undefined,

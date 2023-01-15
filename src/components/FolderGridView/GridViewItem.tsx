@@ -2,20 +2,20 @@ import { Box, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { loadFileThumbnail } from "../../misc/thumbnails";
 import { FileRef, FILE_TYPE, FolderRef } from "../../types/Files";
+import FileSelectCheckbox from "../FileSelectCheckbox";
 import "./styles.sass";
 
 type GridViewItemProps = {
   item: FileRef | FolderRef;
-  onSelect: () => void;
+  onItemOpen: () => void;
 };
 
-const GridViewItem: React.FC<GridViewItemProps> = ({ item, onSelect }) => {
-  return (
+const GridViewItem: React.FC<GridViewItemProps> = ({ item, onItemOpen }) => (
+  <div className="file-tile-item">
+    <FileSelectCheckbox item={item} />
     <Box
       title={item.metadata.name}
-      style={{ width: 200 }}
-      className="file-tile-container"
-      onClick={onSelect}
+      onClick={onItemOpen}
       data-test-id={`${item.type}_${item.id}`}
     >
       <Image
@@ -29,10 +29,10 @@ const GridViewItem: React.FC<GridViewItemProps> = ({ item, onSelect }) => {
         margin="0 auto"
       />
       <Box p={3}>
-        <Text className="file-tile-name">{item.metadata.name}</Text>
+        <Text className="file-tile-item-name">{item.metadata.name}</Text>
       </Box>
     </Box>
-  );
-};
+  </div>
+);
 
 export default GridViewItem;

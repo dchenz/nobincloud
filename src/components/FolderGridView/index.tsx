@@ -1,35 +1,24 @@
 import { SimpleGrid } from "@chakra-ui/react";
-import React, { useContext } from "react";
-import FolderContext from "../../context/FolderContext";
+import React from "react";
+import { FileRef, FolderRef } from "../../types/Files";
 import GridViewItem from "./GridViewItem";
 import "./styles.sass";
 
-const GridView: React.FC = () => {
-  const { contents, pwd, setPwd, setActiveFile } = useContext(FolderContext);
-  return (
-    <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} spacing={8}>
-      {contents.folders.map((folder) => (
-        <GridViewItem
-          key={folder.id}
-          item={folder}
-          onSelect={() =>
-            setPwd({
-              ...pwd,
-              parents: [...pwd.parents, pwd.current],
-              current: folder,
-            })
-          }
-        />
-      ))}
-      {contents.files.map((file) => (
-        <GridViewItem
-          key={file.id}
-          item={file}
-          onSelect={() => setActiveFile(file)}
-        />
-      ))}
-    </SimpleGrid>
-  );
+type GridViewProps = {
+  items: (FileRef | FolderRef)[];
+  onItemOpen: (_: FileRef | FolderRef) => void;
 };
+
+const GridView: React.FC<GridViewProps> = ({ items, onItemOpen }) => (
+  <SimpleGrid columns={[1, 2, 3, 4, 5, 6]} spacing={8}>
+    {items.map((item) => (
+      <GridViewItem
+        key={item.id}
+        item={item}
+        onItemOpen={() => onItemOpen(item)}
+      />
+    ))}
+  </SimpleGrid>
+);
 
 export default GridView;
