@@ -39,6 +39,7 @@ export async function decryptFileObject(
   metadata.createdAt = new Date(metadata.createdAt);
   return {
     ...resp,
+    type: "f",
     encryptionKey: fileKey,
     metadata,
   };
@@ -67,6 +68,7 @@ export async function decryptFolderObject(
   metadata.createdAt = new Date(metadata.createdAt);
   return {
     ...resp,
+    type: "d",
     encryptionKey: folderKey,
     metadata,
   };

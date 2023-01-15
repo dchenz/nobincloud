@@ -1,5 +1,11 @@
 import { createContext } from "react";
-import { FilePath, FileRef, FolderContents, FolderRef } from "../types/Files";
+import {
+  FilePath,
+  FileRef,
+  FolderContents,
+  FolderRef,
+  FOLDER_TYPE,
+} from "../types/Files";
 
 type FolderCtxType = {
   pwd: FilePath;
@@ -10,6 +16,8 @@ type FolderCtxType = {
   setLoading: (_: boolean) => void;
   viewingMode: string;
   setViewingMode: (_: string) => void;
+  activeFile: FileRef | null;
+  setActiveFile: (_: FileRef | null) => void;
   addFile: (_: FileRef) => void;
   addFolder: (_: FolderRef) => void;
   deleteFile: (_: FileRef) => void;
@@ -18,15 +26,13 @@ type FolderCtxType = {
 export const initState: FolderCtxType = {
   pwd: {
     current: {
+      type: FOLDER_TYPE,
       id: "00000000-0000-0000-0000-000000000000",
       parentFolder: null,
       encryptionKey: new ArrayBuffer(0),
       metadata: {
         name: "",
         createdAt: new Date(),
-        type: "",
-        size: 0,
-        thumbnail: null,
       },
     },
     parents: [],
@@ -41,6 +47,8 @@ export const initState: FolderCtxType = {
   setLoading: (_) => undefined,
   viewingMode: "grid",
   setViewingMode: (_) => undefined,
+  activeFile: null,
+  setActiveFile: (_) => undefined,
   addFile: (_) => undefined,
   addFolder: (_) => undefined,
   deleteFile: (_) => undefined,

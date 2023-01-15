@@ -1,18 +1,16 @@
 import { Divider } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
+import GridView from "../../../components/FolderGridView";
+import ListView from "../../../components/FolderListView";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
-import { FileRef } from "../../../types/Files";
 import ContentModal from "../ContentModal";
-import GridView from "./GridView";
 import Header from "./Header";
-import ListView from "./ListView";
 import PathViewer from "./PathViewer";
 import "./styles.sass";
 
 export default function MyFilesDashboard(): JSX.Element {
-  const [selectedFile, setSelectedFile] = useState<FileRef | null>(null);
-  const { viewingMode } = useContext(FolderContext);
+  const { viewingMode, activeFile, setActiveFile } = useContext(FolderContext);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -24,15 +22,11 @@ export default function MyFilesDashboard(): JSX.Element {
       <div className="file-browser-content">
         <PathViewer />
         <Divider my={2} />
-        {viewingMode === "grid" ? (
-          <GridView selectFile={setSelectedFile} />
-        ) : (
-          <ListView selectFile={setSelectedFile} />
-        )}
-        {selectedFile ? (
+        {viewingMode === "grid" ? <GridView /> : <ListView />}
+        {activeFile ? (
           <ContentModal
-            selectedFile={selectedFile}
-            onClose={() => setSelectedFile(null)}
+            selectedFile={activeFile}
+            onClose={() => setActiveFile(null)}
           />
         ) : null}
       </div>

@@ -1,0 +1,21 @@
+.file-list-container
+  .file-list-header
+    & > th
+      padding: 0.5rem
+
+  .file-list-item
+    cursor: pointer
+    transition: background-color 300ms
+
+    &:hover
+      background-color: #f5f5f5
+
+    & > td
+      padding: 0.5rem
+      max-width: 400px // Not sure why 400px, it just works...
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+
+    .file-list-item-icon img
+      width: 32px

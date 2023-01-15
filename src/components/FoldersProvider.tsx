@@ -14,6 +14,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     LocalStorageKeys.viewingMode,
     initState.viewingMode
   );
+  const [activeFile, setActiveFile] = useState<FileRef | null>(null);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -57,6 +58,8 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
         setLoading,
         viewingMode,
         setViewingMode,
+        activeFile,
+        setActiveFile,
         addFile,
         addFolder,
         deleteFile,

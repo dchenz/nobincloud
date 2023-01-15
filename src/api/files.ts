@@ -82,6 +82,7 @@ export async function encryptAndUploadFile(
         onProgress(resp.have, resp.want);
         if (resp.have === resp.want) {
           onComplete({
+            type: "f",
             id: fileID,
             encryptionKey: encryptedFileKey,
             parentFolder: fileUpload.parentFolder,
@@ -159,6 +160,7 @@ export async function createFolder(
     }),
   });
   return {
+    type: "d",
     id,
     encryptionKey: folderKey,
     parentFolder: folder.parentFolder,
