@@ -1,4 +1,4 @@
-import { Divider } from "@chakra-ui/react";
+import { Box, Divider, HStack } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import GridView from "../../../components/FolderGridView";
 import ListView from "../../../components/FolderListView";
@@ -44,7 +44,13 @@ export default function MyFilesDashboard(): JSX.Element {
     <div className="file-browser-container">
       <Header />
       <div className="file-browser-content">
-        <PathViewer />
+        {selectedItems.length > 0 ? (
+          <HStack minHeight="40px">
+            <Box>{selectedItems.length} selected</Box>
+          </HStack>
+        ) : (
+          <PathViewer />
+        )}
         <Divider my={2} />
         {viewingMode === "grid" ? (
           <GridView
