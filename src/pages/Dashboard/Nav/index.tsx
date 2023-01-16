@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import ProfileMenu from "../../../components/ProfileMenu";
 import FolderContext, { initState } from "../../../context/FolderContext";
-import { useLocalStorageState } from "../../../misc/hooks";
+import { useLocalStorageState, useMobileView } from "../../../misc/hooks";
 import NavBrand from "./NavBrand";
 import NavList from "./NavList";
 import "./styles.sass";
@@ -11,8 +11,13 @@ import "./styles.sass";
 export default function DashboardPage(): JSX.Element {
   const { setPwd } = useContext(FolderContext);
   const [showNav, setShowNav] = useLocalStorageState("show-nav", true);
+  const isMobileView = useMobileView({ onEnter: () => setShowNav(false) });
+
   return (
-    <div className={"nav-drawer" + (showNav ? "" : " collapsed")}>
+    <div
+      className={"nav-drawer" + (showNav ? "" : " collapsed")}
+      style={{ position: isMobileView ? "absolute" : "relative" }}
+    >
       <Stack as="nav" gap={2} flexGrow={1}>
         <NavBrand />
         <NavList
