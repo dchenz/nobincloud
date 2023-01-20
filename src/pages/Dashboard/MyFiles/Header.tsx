@@ -1,17 +1,18 @@
-import { Box, Button, HStack, IconButton } from "@chakra-ui/react";
+import { Box, Button, HStack, IconButton, useToast } from "@chakra-ui/react";
 import React, { ChangeEvent, useContext, useState } from "react";
 import { Folder2, Upload } from "react-bootstrap-icons";
 import { encryptAndUploadFile } from "../../../api/files";
 import NewFolderModal from "../../../components/NewFolderModal";
 import ViewModeSelector from "../../../components/ViewModeSelector";
+import { MaxUploadSize } from "../../../const";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { useMobileView } from "../../../misc/hooks";
-import { FileRef } from "../../../types/Files";
 import "./styles.sass";
 
 export default function Header(): JSX.Element {
   const isMobileView = useMobileView();
+  const toast = useToast();
   const [isCreatingFolder, setCreatingFolder] = useState(false);
   const { accountKey } = useContext(AuthContext);
   const { addFile, pwd } = useContext(FolderContext);
@@ -20,22 +21,30 @@ export default function Header(): JSX.Element {
     throw new Error();
   }
 
-  const onComplete = (item: FileRef) => {
-    addFile(item);
-  };
-
   const onUploadButtonClick = () => {
     const fileForm = document.createElement("input");
     fileForm.type = "file";
     fileForm.click();
     // @ts-ignore
     fileForm.onchange = (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files?.[0];
+      if (!selectedFile) {
+        return;
+      }
+      if (selectedFile.size < MaxUploadSize) {
         const uploadRequest = {
-          file: e.target.files[0],
+          file: selectedFile,
           parentFolder: pwd.current.id,
         };
-        encryptAndUploadFile(uploadRequest, accountKey, onComplete);
+        encryptAndUploadFile(uploadRequest, accountKey, addFile);
+      } else {
+        toast({
+          title: "Upload failed",
+          description: "Exceeded max upload limit of 32MB",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     };
   };

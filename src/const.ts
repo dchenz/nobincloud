@@ -20,3 +20,5 @@ export const ServerRoutes = {
 export const LocalStorageKeys = {
   viewingMode: "file-viewing-mode",
 };
+
+export const MaxUploadSize = 32 << 20; // 32MB
