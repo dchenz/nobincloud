@@ -3,7 +3,6 @@ package cloudrouter
 import (
 	"net/http"
 
-	"github.com/dchenz/go-assemble"
 	"github.com/dchenz/nobincloud/pkg/database"
 	"github.com/dchenz/nobincloud/pkg/filestore"
 
@@ -15,7 +14,6 @@ type CloudRouter struct {
 	Database       *database.Database
 	Files          *filestore.FileStore
 	SessionManager *scs.SessionManager
-	UploadManager  *assemble.FileChunksAssembler
 }
 
 func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
@@ -26,21 +24,7 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	u.Handle("/unlock", a.authenticatedMiddleware(http.HandlerFunc(a.LockedLogin))).Methods("POST")
 	u.Handle("/whoami", a.authenticatedMiddleware(http.HandlerFunc(a.WhoAmI))).Methods("GET")
 
-	c := r.PathPrefix("/upload").Subrouter()
-
-	c.Handle("/init",
-		a.authenticatedMiddleware(
-			http.HandlerFunc(a.UploadManager.UploadStartHandler),
-		),
-	).Methods("POST")
-
-	c.Handle("/parts",
-		a.authenticatedMiddleware(
-			a.UploadManager.ChunksMiddleware(
-				http.HandlerFunc(a.UploadFile),
-			),
-		),
-	).Methods("POST")
+	r.Handle("/upload", a.authenticatedMiddleware(http.HandlerFunc(a.UploadFile)))
 
 	f := r.PathPrefix("/file").Subrouter()
 	f.Handle("/{id}", a.authenticatedMiddleware(http.HandlerFunc(a.DownloadFile))).Methods("GET")

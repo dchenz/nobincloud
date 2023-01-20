@@ -20,9 +20,6 @@ export default function Header(): JSX.Element {
     throw new Error();
   }
 
-  const onProgress = (currentChunks: number, totalChunks: number) =>
-    console.log(currentChunks, totalChunks);
-
   const onComplete = (item: FileRef) => {
     addFile(item);
   };
@@ -38,7 +35,7 @@ export default function Header(): JSX.Element {
           file: e.target.files[0],
           parentFolder: pwd.current.id,
         };
-        encryptAndUploadFile(uploadRequest, accountKey, onProgress, onComplete);
+        encryptAndUploadFile(uploadRequest, accountKey, onComplete);
       }
     };
   };

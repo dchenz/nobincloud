@@ -1,13 +1,11 @@
 package utils
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
-	"github.com/dchenz/go-assemble"
 	"github.com/dchenz/nobincloud/pkg/logging"
 	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/google/uuid"
@@ -42,59 +40,15 @@ func GetPathUUID(r *http.Request, name string) (uuid.UUID, error) {
 	return uuid.Parse(value)
 }
 
-func GetFileMetadataString(r *http.Request, key string) (model.JSON[string], error) {
-	fileMetadata := assemble.GetFileMetadata(r)
-	v, exists := fileMetadata[key]
-	if !exists || v == nil {
-		return model.JSON[string]{}, nil
+func UnmarshalFormData(r *http.Request, name string, dest any) error {
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		return err
 	}
-	fileName, ok := v.(string)
-	if !ok {
-		return model.JSON[string]{}, fmt.Errorf("invalid type for '%s'", key)
+	if !r.PostForm.Has(name) {
+		return json.Unmarshal([]byte("null"), dest)
 	}
-	return model.JSON[string]{
-		Valid: true,
-		Value: fileName,
-	}, nil
-}
-
-func GetFileMetadataUUID(r *http.Request, key string) (model.JSON[uuid.UUID], error) {
-	fileMetadata := assemble.GetFileMetadata(r)
-	v, exists := fileMetadata[key]
-	// Root directory
-	if !exists || v == nil {
-		return model.JSON[uuid.UUID]{}, nil
-	}
-	uuidString, ok := v.(string)
-	if !ok {
-		return model.JSON[uuid.UUID]{}, fmt.Errorf("invalid type for '%s'", key)
-	}
-	uuidValue, err := uuid.Parse(uuidString)
-	if err != nil {
-		return model.JSON[uuid.UUID]{}, err
-	}
-	return model.JSON[uuid.UUID]{
-		Valid: true,
-		Value: uuidValue,
-	}, nil
-}
-
-func GetFileMetadataBase64(r *http.Request, key string) (model.JSON[model.Bytes], error) {
-	s, err := GetFileMetadataString(r, key)
-	if err != nil {
-		return model.JSON[model.Bytes]{}, err
-	}
-	if !s.Valid {
-		return model.JSON[model.Bytes]{}, nil
-	}
-	v, err := base64.StdEncoding.DecodeString(s.Value)
-	if err != nil {
-		return model.JSON[model.Bytes]{}, err
-	}
-	return model.JSON[model.Bytes]{
-		Valid: true,
-		Value: model.Bytes{Bytes: v},
-	}, nil
+	// There shouldn't be other double quotes in the form data requests.
+	return json.Unmarshal([]byte("\""+r.PostForm.Get(name)+"\""), dest)
 }
 
 func ResponseSuccess(w http.ResponseWriter, data interface{}) {

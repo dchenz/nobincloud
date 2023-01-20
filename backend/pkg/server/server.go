@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dchenz/go-assemble"
 	"github.com/dchenz/nobincloud/pkg/database"
 	"github.com/dchenz/nobincloud/pkg/filestore"
 	"github.com/dchenz/nobincloud/pkg/logging"
@@ -50,7 +49,6 @@ func NewServer() (*Server, error) {
 		Files: &filestore.FileStore{
 			Path: s.config.DataStorePath,
 		},
-		UploadManager: assemble.NewFileChunksAssembler(nil),
 	}
 	cr.RegisterRoutes(api)
 	api.Use(sessionMgr.LoadAndSave)
