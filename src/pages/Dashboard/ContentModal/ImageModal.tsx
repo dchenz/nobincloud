@@ -10,8 +10,10 @@ type ImageModalProps = {
 
 const ImageModal: React.FC<ImageModalProps> = ({ file, bytes }) => {
   const imageData = useMemo(() => {
-    const dataURI = arrayBufferToString(bytes, "base64");
-    return "data:image/jpeg;base64," + dataURI;
+    return `data:${file.metadata.type};base64,${arrayBufferToString(
+      bytes,
+      "base64"
+    )}`;
   }, [bytes]);
 
   return (
