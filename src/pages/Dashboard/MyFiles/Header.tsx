@@ -1,19 +1,18 @@
-import { Box, Button, HStack, IconButton, useToast } from "@chakra-ui/react";
+import { Box, HStack, useToast } from "@chakra-ui/react";
 import React, { ChangeEvent, useContext, useState } from "react";
 import { Folder2, Trash, Upload } from "react-bootstrap-icons";
 import { deleteFolderContents, encryptAndUploadFile } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import NewFolderModal from "../../../components/NewFolderModal";
+import ResponsiveIconButton from "../../../components/ResponsiveIconButton";
 import ViewModeSelector from "../../../components/ViewModeSelector";
 import { MaxUploadSize } from "../../../const";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
-import { useMobileView } from "../../../misc/hooks";
 import { FILE_TYPE } from "../../../types/Files";
 import "./styles.sass";
 
 export default function Header(): JSX.Element {
-  const isMobileView = useMobileView();
   const toast = useToast();
   const [isCreatingFolder, setCreatingFolder] = useState(false);
   const { accountKey } = useContext(AuthContext);
@@ -76,41 +75,29 @@ export default function Header(): JSX.Element {
       <HStack gap={2} width="100%">
         {selectedItems.length > 0 ? (
           <ConfirmPopup prompt="Delete selected?" onConfirm={onDeleteSelected}>
-            {isMobileView ? (
-              <IconButton aria-label="delete-selected">
-                <Trash />
-              </IconButton>
-            ) : (
-              <Button leftIcon={<Trash />}>Delete</Button>
-            )}
+            <ResponsiveIconButton
+              icon={<Trash />}
+              ariaLabel="delete-selected"
+              text="Delete"
+              title="Delete selected items"
+            />
           </ConfirmPopup>
         ) : (
           <>
-            {isMobileView ? (
-              <IconButton onClick={onUploadButtonClick} aria-label="upload">
-                <Upload />
-              </IconButton>
-            ) : (
-              <Button leftIcon={<Upload />} onClick={onUploadButtonClick}>
-                Upload
-              </Button>
-            )}
-            {isMobileView ? (
-              <IconButton
-                aria-label="create-folder"
-                data-test-id="create-folder"
-              >
-                <Folder2 />
-              </IconButton>
-            ) : (
-              <Button
-                leftIcon={<Folder2 />}
-                onClick={() => setCreatingFolder(true)}
-                data-test-id="create-folder"
-              >
-                New
-              </Button>
-            )}
+            <ResponsiveIconButton
+              icon={<Upload />}
+              ariaLabel="upload"
+              text="Upload"
+              title="Upload file"
+              onClick={onUploadButtonClick}
+            />
+            <ResponsiveIconButton
+              icon={<Folder2 />}
+              ariaLabel="create-folder"
+              text="New"
+              title="Create folder"
+              onClick={() => setCreatingFolder(true)}
+            />
           </>
         )}
         <Box flexGrow={1}></Box>
