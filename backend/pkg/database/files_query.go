@@ -84,12 +84,16 @@ func (a *Database) CreateFile(userID int, file model.File) error {
 	})
 }
 
-func (a *Database) DeleteFile(userID int, fileUUID uuid.UUID) error {
-	fileID, err := a.ResolveFileID(userID, fileUUID)
-	if err != nil {
-		return err
+func (a *Database) DeleteFiles(userID int, fileUUIDs []uuid.UUID) error {
+	fileIDs := make([]int, 0)
+	for _, fileUUID := range fileUUIDs {
+		fileID, err := a.ResolveFileID(userID, fileUUID)
+		if err != nil {
+			return err
+		}
+		fileIDs = append(fileIDs, fileID)
 	}
-	return a.deleteFile(fileID)
+	return a.deleteFiles(fileIDs)
 }
 
 func (a *Database) GetFileOwner(fileUUID uuid.UUID) (int, error) {

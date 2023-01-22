@@ -107,3 +107,15 @@ func (a *Database) CreateFolder(userID int, folder model.Folder) error {
 		Metadata:      folder.Metadata.Bytes,
 	})
 }
+
+func (a *Database) DeleteFolders(userID int, folderUUIDs []uuid.UUID) error {
+	folderIDs := make([]int, 0)
+	for _, folderUUID := range folderUUIDs {
+		folderID, err := a.ResolveFolderID(userID, folderUUID)
+		if err != nil {
+			return err
+		}
+		folderIDs = append(folderIDs, folderID)
+	}
+	return a.deleteFolders(folderIDs)
+}

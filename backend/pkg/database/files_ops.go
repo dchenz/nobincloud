@@ -1,7 +1,10 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
+	"github.com/dchenz/nobincloud/pkg/utils"
 )
 
 func (a *Database) getFilesInRootFolder(ownerID int) ([]dbmodel.File, error) {
@@ -95,10 +98,11 @@ func (a *Database) insertFile(file dbmodel.File) error {
 	return err
 }
 
-func (a *Database) deleteFile(fileID int) error {
+func (a *Database) deleteFiles(fileIDs []int) error {
 	q := `DELETE FROM files
-		  WHERE id = ?;`
-	_, err := a.conn.Exec(q, fileID)
+		  WHERE id IN (%s);`
+	q = fmt.Sprintf(q, utils.Placeholders(len(fileIDs)))
+	_, err := a.conn.Exec(q, utils.AnyArray(fileIDs)...)
 	return err
 }
 

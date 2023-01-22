@@ -24,6 +24,7 @@ type FolderCtxType = {
   addFile: (_: FileRef) => void;
   addFolder: (_: FolderRef) => void;
   deleteFile: (_: FileRef) => void;
+  deleteFolder: (_: FolderRef) => void;
 };
 
 export const initState: FolderCtxType = {
@@ -58,6 +59,7 @@ export const initState: FolderCtxType = {
   addFile: (_) => undefined,
   addFolder: (_) => undefined,
   deleteFile: (_) => undefined,
+  deleteFolder: (_) => undefined,
 };
 
 export default createContext<FolderCtxType>(initState);

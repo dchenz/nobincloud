@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -30,4 +31,20 @@ func RandomBytes(n int) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+func Placeholders(n int) string {
+	s := make([]string, 0)
+	for i := 0; i < n; i++ {
+		s = append(s, "?")
+	}
+	return strings.Join(s, ",")
+}
+
+func AnyArray[T any](items []T) []any {
+	s := make([]any, 0)
+	for _, v := range items {
+		s = append(s, v)
+	}
+	return s
 }

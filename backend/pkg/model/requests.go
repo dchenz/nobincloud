@@ -1,5 +1,7 @@
 package model
 
+import "github.com/google/uuid"
+
 type Response struct {
 	Success bool        `json:"success"`
 	Data    interface{} `json:"data,omitempty"`
@@ -21,4 +23,9 @@ type LoginRequest struct {
 
 type LockedLoginRequest struct {
 	PasswordHash string `json:"passwordHash" validate:"required,base64"`
+}
+
+type FolderContentsRequest struct {
+	Files   []uuid.UUID `json:"files"`
+	Folders []uuid.UUID `json:"folders"`
 }

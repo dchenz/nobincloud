@@ -8,6 +8,7 @@ import { FolderContentsResponse, Response } from "../types/API";
 import {
   FileRef,
   FileUploadDetails,
+  FILE_TYPE,
   FolderContents,
   FolderCreationDetails,
   FolderRef,
@@ -92,10 +93,24 @@ export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
   return fileBytes;
 }
 
-export async function deleteFileOnServer(file: FileRef): Promise<null> {
-  const url = `${ServerRoutes.file}/${file.id}`;
-  return await jsonFetch<null>(url, {
+export async function deleteFolderContents(
+  items: (FileRef | FolderRef)[]
+): Promise<null> {
+  const files = [];
+  const folders = [];
+  for (const f of items) {
+    if (f.type === FILE_TYPE) {
+      files.push(f.id);
+    } else {
+      folders.push(f.id);
+    }
+  }
+  return await jsonFetch<null>(ServerRoutes.batch, {
     method: "DELETE",
+    body: JSON.stringify({
+      files,
+      folders,
+    }),
   });
 }
 

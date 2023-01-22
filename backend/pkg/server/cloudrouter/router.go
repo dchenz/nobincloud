@@ -18,6 +18,7 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 	a.registerUserRouter(r.PathPrefix("/user").Subrouter())
 	a.registerFileRouter(r.PathPrefix("/file").Subrouter())
 	a.registerFolderRouter(r.PathPrefix("/folder").Subrouter())
+	a.registerBatchRouter(r.PathPrefix("/batch").Subrouter())
 }
 
 func (a *CloudRouter) registerUserRouter(r *mux.Router) {
@@ -32,11 +33,15 @@ func (a *CloudRouter) registerFileRouter(r *mux.Router) {
 	r.Use(a.authRequired)
 	r.HandleFunc("", a.UploadFile).Methods("POST")
 	r.HandleFunc("/{id}", a.DownloadFile).Methods("GET")
-	r.HandleFunc("/{id}", a.DeleteFile).Methods("DELETE")
 }
 
 func (a *CloudRouter) registerFolderRouter(r *mux.Router) {
 	r.Use(a.authRequired)
 	r.HandleFunc("", a.CreateFolder).Methods("POST")
 	r.HandleFunc("/{id}/list", a.ListFolderContents).Methods("GET")
+}
+
+func (a *CloudRouter) registerBatchRouter(r *mux.Router) {
+	r.Use(a.authRequired)
+	r.HandleFunc("", a.DeleteFilesAndFolders).Methods("DELETE")
 }

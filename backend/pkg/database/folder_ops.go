@@ -1,6 +1,11 @@
 package database
 
-import "github.com/dchenz/nobincloud/pkg/model/dbmodel"
+import (
+	"fmt"
+
+	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
+	"github.com/dchenz/nobincloud/pkg/utils"
+)
 
 func (a *Database) getFoldersInRootFolder(ownerID int) ([]dbmodel.Folder, error) {
 	q := `SELECT
@@ -118,4 +123,12 @@ func (a *Database) getFolderOwner(folderID int) (int, error) {
 	var ownerID int
 	err := row.Scan(&ownerID)
 	return ownerID, err
+}
+
+func (a *Database) deleteFolders(folderIDs []int) error {
+	q := `DELETE FROM folders
+		  WHERE id IN (%s)`
+	q = fmt.Sprintf(q, utils.Placeholders(len(folderIDs)))
+	_, err := a.conn.Exec(q, utils.AnyArray(folderIDs)...)
+	return err
 }

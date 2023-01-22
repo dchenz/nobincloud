@@ -39,7 +39,7 @@ CREATE TABLE `folders` (
     public_id BINARY(16) NOT NULL UNIQUE,
     owner_id INTEGER NOT NULL REFERENCES user_accounts(id),
     encryption_key BINARY(60) NOT NULL,
-    parent_folder_id INTEGER REFERENCES folders(id),
+    parent_folder_id INTEGER REFERENCES folders(id) ON DELETE CASCADE,
     metadata BLOB NOT NULL
 );
 DROP TABLE IF EXISTS `files`;
@@ -49,7 +49,7 @@ CREATE TABLE `files` (
     public_id BINARY(16) NOT NULL UNIQUE,
     owner_id INTEGER NOT NULL REFERENCES user_accounts(id),
     encryption_key BINARY(60) NOT NULL,
-    parent_folder_id INTEGER REFERENCES folders(id),
+    parent_folder_id INTEGER REFERENCES folders(id) ON DELETE CASCADE,
     metadata BLOB NOT NULL,
     -- File-specific fields.
     saved_location TEXT NOT NULL

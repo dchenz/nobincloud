@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { Download, Trash } from "react-bootstrap-icons";
-import { deleteFileOnServer, getFileDownload } from "../../../api/files";
+import { deleteFolderContents, getFileDownload } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import FolderContext from "../../../context/FolderContext";
 import {
@@ -62,7 +62,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   };
 
   const onDeleteFile = () => {
-    deleteFileOnServer(selectedFile)
+    deleteFolderContents([selectedFile])
       .then(() => {
         deleteFile(selectedFile);
         onClose();

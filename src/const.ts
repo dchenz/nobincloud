@@ -13,6 +13,7 @@ export const ServerRoutes = {
   whoami: "/api/user/whoami",
   file: "/api/file",
   folder: "/api/folder",
+  batch: "/api/batch",
 };
 
 export const LocalStorageKeys = {

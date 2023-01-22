@@ -50,6 +50,13 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     }));
   };
 
+  const deleteFolder = (item: FolderRef) => {
+    setContents((prev) => ({
+      ...prev,
+      folders: prev.folders.filter((f) => f.id !== item.id),
+    }));
+  };
+
   const changePwd = (item: FilePath) => {
     // Selected items reset per folder.
     setSelectedItems([]);
@@ -84,6 +91,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
         addFile,
         addFolder,
         deleteFile,
+        deleteFolder,
       }}
     >
       {props.children}
