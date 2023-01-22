@@ -1,5 +1,5 @@
 import { Box, HStack, useToast } from "@chakra-ui/react";
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Folder2, Trash, Upload } from "react-bootstrap-icons";
 import { deleteFolderContents, encryptAndUploadFile } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
@@ -33,9 +33,8 @@ export default function Header(): JSX.Element {
     const fileForm = document.createElement("input");
     fileForm.type = "file";
     fileForm.click();
-    // @ts-ignore
-    fileForm.onchange = (e: ChangeEvent<HTMLInputElement>) => {
-      const selectedFile = e.target.files?.[0];
+    fileForm.onchange = (e: Event) => {
+      const selectedFile = (e.target as HTMLInputElement).files?.[0];
       if (!selectedFile) {
         return;
       }

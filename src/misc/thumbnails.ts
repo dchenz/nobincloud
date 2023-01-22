@@ -39,8 +39,8 @@ export function loadFileThumbnail(file: FileRef): string {
   return "/static/media/file-icon.png";
 }
 
-async function createImageThumbnail(f: File): Promise<ArrayBuffer> {
-  return new Promise(async (resolve, reject) => {
+function createImageThumbnail(f: File): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = function () {
       const canvas = document.createElement("canvas");
@@ -67,7 +67,9 @@ async function createImageThumbnail(f: File): Promise<ArrayBuffer> {
         }
       }, f.type);
     };
-    img.src = await blobToDataURL(f);
+    blobToDataURL(f).then((d) => {
+      img.src = d;
+    });
   });
 }
 

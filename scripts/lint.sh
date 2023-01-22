@@ -1,6 +1,7 @@
 #!/bin/bash
 
-prettier --check src
+eslint src cypress
+prettier --check src cypress
 
 cd backend
 golangci-lint run ./...
