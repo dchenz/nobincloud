@@ -11,8 +11,6 @@ export const ServerRoutes = {
   register: "/api/user/register",
   unlock: "/api/user/unlock",
   whoami: "/api/user/whoami",
-  upload: "/api/upload",
-  thumbnail: "/api/thumbnail",
   file: "/api/file",
   folder: "/api/folder",
 };

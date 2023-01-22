@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func (a *CloudRouter) authenticatedMiddleware(next http.Handler) http.Handler {
+func (a *CloudRouter) authRequired(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if _, email := a.whoami(r); email == "" {
 			w.WriteHeader(http.StatusUnauthorized)

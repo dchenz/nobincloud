@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { jsonFetch } from "../../api/helpers";
 import { unlockAccount } from "../../api/loginAccount";
 import { PageRoutes, ServerRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
@@ -27,12 +28,12 @@ const LockedOutForm: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const resp = await fetch(ServerRoutes.whoami);
-      if (resp.status === 401) {
+      const currentUserEmail = await jsonFetch<string>(ServerRoutes.whoami);
+      if (!currentUserEmail) {
         logout();
         return;
       }
-      setEmail((await resp.json()).data);
+      setEmail(currentUserEmail);
     })();
   }, []);
 

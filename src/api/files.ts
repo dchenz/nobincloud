@@ -41,7 +41,7 @@ export async function encryptAndUploadFile(
   form.append("metadata", arrayBufferToString(encryptedFileMetadata, "base64"));
 
   const response: Response<string> = await (
-    await fetch(ServerRoutes.upload, {
+    await fetch(ServerRoutes.file, {
       method: "POST",
       body: form,
     })
