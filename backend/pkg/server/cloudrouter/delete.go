@@ -1,34 +1,32 @@
 package cloudrouter
 
 import (
-	"database/sql"
 	"net/http"
 
+	"github.com/dchenz/nobincloud/pkg/errors"
 	"github.com/dchenz/nobincloud/pkg/utils"
 )
 
 func (a *CloudRouter) DeleteFile(w http.ResponseWriter, r *http.Request) {
-	fileID, err := utils.GetPathUUID(r, "id")
+	userID, _ := a.whoami(r)
+
+	fileUUID, err := utils.GetPathUUID(r, "id")
 	if err != nil {
 		utils.RespondFail(w, http.StatusBadRequest, "invalid file ID")
 		return
 	}
-	userID, _ := a.whoami(r)
-	ownerID, err := a.Database.GetFileOwner(fileID)
-	if err == sql.ErrNoRows || ownerID != userID {
-		utils.RespondFail(w, http.StatusNotFound, "file not found")
+	err = a.Database.DeleteFile(userID, fileUUID)
+	if err == errors.ErrNotAuthorized {
+		utils.RespondFail(w, http.StatusForbidden, err.Error())
 		return
 	}
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	if err := a.Files.Delete(fileID); err != nil {
+	if err := a.Files.Delete(fileUUID); err != nil {
 		utils.RespondError(w, err.Error())
 		return
-	}
-	if err := a.Database.DeleteFile(userID, fileID); err != nil {
-		utils.RespondError(w, err.Error())
 	}
 	utils.ResponseSuccess(w, nil)
 }

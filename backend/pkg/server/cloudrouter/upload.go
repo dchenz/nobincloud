@@ -3,12 +3,15 @@ package cloudrouter
 import (
 	"net/http"
 
+	"github.com/dchenz/nobincloud/pkg/errors"
 	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/dchenz/nobincloud/pkg/utils"
 	"github.com/google/uuid"
 )
 
 func (a *CloudRouter) UploadFile(w http.ResponseWriter, r *http.Request) {
+	userID, _ := a.whoami(r)
+
 	var file model.File
 	if err := utils.UnmarshalFormData(r, "encryptionKey", &file.EncryptionKey); err != nil {
 		utils.RespondFail(w, http.StatusBadRequest, err.Error())
@@ -34,8 +37,12 @@ func (a *CloudRouter) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	file.SavedLocation = filePath
-	userID, _ := a.whoami(r)
-	if err := a.Database.CreateFile(userID, file); err != nil {
+	err = a.Database.CreateFile(userID, file)
+	if err == errors.ErrNotAuthorized {
+		utils.RespondFail(w, http.StatusForbidden, err.Error())
+		return
+	}
+	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}

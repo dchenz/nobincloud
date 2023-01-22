@@ -37,6 +37,6 @@ func (a *CloudRouter) registerFileRouter(r *mux.Router) {
 
 func (a *CloudRouter) registerFolderRouter(r *mux.Router) {
 	r.Use(a.authRequired)
-	r.HandleFunc("/{id}", a.CreateFolder).Methods("PUT")
+	r.HandleFunc("", a.CreateFolder).Methods("POST")
 	r.HandleFunc("/{id}/list", a.ListFolderContents).Methods("GET")
 }

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/dchenz/nobincloud/pkg/errors"
 	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -80,7 +81,7 @@ func TestListingFilesAndFolders(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create folder: /videos
-	err = db.UpsertFolder(userID, videosFolder)
+	err = db.CreateFolder(userID, videosFolder)
 	assert.NoError(t, err)
 
 	// Create file: /videos/hello.mp4
@@ -92,45 +93,52 @@ func TestListingFilesAndFolders(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create folder: /my_files
-	err = db.UpsertFolder(userID, myFolder)
+	err = db.CreateFolder(userID, myFolder)
 	assert.NoError(t, err)
 
 	// List files in /videos
-	files, err := db.GetFilesInFolder(userID, videosFolder.ID)
+	files, err := db.GetFilesInFolder(userID, videosFolder.ID, false)
 	assert.NoError(t, err)
 	assert.Contains(t, files, helloFile)
 	assert.Contains(t, files, worldFile)
 	assert.Len(t, files, 2)
 
 	// List folders in /videos
-	folders, err := db.GetFoldersInFolder(userID, videosFolder.ID)
+	folders, err := db.GetFoldersInFolder(userID, videosFolder.ID, false)
 	assert.NoError(t, err)
 	assert.Len(t, folders, 0)
 
 	// List files in root (zero uuid)
-	files, err = db.GetFilesInFolder(userID, uuid.Nil)
+	files, err = db.GetFilesInFolder(userID, uuid.Nil, true)
 	assert.NoError(t, err)
 	assert.Contains(t, files, imageFile)
 	assert.Len(t, files, 1)
 
 	// List folders in root (zero uuid)
-	folders, err = db.GetFoldersInFolder(userID, uuid.Nil)
+	folders, err = db.GetFoldersInFolder(userID, uuid.Nil, true)
 	assert.NoError(t, err)
 	assert.Contains(t, folders, videosFolder)
 	assert.Contains(t, folders, myFolder)
 	assert.Len(t, folders, 2)
 
 	// List folders of another user and it should return empty
-	folders, err = db.GetFoldersInFolder(1234, uuid.Nil)
+	folders, err = db.GetFoldersInFolder(1234, uuid.Nil, true)
 	assert.NoError(t, err) // Unknown user is not checked here.
 	assert.Len(t, folders, 0)
 
 	// List unknown folder and get an error
 	unknownFolderID := uuid.New()
-	_, err = db.GetFilesInFolder(userID, unknownFolderID)
+	_, err = db.GetFilesInFolder(userID, unknownFolderID, false)
 	assert.ErrorIs(t, err, sql.ErrNoRows)
-	_, err = db.GetFoldersInFolder(userID, unknownFolderID)
+	_, err = db.GetFoldersInFolder(userID, unknownFolderID, false)
 	assert.ErrorIs(t, err, sql.ErrNoRows)
+
+	// Unauthorized user trying to list files
+	unknownUserID := 346248
+	_, err = db.GetFilesInFolder(unknownUserID, videosFolder.ID, false)
+	assert.ErrorIs(t, err, errors.ErrNotAuthorized)
+	_, err = db.GetFoldersInFolder(unknownUserID, videosFolder.ID, false)
+	assert.ErrorIs(t, err, errors.ErrNotAuthorized)
 }
 
 func TestJSONFilesAndFolders(t *testing.T) {
@@ -231,44 +239,4 @@ func TestJSONFilesAndFolders(t *testing.T) {
 			assert.Equal(t, tc.obj, v)
 		}
 	}
-}
-
-func TestFolderUpsert(t *testing.T) {
-	db := createMockDB()
-	defer destroyMockDB()
-
-	// Register account.
-	err := db.CreateUserAccount(model.NewUserRequest{
-		Email:                "example@example.com",
-		PasswordHash:         "abcdefabcdef",
-		AccountEncryptionKey: "aaaaaaaaaaaa",
-	})
-	assert.NoError(t, err)
-
-	userID, err := db.ResolveAccountID("example@example.com")
-	assert.NoError(t, err)
-
-	// ---
-
-	f := model.Folder{
-		ID: uuid.New(),
-		ParentFolder: model.JSON[uuid.UUID]{
-			Valid: false,
-		},
-		EncryptionKey: model.Bytes{Bytes: fakeEncryptionKey},
-		Metadata:      model.Bytes{Bytes: []byte("test")},
-	}
-
-	err = db.UpsertFolder(userID, f)
-	assert.NoError(t, err)
-	ff, err := db.GetFolder(userID, f.ID)
-	assert.NoError(t, err)
-	assert.Equal(t, f, *ff)
-
-	f.Metadata.Bytes = []byte("test 123")
-	err = db.UpsertFolder(userID, f)
-	assert.NoError(t, err)
-	ff, err = db.GetFolder(userID, f.ID)
-	assert.NoError(t, err)
-	assert.Equal(t, f, *ff)
 }

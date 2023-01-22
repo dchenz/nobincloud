@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { ServerRoutes } from "../const";
 import { decrypt, encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
-import { arrayBufferToString, uuid, uuidZero } from "../crypto/utils";
+import { arrayBufferToString, uuidZero } from "../crypto/utils";
 import { createCustomFileThumbnail } from "../misc/thumbnails";
 import { FolderContentsResponse, Response } from "../types/API";
 import {
@@ -37,8 +37,10 @@ export async function encryptAndUploadFile(
   const form = new FormData();
   form.append("file", new Blob([await encrypt(fileData, fileKey)]));
   form.append("encryptionKey", arrayBufferToString(encryptedFileKey, "base64"));
-  form.append("parentFolder", fileUpload.parentFolder ?? "");
   form.append("metadata", arrayBufferToString(encryptedFileMetadata, "base64"));
+  if (fileUpload.parentFolder) {
+    form.append("parentFolder", fileUpload.parentFolder ?? "");
+  }
 
   const response: Response<string> = await (
     await fetch(ServerRoutes.file, {
@@ -101,8 +103,6 @@ export async function createFolder(
   folder: FolderCreationDetails,
   accountKey: ArrayBuffer
 ): Promise<FolderRef> {
-  const id = uuid();
-  const url = `${ServerRoutes.folder}/${id}`;
   const [encryptedFolderKey, folderKey] = await generateWrappedKey(accountKey);
   const folderMetadata = {
     name: folder.name,
@@ -112,18 +112,17 @@ export async function createFolder(
     Buffer.from(JSON.stringify(folderMetadata)),
     folderKey
   );
-  await jsonFetch(url, {
-    method: "PUT",
+  const id = await jsonFetch<string>(ServerRoutes.folder, {
+    method: "POST",
     body: JSON.stringify({
-      id,
       encryptionKey: arrayBufferToString(encryptedFolderKey, "base64"),
       parentFolder: folder.parentFolder,
       metadata: arrayBufferToString(encryptedFolderMetadata, "base64"),
     }),
   });
   return {
-    type: "d",
     id,
+    type: "d",
     encryptionKey: folderKey,
     parentFolder: folder.parentFolder,
     metadata: folderMetadata,

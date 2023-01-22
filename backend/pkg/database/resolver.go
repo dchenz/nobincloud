@@ -1,29 +1,27 @@
 package database
 
 import (
-	"database/sql"
-
 	"github.com/google/uuid"
 )
 
-func (a *Database) findFileID(id []byte) (int, error) {
+func (a *Database) findFileID(fileUUID uuid.UUID) (int, error) {
 	q := `SELECT id
 		  FROM files
 		  WHERE public_id = ?`
-	res := a.conn.QueryRow(q, id)
+	res := a.conn.QueryRow(q, fileUUID[:])
 	var fileID int
 	err := res.Scan(&fileID)
 	return fileID, err
 }
 
-func (a *Database) findFolderID(id []byte) (int, error) {
+func (a *Database) findFolderID(folderUUID uuid.UUID) (int, error) {
 	q := `SELECT id
 		  FROM folders
 		  WHERE public_id = ?`
-	res := a.conn.QueryRow(q, id)
-	var fileID int
-	err := res.Scan(&fileID)
-	return fileID, err
+	res := a.conn.QueryRow(q, folderUUID[:])
+	var folderID int
+	err := res.Scan(&folderID)
+	return folderID, err
 }
 
 func (a *Database) findAccountID(email string) (int, error) {
@@ -34,19 +32,6 @@ func (a *Database) findAccountID(email string) (int, error) {
 	var accountID int
 	err := res.Scan(&accountID)
 	return accountID, err
-}
-
-func (a *Database) sqlFolderID(folderID uuid.UUID) (sql.NullInt32, error) {
-	var v sql.NullInt32
-	if folderID != uuid.Nil {
-		id, err := a.findFolderID(folderID[:])
-		if err != nil {
-			return v, err
-		}
-		v.Valid = true
-		v.Int32 = int32(id)
-	}
-	return v, nil
 }
 
 func (a *Database) findFolderUUID(id int) (uuid.UUID, error) {

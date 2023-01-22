@@ -34,7 +34,7 @@ export default function Header(): JSX.Element {
       if (selectedFile.size < MaxUploadSize) {
         const uploadRequest = {
           file: selectedFile,
-          parentFolder: pwd.current.id,
+          parentFolder: pwd.parents.length > 0 ? pwd.current.id : null,
         };
         encryptAndUploadFile(uploadRequest, accountKey, addFile);
       } else {
@@ -80,7 +80,7 @@ export default function Header(): JSX.Element {
       {isCreatingFolder ? (
         <NewFolderModal
           onClose={() => setCreatingFolder(false)}
-          parentFolder={pwd.current.id}
+          parentFolder={pwd.parents.length > 0 ? pwd.current.id : null}
         />
       ) : null}
     </Box>

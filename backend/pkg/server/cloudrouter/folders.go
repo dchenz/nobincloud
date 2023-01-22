@@ -3,24 +3,31 @@ package cloudrouter
 import (
 	"net/http"
 
+	"github.com/dchenz/nobincloud/pkg/errors"
 	"github.com/dchenz/nobincloud/pkg/model"
 	"github.com/dchenz/nobincloud/pkg/utils"
 	"github.com/google/uuid"
 )
 
 func (a *CloudRouter) ListFolderContents(w http.ResponseWriter, r *http.Request) {
-	folderID, err := utils.GetPathUUID(r, "id")
+	userID, _ := a.whoami(r)
+
+	folderUUID, err := utils.GetPathUUID(r, "id")
 	if err != nil {
 		utils.RespondFail(w, http.StatusBadRequest, "invalid folder ID")
 		return
 	}
-	userID, _ := a.whoami(r)
-	memberFiles, err := a.Database.GetFilesInFolder(userID, folderID)
+	isRootFolder := folderUUID == uuid.Nil
+	memberFiles, err := a.Database.GetFilesInFolder(userID, folderUUID, isRootFolder)
+	if err == errors.ErrNotAuthorized {
+		utils.RespondFail(w, http.StatusForbidden, err.Error())
+		return
+	}
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	memberFolders, err := a.Database.GetFoldersInFolder(userID, folderID)
+	memberFolders, err := a.Database.GetFoldersInFolder(userID, folderUUID, isRootFolder)
 	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
@@ -32,24 +39,22 @@ func (a *CloudRouter) ListFolderContents(w http.ResponseWriter, r *http.Request)
 }
 
 func (a *CloudRouter) CreateFolder(w http.ResponseWriter, r *http.Request) {
-	folderID, err := utils.GetPathUUID(r, "id")
-	if err != nil {
-		utils.RespondFail(w, http.StatusBadRequest, "invalid folder ID")
-		return
-	}
-	if folderID == uuid.Nil {
-		utils.RespondFail(w, http.StatusBadRequest, "invalid folder ID")
-		return
-	}
-	var folderBody model.Folder
-	if err := utils.GetBody(r, &folderBody); err != nil {
+	userID, _ := a.whoami(r)
+
+	var folderReq model.Folder
+	if err := utils.GetBody(r, &folderReq); err != nil {
 		utils.RespondFail(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	userID, _ := a.whoami(r)
-	if err := a.Database.UpsertFolder(userID, folderBody); err != nil {
+	folderReq.ID = uuid.New()
+	err := a.Database.CreateFolder(userID, folderReq)
+	if err == errors.ErrNotAuthorized {
+		utils.RespondFail(w, http.StatusForbidden, err.Error())
+		return
+	}
+	if err != nil {
 		utils.RespondError(w, err.Error())
 		return
 	}
-	utils.ResponseSuccess(w, nil)
+	utils.ResponseSuccess(w, folderReq.ID)
 }
