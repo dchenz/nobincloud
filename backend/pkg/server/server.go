@@ -50,6 +50,7 @@ func NewServer() (*Server, error) {
 			Path: serverConfig.DataStorePath,
 		},
 		CaptchaSecret: serverConfig.CaptchaSecret,
+		DevMode:       serverConfig.DevMode,
 	}
 	cr.RegisterRoutes(api)
 	api.Use(sessionMgr.LoadAndSave)

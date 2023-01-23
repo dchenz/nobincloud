@@ -16,7 +16,7 @@ import React, { useContext, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
 import { registerAccount } from "../../api/registerAccount";
-import { GoogleCaptchaSiteKey, PageRoutes } from "../../const";
+import { DevMode, GoogleCaptchaSiteKey, PageRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
 
 export default function RegisterPage(): JSX.Element {
@@ -32,7 +32,7 @@ export default function RegisterPage(): JSX.Element {
     email !== "" &&
     nickname.trim() !== "" &&
     password !== "" &&
-    captchaToken !== null;
+    (captchaToken !== null || DevMode);
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ export default function RegisterPage(): JSX.Element {
       return;
     }
     const newUser = { email, nickname, password };
-    registerAccount(newUser, captchaToken)
+    registerAccount(newUser, captchaToken ?? "")
       .then((result) => {
         if (result.success) {
           // Store the decrypted AES key on successful login
@@ -91,10 +91,12 @@ export default function RegisterPage(): JSX.Element {
               </FormHelperText>
             </FormControl>
             <Flex gap={2}>
-              <ReCAPTCHA
-                sitekey={GoogleCaptchaSiteKey}
-                onChange={setCaptchaToken}
-              />
+              {!DevMode ? (
+                <ReCAPTCHA
+                  sitekey={GoogleCaptchaSiteKey}
+                  onChange={setCaptchaToken}
+                />
+              ) : null}
               <Button type="submit" disabled={!canSubmit} width="100%">
                 Create
               </Button>

@@ -13,6 +13,7 @@ type ServerConfig struct {
 	DSN           string `env:"MYSQL_DB,required"`
 	DataStorePath string `env:"DATA_STORE_PATH,required"`
 	CaptchaSecret string `env:"GOOGLE_CAPTCHA_SECRET,required"`
+	DevMode       bool   `env:"SERVER_DEV_MODE,default=false"`
 }
 
 func loadConfig() (*ServerConfig, error) {

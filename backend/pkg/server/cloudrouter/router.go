@@ -15,6 +15,7 @@ type CloudRouter struct {
 	Files          *filestore.FileStore
 	SessionManager *scs.SessionManager
 	CaptchaSecret  string
+	DevMode        bool
 }
 
 func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
@@ -25,12 +26,15 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 }
 
 func (a *CloudRouter) registerUserRouter(r *mux.Router) {
+	registerHandler := http.Handler(http.HandlerFunc(a.SignUpNewUser))
+	if !a.DevMode {
+		registerHandler = a.captchaRequired(registerHandler)
+	}
 	r.HandleFunc("/login", a.Login).Methods("POST")
 	r.HandleFunc("/logout", a.Logout).Methods("POST")
 	r.HandleFunc("/unlock", a.LockedLogin).Methods("POST")
 	r.HandleFunc("/whoami", a.WhoAmI).Methods("GET")
-	r.Handle("/register",
-		a.captchaRequired(http.HandlerFunc(a.SignUpNewUser))).Methods("POST")
+	r.Handle("/register", registerHandler).Methods("POST")
 }
 
 func (a *CloudRouter) registerFileRouter(r *mux.Router) {
