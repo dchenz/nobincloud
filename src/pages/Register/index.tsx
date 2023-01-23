@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Center,
+  Flex,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -12,9 +13,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
 import { registerAccount } from "../../api/registerAccount";
-import { PageRoutes } from "../../const";
+import { GoogleCaptchaSiteKey, PageRoutes } from "../../const";
 import AuthContext from "../../context/AuthContext";
 
 export default function RegisterPage(): JSX.Element {
@@ -23,9 +25,14 @@ export default function RegisterPage(): JSX.Element {
   const [email, setEmail] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [failedSignup, setFailedSignup] = useState<string>("");
 
-  const canSubmit = email !== "" && nickname.trim() !== "" && password !== "";
+  const canSubmit =
+    email !== "" &&
+    nickname.trim() !== "" &&
+    password !== "" &&
+    captchaToken !== null;
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +40,7 @@ export default function RegisterPage(): JSX.Element {
       return;
     }
     const newUser = { email, nickname, password };
-    registerAccount(newUser)
+    registerAccount(newUser, captchaToken)
       .then((result) => {
         if (result.success) {
           // Store the decrypted AES key on successful login
@@ -83,9 +90,15 @@ export default function RegisterPage(): JSX.Element {
                 All account data is lost if you forget your password.
               </FormHelperText>
             </FormControl>
-            <Button type="submit" disabled={!canSubmit}>
-              Create
-            </Button>
+            <Flex gap={2}>
+              <ReCAPTCHA
+                sitekey={GoogleCaptchaSiteKey}
+                onChange={setCaptchaToken}
+              />
+              <Button type="submit" disabled={!canSubmit} width="100%">
+                Create
+              </Button>
+            </Flex>
             {failedSignup ? (
               <Alert status="warning">{failedSignup}</Alert>
             ) : null}

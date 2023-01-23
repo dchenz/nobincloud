@@ -15,12 +15,13 @@ import (
 )
 
 type Server struct {
-	config ServerConfig
-	router *mux.Router
+	Hostname string
+	Port     int
+	router   *mux.Router
 }
 
 func (s *Server) Start() error {
-	addr := fmt.Sprintf("%s:%d", s.config.HostName, s.config.Port)
+	addr := fmt.Sprintf("%s:%d", s.Hostname, s.Port)
 	httpServer := http.Server{
 		Handler:           s.router,
 		Addr:              addr,
@@ -31,26 +32,31 @@ func (s *Server) Start() error {
 }
 
 func NewServer() (*Server, error) {
-	s := &Server{
-		router: mux.NewRouter(),
-	}
+	r := mux.NewRouter()
 	sessionMgr := scs.New()
-	if err := s.loadConfig(); err != nil {
-		return nil, err
-	}
-	db, err := database.NewDatabase(s.config.DSN)
+	serverConfig, err := loadConfig()
 	if err != nil {
 		return nil, err
 	}
-	api := s.router.PathPrefix("/api").Subrouter()
+	db, err := database.NewDatabase(serverConfig.DSN)
+	if err != nil {
+		return nil, err
+	}
+	api := r.PathPrefix("/api").Subrouter()
 	cr := cloudrouter.CloudRouter{
 		Database:       db,
 		SessionManager: sessionMgr,
 		Files: &filestore.FileStore{
-			Path: s.config.DataStorePath,
+			Path: serverConfig.DataStorePath,
 		},
+		CaptchaSecret: serverConfig.CaptchaSecret,
 	}
 	cr.RegisterRoutes(api)
 	api.Use(sessionMgr.LoadAndSave)
-	return s, nil
+	s := Server{
+		Hostname: serverConfig.HostName,
+		Port:     serverConfig.Port,
+		router:   r,
+	}
+	return &s, nil
 }

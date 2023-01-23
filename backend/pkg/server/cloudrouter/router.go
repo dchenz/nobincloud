@@ -1,6 +1,8 @@
 package cloudrouter
 
 import (
+	"net/http"
+
 	"github.com/dchenz/nobincloud/pkg/database"
 	"github.com/dchenz/nobincloud/pkg/filestore"
 
@@ -12,6 +14,7 @@ type CloudRouter struct {
 	Database       *database.Database
 	Files          *filestore.FileStore
 	SessionManager *scs.SessionManager
+	CaptchaSecret  string
 }
 
 func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
@@ -24,9 +27,10 @@ func (a *CloudRouter) RegisterRoutes(r *mux.Router) {
 func (a *CloudRouter) registerUserRouter(r *mux.Router) {
 	r.HandleFunc("/login", a.Login).Methods("POST")
 	r.HandleFunc("/logout", a.Logout).Methods("POST")
-	r.HandleFunc("/register", a.SignUpNewUser).Methods("POST")
 	r.HandleFunc("/unlock", a.LockedLogin).Methods("POST")
 	r.HandleFunc("/whoami", a.WhoAmI).Methods("GET")
+	r.Handle("/register",
+		a.captchaRequired(http.HandlerFunc(a.SignUpNewUser))).Methods("POST")
 }
 
 func (a *CloudRouter) registerFileRouter(r *mux.Router) {

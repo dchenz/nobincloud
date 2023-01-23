@@ -21,3 +21,5 @@ export const LocalStorageKeys = {
 };
 
 export const MaxUploadSize = 32 << 20; // 32MB
+
+export const GoogleCaptchaSiteKey = "6LeFmxwkAAAAABFpg9KhEt0xndxwYWlAdtsoq3Jo";

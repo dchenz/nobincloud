@@ -15,7 +15,8 @@ import { Response } from "../types/API";
  * @returns ({ success: true, data: undefined })
  */
 export async function registerAccount(
-  details: AccountSignupDetails
+  details: AccountSignupDetails,
+  captchaToken: string
 ): Promise<Response<ArrayBuffer>> {
   const passwordKey = derivePasswordKey(details.password, details.email);
   const passwordHash = await deriveServerPasswordHash(
@@ -30,6 +31,7 @@ export async function registerAccount(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-google-captcha": captchaToken,
       },
       body: JSON.stringify({
         email: details.email,

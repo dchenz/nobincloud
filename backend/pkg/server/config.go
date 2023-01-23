@@ -12,12 +12,14 @@ type ServerConfig struct {
 	Secret        []byte `env:"SERVER_SECRET,required"`
 	DSN           string `env:"MYSQL_DB,required"`
 	DataStorePath string `env:"DATA_STORE_PATH,required"`
+	CaptchaSecret string `env:"GOOGLE_CAPTCHA_SECRET,required"`
 }
 
-func (s *Server) loadConfig() error {
-	err := envconfig.Process(context.Background(), &s.config)
+func loadConfig() (*ServerConfig, error) {
+	var cfg ServerConfig
+	err := envconfig.Process(context.Background(), &cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &cfg, nil
 }
