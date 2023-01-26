@@ -1,7 +1,7 @@
 import { Box, HStack } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { Folder2, Trash } from "react-bootstrap-icons";
-import { deleteFolderContents, encryptAndUploadFile } from "../../../api/files";
+import { deleteFolderContents } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import NewFolderModal from "../../../components/NewFolderModal";
 import ResponsiveIconButton from "../../../components/ResponsiveIconButton";
@@ -15,30 +15,12 @@ import "./styles.sass";
 export default function Header(): JSX.Element {
   const [isCreatingFolder, setCreatingFolder] = useState(false);
   const { accountKey } = useContext(AuthContext);
-  const {
-    addFile,
-    pwd,
-    selectedItems,
-    setSelectedItems,
-    deleteFile,
-    deleteFolder,
-  } = useContext(FolderContext);
+  const { pwd, selectedItems, setSelectedItems, deleteFile, deleteFolder } =
+    useContext(FolderContext);
   // TODO: Improve the typescript types.
   if (!accountKey) {
     throw new Error();
   }
-
-  const onFileUpload = (selectedFile: File) => {
-    const uploadRequest = {
-      file: selectedFile,
-      parentFolder: pwd.parents.length > 0 ? pwd.current.id : null,
-    };
-    encryptAndUploadFile(uploadRequest, accountKey, addFile);
-  };
-
-  const onFolderUpload = (selectedFiles: File[]) => {
-    console.log(selectedFiles);
-  };
 
   const onDeleteSelected = () => {
     deleteFolderContents(selectedItems).then(() => {
@@ -67,10 +49,7 @@ export default function Header(): JSX.Element {
           </ConfirmPopup>
         ) : (
           <>
-            <UploadMenuButton
-              onFileUpload={onFileUpload}
-              onFolderUpload={onFolderUpload}
-            />
+            <UploadMenuButton />
             <ResponsiveIconButton
               icon={<Folder2 />}
               ariaLabel="create-folder"

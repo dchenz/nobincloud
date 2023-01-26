@@ -1,13 +1,3 @@
-export type FileUploadDetails = {
-  file: File;
-  parentFolder: UUID | null;
-};
-
-export type FolderCreationDetails = {
-  name: string;
-  parentFolder: UUID | null;
-};
-
 export type FileMetadata = {
   name: string;
   createdAt: Date;

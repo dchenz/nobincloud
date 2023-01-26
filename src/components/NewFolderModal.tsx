@@ -36,11 +36,7 @@ const NewFolderModal: React.FC<NewFolderModalProps> = ({
     if (!canSubmit) {
       return;
     }
-    const newFolder = {
-      name: name.trim(),
-      parentFolder,
-    };
-    createFolder(newFolder, accountKey)
+    createFolder(name.trim(), parentFolder, accountKey)
       .then((result) => {
         addFolder(result);
         onClose();

@@ -7,40 +7,38 @@ import { createCustomFileThumbnail } from "../misc/thumbnails";
 import { FolderContentsResponse, Response } from "../types/API";
 import {
   FileRef,
-  FileUploadDetails,
   FILE_TYPE,
   FolderContents,
-  FolderCreationDetails,
   FolderRef,
   UUID,
 } from "../types/Files";
 import { decryptFileObject, decryptFolderObject, jsonFetch } from "./helpers";
 
 export async function encryptAndUploadFile(
-  fileUpload: FileUploadDetails,
-  accountKey: ArrayBuffer,
-  onComplete: (item: FileRef) => void
-) {
+  file: File,
+  parentFolder: UUID | null,
+  accountKey: ArrayBuffer
+): Promise<FileRef> {
   const [encryptedFileKey, fileKey] = await generateWrappedKey(accountKey);
-  const thumbnail = await createCustomFileThumbnail(fileUpload.file);
+  const thumbnail = await createCustomFileThumbnail(file);
   const fileMetadata = {
-    name: fileUpload.file.name,
+    name: file.name,
     createdAt: new Date(), // Will show time when the upload started
-    type: fileUpload.file.type,
-    size: fileUpload.file.size,
+    type: file.type,
+    size: file.size,
     thumbnail: thumbnail ? arrayBufferToString(thumbnail, "base64") : null,
   };
   const encryptedFileMetadata = await encrypt(
     Buffer.from(JSON.stringify(fileMetadata)),
     fileKey
   );
-  const fileData = await fileUpload.file.arrayBuffer();
+  const fileData = await file.arrayBuffer();
   const form = new FormData();
   form.append("file", new Blob([await encrypt(fileData, fileKey)]));
   form.append("encryptionKey", arrayBufferToString(encryptedFileKey, "base64"));
   form.append("metadata", arrayBufferToString(encryptedFileMetadata, "base64"));
-  if (fileUpload.parentFolder) {
-    form.append("parentFolder", fileUpload.parentFolder ?? "");
+  if (parentFolder) {
+    form.append("parentFolder", parentFolder ?? "");
   }
 
   const response: Response<string> = await (
@@ -49,13 +47,14 @@ export async function encryptAndUploadFile(
       body: form,
     })
   ).json();
-  onComplete({
+
+  return {
     type: "f",
     id: response.data,
     encryptionKey: encryptedFileKey,
-    parentFolder: fileUpload.parentFolder,
+    parentFolder: parentFolder,
     metadata: fileMetadata,
-  });
+  };
 }
 
 export async function getFolderContents(
@@ -115,12 +114,13 @@ export async function deleteFolderContents(
 }
 
 export async function createFolder(
-  folder: FolderCreationDetails,
+  folderName: string,
+  parentFolder: UUID | null,
   accountKey: ArrayBuffer
 ): Promise<FolderRef> {
   const [encryptedFolderKey, folderKey] = await generateWrappedKey(accountKey);
   const folderMetadata = {
-    name: folder.name,
+    name: folderName,
     createdAt: new Date(),
   };
   const encryptedFolderMetadata = await encrypt(
@@ -131,7 +131,7 @@ export async function createFolder(
     method: "POST",
     body: JSON.stringify({
       encryptionKey: arrayBufferToString(encryptedFolderKey, "base64"),
-      parentFolder: folder.parentFolder,
+      parentFolder,
       metadata: arrayBufferToString(encryptedFolderMetadata, "base64"),
     }),
   });
@@ -139,7 +139,7 @@ export async function createFolder(
     id,
     type: "d",
     encryptionKey: folderKey,
-    parentFolder: folder.parentFolder,
+    parentFolder,
     metadata: folderMetadata,
   };
 }

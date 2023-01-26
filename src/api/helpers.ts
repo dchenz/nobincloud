@@ -1,8 +1,9 @@
 import { Buffer } from "buffer";
 import { decrypt } from "../crypto/cipher";
-import { arrayBufferToString } from "../crypto/utils";
+import { arrayBufferToString, uuidZero } from "../crypto/utils";
 import { FileResponse, FolderResponse, Response } from "../types/API";
-import { FileRef, FolderRef } from "../types/Files";
+import { FileRef, FolderRef, UUID } from "../types/Files";
+import { createFolder, encryptAndUploadFile } from "./files";
 
 export async function jsonFetch<T>(
   url: RequestInfo | URL,
@@ -73,3 +74,44 @@ export async function decryptFolderObject(
     metadata,
   };
 }
+
+export const uploadFileList = async (
+  fileList: FileList,
+  parentFolder: UUID | null,
+  accountKey: ArrayBuffer,
+  displayFile: (_: FileRef) => void,
+  displayFolder: (_: FolderRef) => void
+) => {
+  const folderCache: Record<string, UUID> = {};
+  for (const f of fileList) {
+    const pathComponents = f.webkitRelativePath.split("/").slice(0, -1);
+    let curFolderPath = "";
+    let parentFolderID: UUID | null = parentFolder;
+    for (const folderName of pathComponents) {
+      if (folderName === "") {
+        break;
+      }
+      curFolderPath += folderName;
+      if (!Object.prototype.hasOwnProperty.call(folderCache, curFolderPath)) {
+        const newFolder: FolderRef = await createFolder(
+          folderName,
+          parentFolderID === uuidZero() ? null : parentFolderID,
+          accountKey
+        );
+        if (parentFolderID === parentFolder) {
+          displayFolder(newFolder);
+        }
+        folderCache[curFolderPath] = newFolder.id;
+      }
+      parentFolderID = folderCache[curFolderPath];
+    }
+    const newFile = await encryptAndUploadFile(
+      f,
+      parentFolderID === uuidZero() ? null : parentFolderID,
+      accountKey
+    );
+    if (parentFolderID === parentFolder) {
+      displayFile(newFile);
+    }
+  }
+};
