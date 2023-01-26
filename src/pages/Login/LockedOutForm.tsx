@@ -14,7 +14,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jsonFetch } from "../../api/helpers";
 import { unlockAccount } from "../../api/loginAccount";
-import { PageRoutes, ServerRoutes } from "../../const";
+import { PAGE_ROUTES, SERVER_ROUTES } from "../../const";
 import AuthContext from "../../context/AuthContext";
 import { useLogout } from "../../misc/hooks";
 
@@ -28,7 +28,7 @@ const LockedOutForm: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const currentUserEmail = await jsonFetch<string>(ServerRoutes.whoami);
+      const currentUserEmail = await jsonFetch<string>(SERVER_ROUTES.whoami);
       if (!currentUserEmail) {
         logout();
         return;
@@ -51,7 +51,7 @@ const LockedOutForm: React.FC = () => {
           ctx.setAccountKey(decryptedAccountKey);
           ctx.setLoggedIn(true);
           // Redirect to personal dashboard.
-          navigate(PageRoutes.dashboard);
+          navigate(PAGE_ROUTES.dashboard);
         } else {
           setFailedLogin("Incorrect email or password.");
         }
@@ -83,7 +83,7 @@ const LockedOutForm: React.FC = () => {
         <Box mt={8}>
           <Text>
             Not {email}? Click{" "}
-            <Link to={PageRoutes.login} onClick={logout}>
+            <Link to={PAGE_ROUTES.login} onClick={logout}>
               <u>here</u>
             </Link>{" "}
             to logout.

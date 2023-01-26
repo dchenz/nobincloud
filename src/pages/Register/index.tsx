@@ -16,7 +16,7 @@ import React, { useContext, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
 import { registerAccount } from "../../api/registerAccount";
-import { DevMode, GoogleCaptchaSiteKey, PageRoutes } from "../../const";
+import { DEV_MODE, GOOGLE_CAPTCHA_SITE_KEY, PAGE_ROUTES } from "../../const";
 import AuthContext from "../../context/AuthContext";
 
 export default function RegisterPage(): JSX.Element {
@@ -32,7 +32,7 @@ export default function RegisterPage(): JSX.Element {
     email !== "" &&
     nickname.trim() !== "" &&
     password !== "" &&
-    (captchaToken !== null || DevMode);
+    (captchaToken !== null || DEV_MODE);
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,7 +48,7 @@ export default function RegisterPage(): JSX.Element {
           ctx.setAccountKey(result.data);
           ctx.setLoggedIn(true);
           // Redirect to personal dashboard.
-          navigate(PageRoutes.dashboard);
+          navigate(PAGE_ROUTES.dashboard);
         } else {
           setFailedSignup(result.data);
         }
@@ -91,9 +91,9 @@ export default function RegisterPage(): JSX.Element {
               </FormHelperText>
             </FormControl>
             <Flex gap={2}>
-              {!DevMode ? (
+              {!DEV_MODE ? (
                 <ReCAPTCHA
-                  sitekey={GoogleCaptchaSiteKey}
+                  sitekey={GOOGLE_CAPTCHA_SITE_KEY}
                   onChange={setCaptchaToken}
                 />
               ) : null}

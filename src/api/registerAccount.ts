@@ -1,4 +1,4 @@
-import { ServerRoutes } from "../const";
+import { SERVER_ROUTES } from "../const";
 import {
   derivePasswordKey,
   deriveServerPasswordHash,
@@ -27,7 +27,7 @@ export async function registerAccount(
     passwordKey
   );
   const response: Response = await (
-    await fetch(ServerRoutes.register, {
+    await fetch(SERVER_ROUTES.register, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

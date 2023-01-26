@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { uploadFileList } from "../api/helpers";
-import { MaxUploadSize } from "../const";
+import { MAX_UPLOAD_SIZE } from "../const";
 import AuthContext from "../context/AuthContext";
 import FolderContext from "../context/FolderContext";
 
@@ -23,7 +23,7 @@ const UploadMenuButton: React.FC = () => {
 
   const uploadFiles = (fileList: FileList) => {
     for (const f of fileList) {
-      if (f.size >= MaxUploadSize) {
+      if (f.size >= MAX_UPLOAD_SIZE) {
         toast({
           title: `Upload failed: ${f.name}`,
           description: "Exceeded maximum file size of 32MB",

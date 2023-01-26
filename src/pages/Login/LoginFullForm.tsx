@@ -13,7 +13,7 @@ import {
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginAccount } from "../../api/loginAccount";
-import { PageRoutes } from "../../const";
+import { PAGE_ROUTES } from "../../const";
 import AuthContext from "../../context/AuthContext";
 
 const LoginFullForm: React.FC = () => {
@@ -32,7 +32,7 @@ const LoginFullForm: React.FC = () => {
           ctx.setAccountKey(decryptedAccountKey);
           ctx.setLoggedIn(true);
           // Redirect to personal dashboard.
-          navigate(PageRoutes.dashboard);
+          navigate(PAGE_ROUTES.dashboard);
         } else {
           setFailedLogin("Incorrect email or password.");
         }

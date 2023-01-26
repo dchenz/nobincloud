@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { getFolderContents } from "../api/files";
-import { LocalStorageKeys } from "../const";
+import { LS_FILE_VIEW_MODE } from "../const";
 import AuthContext from "../context/AuthContext";
 import FolderContext, { initState } from "../context/FolderContext";
 import { useLocalStorageState } from "../misc/hooks";
@@ -11,7 +11,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
   const [contents, setContents] = useState<FolderContents>(initState.contents);
   const [loading, setLoading] = useState<boolean>(false);
   const [viewingMode, setViewingMode] = useLocalStorageState<string>(
-    LocalStorageKeys.viewingMode,
+    LS_FILE_VIEW_MODE,
     initState.viewingMode
   );
   const [activeFile, setActiveFile] = useState<FileRef | null>(null);

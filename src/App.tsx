@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import RedirectSignedIn from "./components/RedirectSignedIn";
 import RedirectSignedOut from "./components/RedirectSignedOut";
-import { PageRoutes } from "./const";
+import { PAGE_ROUTES } from "./const";
 import AuthContext from "./context/AuthContext";
 import DashboardPage from "./pages/Dashboard";
 import MyFilesDashboard from "./pages/Dashboard/MyFiles";
@@ -19,23 +19,23 @@ export default function App(): JSX.Element {
         <AuthProvider>
           <BrowserRouter>
             <Routes>
-              <Route path={PageRoutes.dashboard + "*"} element={null} />
+              <Route path={PAGE_ROUTES.dashboard + "*"} element={null} />
               <Route path="*" element={<Header />} />
             </Routes>
             <Routes>
-              <Route path={PageRoutes.login} element={<LoginPage />} />
+              <Route path={PAGE_ROUTES.login} element={<LoginPage />} />
               <Route
-                path={PageRoutes.register}
+                path={PAGE_ROUTES.register}
                 element={
-                  <RedirectSignedIn to={PageRoutes.dashboard}>
+                  <RedirectSignedIn to={PAGE_ROUTES.dashboard}>
                     <RegisterPage />
                   </RedirectSignedIn>
                 }
               />
               <Route
-                path={PageRoutes.dashboard}
+                path={PAGE_ROUTES.dashboard}
                 element={
-                  <RedirectSignedOut to={PageRoutes.login}>
+                  <RedirectSignedOut to={PAGE_ROUTES.login}>
                     <DashboardPage />
                   </RedirectSignedOut>
                 }

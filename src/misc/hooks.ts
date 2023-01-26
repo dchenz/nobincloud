@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { logoutAccount } from "../api/logoutAccount";
-import { PageRoutes } from "../const";
+import { PAGE_ROUTES } from "../const";
 import AuthContext from "../context/AuthContext";
 
 export function useLocalStorageState<T>(
@@ -56,7 +56,7 @@ export function useLogout(redirect?: string): () => void {
       clearCookies("signed_in");
       setAccountKey(null);
       setLoggedIn(false);
-      navigate(redirect ?? PageRoutes.login);
+      navigate(redirect ?? PAGE_ROUTES.login);
     });
   };
 }

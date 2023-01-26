@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { ServerRoutes } from "../const";
+import { SERVER_ROUTES } from "../const";
 import { decrypt } from "../crypto/cipher";
 import {
   derivePasswordKey,
@@ -25,7 +25,7 @@ export async function loginAccount(
   );
 
   const response: Response<SuccessfulLoginResponse> = await (
-    await fetch(ServerRoutes.login, {
+    await fetch(SERVER_ROUTES.login, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export async function unlockAccount(
   const passwordKey = derivePasswordKey(password, email);
   const passwordHash = await deriveServerPasswordHash(password, passwordKey);
   const response = await (
-    await fetch(ServerRoutes.unlock, {
+    await fetch(SERVER_ROUTES.unlock, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

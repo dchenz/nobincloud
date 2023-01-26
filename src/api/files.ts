@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { ServerRoutes } from "../const";
+import { SERVER_ROUTES } from "../const";
 import { decrypt, encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
 import { arrayBufferToString, uuidZero } from "../crypto/utils";
@@ -42,7 +42,7 @@ export async function encryptAndUploadFile(
   }
 
   const response: Response<string> = await (
-    await fetch(ServerRoutes.file, {
+    await fetch(SERVER_ROUTES.file, {
       method: "POST",
       body: form,
     })
@@ -65,7 +65,7 @@ export async function getFolderContents(
     folderID = uuidZero();
   }
   const contents = await jsonFetch<FolderContentsResponse>(
-    `${ServerRoutes.folder}/${folderID}/list`
+    `${SERVER_ROUTES.folder}/${folderID}/list`
   );
   const files = [];
   const folders = [];
@@ -82,7 +82,7 @@ export async function getFolderContents(
 }
 
 export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
-  const url = `${ServerRoutes.file}/${file.id}`;
+  const url = `${SERVER_ROUTES.file}/${file.id}`;
   const responseBytes = await (await fetch(url)).arrayBuffer();
   // TODO: Find a new scheme to decrypt chunked large files.
   const fileBytes = await decrypt(responseBytes, file.encryptionKey);
@@ -104,7 +104,7 @@ export async function deleteFolderContents(
       folders.push(f.id);
     }
   }
-  return await jsonFetch<null>(ServerRoutes.batch, {
+  return await jsonFetch<null>(SERVER_ROUTES.batch, {
     method: "DELETE",
     body: JSON.stringify({
       files,
@@ -127,7 +127,7 @@ export async function createFolder(
     Buffer.from(JSON.stringify(folderMetadata)),
     folderKey
   );
-  const id = await jsonFetch<string>(ServerRoutes.folder, {
+  const id = await jsonFetch<string>(SERVER_ROUTES.folder, {
     method: "POST",
     body: JSON.stringify({
       encryptionKey: arrayBufferToString(encryptedFolderKey, "base64"),
