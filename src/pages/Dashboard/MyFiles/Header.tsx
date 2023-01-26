@@ -1,19 +1,18 @@
-import { Box, HStack, useToast } from "@chakra-ui/react";
+import { Box, HStack } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
-import { Folder2, Trash, Upload } from "react-bootstrap-icons";
+import { Folder2, Trash } from "react-bootstrap-icons";
 import { deleteFolderContents, encryptAndUploadFile } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
 import NewFolderModal from "../../../components/NewFolderModal";
 import ResponsiveIconButton from "../../../components/ResponsiveIconButton";
+import UploadMenuButton from "../../../components/UploadMenuButton";
 import ViewModeSelector from "../../../components/ViewModeSelector";
-import { MaxUploadSize } from "../../../const";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FILE_TYPE } from "../../../types/Files";
 import "./styles.sass";
 
 export default function Header(): JSX.Element {
-  const toast = useToast();
   const [isCreatingFolder, setCreatingFolder] = useState(false);
   const { accountKey } = useContext(AuthContext);
   const {
@@ -29,31 +28,16 @@ export default function Header(): JSX.Element {
     throw new Error();
   }
 
-  const onUploadButtonClick = () => {
-    const fileForm = document.createElement("input");
-    fileForm.type = "file";
-    fileForm.click();
-    fileForm.onchange = (e: Event) => {
-      const selectedFile = (e.target as HTMLInputElement).files?.[0];
-      if (!selectedFile) {
-        return;
-      }
-      if (selectedFile.size < MaxUploadSize) {
-        const uploadRequest = {
-          file: selectedFile,
-          parentFolder: pwd.parents.length > 0 ? pwd.current.id : null,
-        };
-        encryptAndUploadFile(uploadRequest, accountKey, addFile);
-      } else {
-        toast({
-          title: "Upload failed",
-          description: "Exceeded max upload limit of 32MB",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+  const onFileUpload = (selectedFile: File) => {
+    const uploadRequest = {
+      file: selectedFile,
+      parentFolder: pwd.parents.length > 0 ? pwd.current.id : null,
     };
+    encryptAndUploadFile(uploadRequest, accountKey, addFile);
+  };
+
+  const onFolderUpload = (selectedFiles: File[]) => {
+    console.log(selectedFiles);
   };
 
   const onDeleteSelected = () => {
@@ -83,12 +67,9 @@ export default function Header(): JSX.Element {
           </ConfirmPopup>
         ) : (
           <>
-            <ResponsiveIconButton
-              icon={<Upload />}
-              ariaLabel="upload"
-              text="Upload"
-              title="Upload file"
-              onClick={onUploadButtonClick}
+            <UploadMenuButton
+              onFileUpload={onFileUpload}
+              onFolderUpload={onFolderUpload}
             />
             <ResponsiveIconButton
               icon={<Folder2 />}
