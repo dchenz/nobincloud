@@ -1,12 +1,13 @@
-import { Box, CircularProgress, IconButton } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import React, { useContext } from "react";
-import { CheckCircleFill } from "react-bootstrap-icons";
 import FolderContext from "../../context/FolderContext";
+import CompletedIcon from "./CompletedIcon";
+import ProgressIcon from "./ProgressIcon";
 import "./styles.sass";
 
 const UploadsTracker: React.FC = () => {
   const { uploads, removeUpload } = useContext(FolderContext);
-  if (!uploads.length) {
+  if (uploads.length === 0) {
     return null;
   }
   return (
@@ -14,22 +15,9 @@ const UploadsTracker: React.FC = () => {
       {uploads.map((upload) => (
         <Box className="upload-item" key={upload.id}>
           {upload.current < upload.total ? (
-            <Box borderRadius="50%" padding="8px">
-              <CircularProgress
-                size="24px"
-                thickness="12px"
-                value={(upload.current * 100) / upload.total}
-              />
-            </Box>
+            <ProgressIcon current={upload.current} total={upload.total} />
           ) : (
-            <IconButton
-              variant="ghost"
-              aria-label="close"
-              onClick={() => removeUpload(upload.id)}
-              borderRadius="50%"
-            >
-              <CheckCircleFill color="#3db535" size="24px" />
-            </IconButton>
+            <CompletedIcon onClick={() => removeUpload(upload.id)} />
           )}
           <Box className="upload-item-name" title={upload.title}>
             {upload.title}
