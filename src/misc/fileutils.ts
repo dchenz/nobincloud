@@ -1,4 +1,5 @@
-import { FileRef } from "../types/Files";
+import { UUID_NIL } from "../const";
+import { FileRef, UUID } from "../types/Files";
 
 export function saveFile(buf: ArrayBuffer, fileName: string) {
   const blob = new Blob([buf]);
@@ -48,4 +49,8 @@ export function formatRelativeTime(date: Date): string {
     return `${Math.floor(n)}hr ago`;
   }
   return date.toLocaleString();
+}
+
+export function isRootFolder(folderID: UUID): boolean {
+  return folderID === UUID_NIL;
 }

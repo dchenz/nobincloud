@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
+import { UUID_NIL } from "../const";
 import { decrypt } from "../crypto/cipher";
-import { arrayBufferToString, uuidZero } from "../crypto/utils";
+import { arrayBufferToString } from "../crypto/utils";
 import { FileResponse, FolderResponse, Response } from "../types/API";
 import { FileRef, FolderRef, UUID } from "../types/Files";
 import { createFolder, encryptAndUploadFile } from "./files";
@@ -40,6 +41,7 @@ export async function decryptFileObject(
   metadata.createdAt = new Date(metadata.createdAt);
   return {
     ...resp,
+    parentFolder: resp.parentFolder ?? UUID_NIL,
     type: "f",
     encryptionKey: fileKey,
     metadata,
@@ -69,6 +71,7 @@ export async function decryptFolderObject(
   metadata.createdAt = new Date(metadata.createdAt);
   return {
     ...resp,
+    parentFolder: resp.parentFolder ?? UUID_NIL,
     type: "d",
     encryptionKey: folderKey,
     metadata,
@@ -77,7 +80,7 @@ export async function decryptFolderObject(
 
 export const uploadFileList = async (
   fileList: FileList,
-  parentFolder: UUID | null,
+  parentFolder: UUID,
   accountKey: ArrayBuffer,
   displayFile: (_: FileRef) => void,
   displayFolder: (_: FolderRef) => void
@@ -86,7 +89,7 @@ export const uploadFileList = async (
   for (const f of fileList) {
     const pathComponents = f.webkitRelativePath.split("/").slice(0, -1);
     let curFolderPath = "";
-    let parentFolderID: UUID | null = parentFolder;
+    let parentFolderID: UUID = parentFolder;
     for (const folderName of pathComponents) {
       if (folderName === "") {
         break;
@@ -95,7 +98,7 @@ export const uploadFileList = async (
       if (!Object.prototype.hasOwnProperty.call(folderCache, curFolderPath)) {
         const newFolder: FolderRef = await createFolder(
           folderName,
-          parentFolderID === uuidZero() ? null : parentFolderID,
+          parentFolderID,
           accountKey
         );
         if (parentFolderID === parentFolder) {
@@ -105,11 +108,7 @@ export const uploadFileList = async (
       }
       parentFolderID = folderCache[curFolderPath];
     }
-    const newFile = await encryptAndUploadFile(
-      f,
-      parentFolderID === uuidZero() ? null : parentFolderID,
-      accountKey
-    );
+    const newFile = await encryptAndUploadFile(f, parentFolderID, accountKey);
     if (parentFolderID === parentFolder) {
       displayFile(newFile);
     }

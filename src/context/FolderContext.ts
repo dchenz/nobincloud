@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import { ROOT_FOLDER_NAME, UUID_NIL } from "../const";
 import {
   FilePath,
   FileRef,
@@ -31,12 +32,12 @@ export const initState: FolderCtxType = {
   pwd: {
     current: {
       type: FOLDER_TYPE,
-      id: "00000000-0000-0000-0000-000000000000",
-      parentFolder: null,
+      id: UUID_NIL,
+      parentFolder: "",
       encryptionKey: new ArrayBuffer(0),
       metadata: {
-        name: "",
-        createdAt: new Date(),
+        name: ROOT_FOLDER_NAME,
+        createdAt: new Date(0),
       },
     },
     parents: [],

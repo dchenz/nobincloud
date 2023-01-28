@@ -26,10 +26,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
   useEffect(() => {
     setLoading(true);
     // Root directory has nothing above it.
-    const contentsRequest = pwd.parents.length
-      ? getFolderContents(pwd.current.id, accountKey)
-      : getFolderContents(null, accountKey);
-    contentsRequest
+    getFolderContents(pwd.current.id, accountKey)
       .then((contentsResult) => setContents(contentsResult))
       .catch(console.error)
       .finally(() => setLoading(false));

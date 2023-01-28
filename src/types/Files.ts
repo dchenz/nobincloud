@@ -13,7 +13,7 @@ export type FolderMetadata = {
 
 type BaseFolderObject = {
   id: UUID;
-  parentFolder: UUID | null;
+  parentFolder: UUID;
   encryptionKey: ArrayBuffer;
 };
 

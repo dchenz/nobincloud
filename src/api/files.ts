@@ -2,7 +2,8 @@ import { Buffer } from "buffer";
 import { SERVER_ROUTES } from "../const";
 import { decrypt, encrypt } from "../crypto/cipher";
 import { generateWrappedKey } from "../crypto/password";
-import { arrayBufferToString, uuidZero } from "../crypto/utils";
+import { arrayBufferToString } from "../crypto/utils";
+import { isRootFolder } from "../misc/fileutils";
 import { createCustomFileThumbnail } from "../misc/thumbnails";
 import { FolderContentsResponse, Response } from "../types/API";
 import {
@@ -16,7 +17,7 @@ import { decryptFileObject, decryptFolderObject, jsonFetch } from "./helpers";
 
 export async function encryptAndUploadFile(
   file: File,
-  parentFolder: UUID | null,
+  parentFolder: UUID,
   accountKey: ArrayBuffer
 ): Promise<FileRef> {
   const [encryptedFileKey, fileKey] = await generateWrappedKey(accountKey);
@@ -37,8 +38,8 @@ export async function encryptAndUploadFile(
   form.append("file", new Blob([await encrypt(fileData, fileKey)]));
   form.append("encryptionKey", arrayBufferToString(encryptedFileKey, "base64"));
   form.append("metadata", arrayBufferToString(encryptedFileMetadata, "base64"));
-  if (parentFolder) {
-    form.append("parentFolder", parentFolder ?? "");
+  if (!isRootFolder(parentFolder)) {
+    form.append("parentFolder", parentFolder);
   }
 
   const response: Response<string> = await (
@@ -52,18 +53,15 @@ export async function encryptAndUploadFile(
     type: "f",
     id: response.data,
     encryptionKey: encryptedFileKey,
-    parentFolder: parentFolder,
+    parentFolder,
     metadata: fileMetadata,
   };
 }
 
 export async function getFolderContents(
-  folderID: UUID | null,
+  folderID: UUID,
   accountKey: ArrayBuffer
 ): Promise<FolderContents> {
-  if (!folderID) {
-    folderID = uuidZero();
-  }
   const contents = await jsonFetch<FolderContentsResponse>(
     `${SERVER_ROUTES.folder}/${folderID}/list`
   );
@@ -115,7 +113,7 @@ export async function deleteFolderContents(
 
 export async function createFolder(
   folderName: string,
-  parentFolder: UUID | null,
+  parentFolder: UUID,
   accountKey: ArrayBuffer
 ): Promise<FolderRef> {
   const [encryptedFolderKey, folderKey] = await generateWrappedKey(accountKey);
@@ -131,7 +129,7 @@ export async function createFolder(
     method: "POST",
     body: JSON.stringify({
       encryptionKey: arrayBufferToString(encryptedFolderKey, "base64"),
-      parentFolder,
+      parentFolder: isRootFolder(parentFolder) ? null : parentFolder,
       metadata: arrayBufferToString(encryptedFolderMetadata, "base64"),
     }),
   });

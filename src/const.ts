@@ -23,5 +23,9 @@ export const GOOGLE_CAPTCHA_SITE_KEY =
 
 export const DEV_MODE = process.env.REACT_APP_DEV_MODE === "true";
 
+export const UUID_NIL = "00000000-0000-0000-0000-000000000000";
+
+export const ROOT_FOLDER_NAME = "My Files";
+
 // Local storage keys
 export const LS_FILE_VIEW_MODE = "file-viewing-mode";

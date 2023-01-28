@@ -12,16 +12,6 @@ export type Failure = {
 
 export type Response<T = undefined> = Success<T> | Failure;
 
-export type UploadInitResponse = {
-  id: number;
-};
-
-export type UploadPartsResponse = {
-  have: number;
-  want: number;
-  error?: string;
-};
-
 type BaseFolderResponseObject = {
   id: UUID;
   parentFolder: UUID | null;

@@ -43,12 +43,3 @@ export function randomBytes(n: number): ArrayBuffer {
 export function uuid(): UUID {
   return window.crypto.randomUUID();
 }
-
-/**
- * Generate a UUID string with all zeroes.
- *
- * @returns UUID
- */
-export function uuidZero(): UUID {
-  return "00000000-0000-0000-0000-000000000000";
-}

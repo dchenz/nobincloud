@@ -2,7 +2,6 @@ import { Box, Button, HStack } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { ChevronRight } from "react-bootstrap-icons";
 import FolderContext from "../../../context/FolderContext";
-import { uuidZero } from "../../../crypto/utils";
 import { FolderRef } from "../../../types/Files";
 import "./styles.sass";
 
@@ -34,7 +33,7 @@ const PathViewer: React.FC = () => {
               className="path-viewer-item"
               data-test-id={`parent_${folder.id}`}
             >
-              {folder.id === uuidZero() ? "My Files" : folder.metadata.name}
+              {folder.metadata.name}
             </Box>
           </Button>
           <div>
@@ -43,7 +42,7 @@ const PathViewer: React.FC = () => {
         </React.Fragment>
       ))}
       <Box className="path-viewer-item" data-test-id={`pwd_${pwd.current.id}`}>
-        {pwd.current.id === uuidZero() ? "My Files" : pwd.current.metadata.name}
+        {pwd.current.metadata.name}
       </Box>
     </HStack>
   );

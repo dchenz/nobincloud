@@ -65,7 +65,7 @@ export default function Header(): JSX.Element {
       {isCreatingFolder ? (
         <NewFolderModal
           onClose={() => setCreatingFolder(false)}
-          parentFolder={pwd.parents.length > 0 ? pwd.current.id : null}
+          parentFolder={pwd.current.id}
         />
       ) : null}
     </Box>

@@ -16,7 +16,7 @@ import { UUID } from "../types/Files";
 
 type NewFolderModalProps = {
   onClose: () => void;
-  parentFolder: UUID | null;
+  parentFolder: UUID;
 };
 
 const NewFolderModal: React.FC<NewFolderModalProps> = ({
