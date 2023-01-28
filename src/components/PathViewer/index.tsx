@@ -1,8 +1,8 @@
 import { Box, Button, HStack } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { ChevronRight } from "react-bootstrap-icons";
-import FolderContext from "../../../context/FolderContext";
-import { FolderRef } from "../../../types/Files";
+import FolderContext from "../../context/FolderContext";
+import { FolderRef } from "../../types/Files";
 import "./styles.sass";
 
 const PathViewer: React.FC = () => {
@@ -21,7 +21,7 @@ const PathViewer: React.FC = () => {
   };
 
   return (
-    <HStack minHeight="40px">
+    <HStack className="path-viewer">
       {pwd.parents.map((folder, k) => (
         <React.Fragment key={k}>
           <Button
