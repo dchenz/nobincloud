@@ -4,7 +4,13 @@ import { LS_FILE_VIEW_MODE } from "../const";
 import AuthContext from "../context/AuthContext";
 import FolderContext, { initState } from "../context/FolderContext";
 import { useLocalStorageState } from "../misc/hooks";
-import { FilePath, FileRef, FolderContents, FolderRef } from "../types/Files";
+import {
+  FilePath,
+  FileRef,
+  FolderContents,
+  FolderRef,
+  UploadProgress,
+} from "../types/Files";
 
 const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
   const [pwd, setPwd] = useState<FilePath>(initState.pwd);
@@ -18,6 +24,7 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
   const [selectedItems, setSelectedItems] = useState<(FileRef | FolderRef)[]>(
     []
   );
+  const [uploads, setUploads] = useState<UploadProgress[]>([]);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
@@ -69,6 +76,27 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
     setSelectedItems(s);
   };
 
+  const addUpload = (key: string, total: number, title: string) => {
+    setUploads((prev) => [...prev, { id: key, current: 0, total, title }]);
+  };
+
+  const removeUpload = (key: string) => {
+    setUploads((prev) => prev.filter((x) => x.id !== key));
+  };
+
+  const incrementUpload = (key: string) => {
+    setUploads((prev) => {
+      const us = [];
+      for (const u of prev) {
+        if (u.id === key) {
+          u.current += 1;
+        }
+        us.push(u);
+      }
+      return us;
+    });
+  };
+
   return (
     <FolderContext.Provider
       value={{
@@ -89,6 +117,10 @@ const FoldersProvider = (props: { children: React.ReactNode }): JSX.Element => {
         addFolder,
         deleteFile,
         deleteFolder,
+        uploads,
+        addUpload,
+        removeUpload,
+        incrementUpload,
       }}
     >
       {props.children}

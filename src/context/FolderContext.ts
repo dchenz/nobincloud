@@ -6,6 +6,7 @@ import {
   FolderContents,
   FolderRef,
   FOLDER_TYPE,
+  UploadProgress,
 } from "../types/Files";
 
 type FolderCtxType = {
@@ -26,6 +27,10 @@ type FolderCtxType = {
   addFolder: (_: FolderRef) => void;
   deleteFile: (_: FileRef) => void;
   deleteFolder: (_: FolderRef) => void;
+  uploads: UploadProgress[];
+  addUpload: (_key: string, _total: number, title: string) => void;
+  removeUpload: (_key: string) => void;
+  incrementUpload: (_key: string) => void;
 };
 
 export const initState: FolderCtxType = {
@@ -61,6 +66,10 @@ export const initState: FolderCtxType = {
   addFolder: (_) => undefined,
   deleteFile: (_) => undefined,
   deleteFolder: (_) => undefined,
+  uploads: [],
+  addUpload: () => undefined,
+  removeUpload: () => undefined,
+  incrementUpload: () => undefined,
 };
 
 export default createContext<FolderCtxType>(initState);

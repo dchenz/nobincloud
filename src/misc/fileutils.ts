@@ -54,3 +54,28 @@ export function formatRelativeTime(date: Date): string {
 export function isRootFolder(folderID: UUID): boolean {
   return folderID === UUID_NIL;
 }
+
+export function getUploadDisplayName(
+  fileList: FileList,
+  asFolder?: boolean
+): string {
+  if (fileList.length === 0) {
+    return "";
+  }
+  if (asFolder) {
+    return fileList[0].webkitRelativePath.split("/")[0];
+  }
+  const components = [];
+  for (let i = 0; i < 5; i++) {
+    const f = fileList.item(i);
+    if (!f) {
+      break;
+    }
+    components.push(f.name);
+  }
+  let name = components.join(", ");
+  if (fileList.length > components.length) {
+    name += ` and ${fileList.length - components.length} more`;
+  }
+  return name;
+}

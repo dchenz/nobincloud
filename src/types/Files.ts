@@ -42,3 +42,10 @@ export type FolderContents = {
 // Used to determine file vs folder in FileRef | FolderRef union.
 export const FILE_TYPE = "f";
 export const FOLDER_TYPE = "d";
+
+export type UploadProgress = {
+  id: string;
+  current: number;
+  total: number;
+  title: string;
+};

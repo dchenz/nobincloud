@@ -82,8 +82,7 @@ export const uploadFileList = async (
   fileList: FileList,
   parentFolder: UUID,
   accountKey: ArrayBuffer,
-  displayFile: (_: FileRef) => void,
-  displayFolder: (_: FolderRef) => void
+  onItemUpload: (_: FileRef | FolderRef) => void
 ) => {
   const folderCache: Record<string, UUID> = {};
   for (const f of fileList) {
@@ -101,16 +100,12 @@ export const uploadFileList = async (
           parentFolderID,
           accountKey
         );
-        if (parentFolderID === parentFolder) {
-          displayFolder(newFolder);
-        }
+        onItemUpload(newFolder);
         folderCache[curFolderPath] = newFolder.id;
       }
       parentFolderID = folderCache[curFolderPath];
     }
     const newFile = await encryptAndUploadFile(f, parentFolderID, accountKey);
-    if (parentFolderID === parentFolder) {
-      displayFile(newFile);
-    }
+    onItemUpload(newFile);
   }
 };

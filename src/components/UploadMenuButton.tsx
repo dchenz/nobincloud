@@ -12,16 +12,21 @@ import { uploadFileList } from "../api/helpers";
 import { MAX_UPLOAD_SIZE } from "../const";
 import AuthContext from "../context/AuthContext";
 import FolderContext from "../context/FolderContext";
+import { uuid } from "../crypto/utils";
+import { getUploadDisplayName } from "../misc/fileutils";
+import { FileRef, FILE_TYPE, FolderRef } from "../types/Files";
 
 const UploadMenuButton: React.FC = () => {
   const toast = useToast();
-  const { addFile, addFolder, pwd } = useContext(FolderContext);
+  const { addFile, addFolder, pwd, addUpload, incrementUpload } =
+    useContext(FolderContext);
   const { accountKey } = useContext(AuthContext);
   if (!accountKey) {
     throw new Error();
   }
 
-  const uploadFiles = (fileList: FileList) => {
+  const uploadFiles = (fileList: FileList, asFolder: boolean) => {
+    const uploadID = uuid();
     for (const f of fileList) {
       if (f.size >= MAX_UPLOAD_SIZE) {
         toast({
@@ -34,7 +39,22 @@ const UploadMenuButton: React.FC = () => {
         return;
       }
     }
-    uploadFileList(fileList, pwd.current.id, accountKey, addFile, addFolder);
+    const onItemUpload = (item: FileRef | FolderRef) => {
+      if (item.type === FILE_TYPE) {
+        if (item.parentFolder === pwd.current.id) {
+          addFile(item);
+        }
+        incrementUpload(uploadID);
+      } else if (item.parentFolder === pwd.current.id) {
+        addFolder(item);
+      }
+    };
+    addUpload(
+      uploadID,
+      fileList.length,
+      getUploadDisplayName(fileList, asFolder)
+    );
+    uploadFileList(fileList, pwd.current.id, accountKey, onItemUpload);
   };
 
   return (
@@ -54,7 +74,7 @@ const UploadMenuButton: React.FC = () => {
               if (!fileList || fileList.length === 0) {
                 return;
               }
-              uploadFiles(fileList);
+              uploadFiles(fileList, false);
             };
           }}
         >
@@ -71,7 +91,7 @@ const UploadMenuButton: React.FC = () => {
               if (!fileList || fileList.length === 0) {
                 return;
               }
-              uploadFiles(fileList);
+              uploadFiles(fileList, true);
             };
           }}
         >

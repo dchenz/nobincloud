@@ -2,6 +2,7 @@ import { Box, Divider, HStack } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import GridView from "../../../components/FolderGridView";
 import ListView from "../../../components/FolderListView";
+import UploadsTracker from "../../../components/UploadsTracker";
 import AuthContext from "../../../context/AuthContext";
 import FolderContext from "../../../context/FolderContext";
 import { FileRef, FolderRef, FOLDER_TYPE } from "../../../types/Files";
@@ -70,6 +71,7 @@ export default function MyFilesDashboard(): JSX.Element {
           />
         ) : null}
       </div>
+      <UploadsTracker />
     </div>
   );
 }
