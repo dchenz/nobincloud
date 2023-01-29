@@ -82,7 +82,12 @@ export default function Header(): JSX.Element {
           parentFolder={pwd.current.id}
         />
       ) : null}
-      {isMoving ? <MoveItemsModal onClose={() => setMoving(false)} /> : null}
+      {isMoving ? (
+        <MoveItemsModal
+          movingItems={selectedItems}
+          onClose={() => setMoving(false)}
+        />
+      ) : null}
     </Box>
   );
 }

@@ -10,12 +10,14 @@ type ListViewProps = {
   items: (FileRef | FolderRef)[];
   onItemOpen: (_: FileRef | FolderRef) => void;
   selectSingleItem?: boolean;
+  disableFunc?: (_: FileRef | FolderRef) => boolean;
 };
 
 const ListView: React.FC<ListViewProps> = ({
   items,
   onItemOpen,
   selectSingleItem,
+  disableFunc,
 }) => {
   const { selectedItems, setSelectedItems } = useContext(FolderContext);
 
@@ -55,6 +57,7 @@ const ListView: React.FC<ListViewProps> = ({
               item={item}
               onItemOpen={() => onItemOpen(item)}
               selectSingleItem={selectSingleItem}
+              disabled={disableFunc?.(item)}
             />
           ))}
         </Tbody>

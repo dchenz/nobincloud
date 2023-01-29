@@ -11,12 +11,14 @@ type ListViewItemProps = {
   item: FileRef | FolderRef;
   onItemOpen: () => void;
   selectSingleItem?: boolean;
+  disabled?: boolean;
 };
 
 const ListViewItem: React.FC<ListViewItemProps> = ({
   item,
   onItemOpen,
   selectSingleItem,
+  disabled,
 }) => {
   const { selectedItems, toggleSelectedItem, setSelectedItems } =
     useContext(FolderContext);
@@ -34,16 +36,23 @@ const ListViewItem: React.FC<ListViewItemProps> = ({
     }
   };
 
+  const onCellClick = !disabled ? onItemOpen : undefined;
+
   return (
-    <Tr className="file-list-item" data-test-id={`${item.type}_${item.id}`}>
+    <Tr
+      className={"file-list-item" + (disabled ? " disabled" : " hoverable")}
+      data-test-id={`${item.type}_${item.id}`}
+    >
       <Td>
-        <FileSelectCheckbox
-          selected={selected}
-          onSelect={onSelect}
-          permanent={selectedItems.length > 0}
-        />
+        {!disabled ? (
+          <FileSelectCheckbox
+            selected={selected}
+            onSelect={onSelect}
+            permanent={selectedItems.length > 0}
+          />
+        ) : null}
       </Td>
-      <Td className="file-list-item-icon" onClick={onItemOpen}>
+      <Td className="file-list-item-icon" onClick={onCellClick}>
         <Image
           src={
             item.type === FILE_TYPE
@@ -52,13 +61,13 @@ const ListViewItem: React.FC<ListViewItemProps> = ({
           }
         />
       </Td>
-      <Td onClick={onItemOpen}>{item.metadata.name}</Td>
-      <Td onClick={onItemOpen}>
+      <Td onClick={onCellClick}>{item.metadata.name}</Td>
+      <Td onClick={onCellClick}>
         {item.type === FILE_TYPE
           ? formatRelativeTime(item.metadata.createdAt)
           : null}
       </Td>
-      <Td onClick={onItemOpen} isNumeric>
+      <Td onClick={onCellClick} isNumeric>
         {item.type === FILE_TYPE ? formatBinarySize(item.metadata.size) : null}
       </Td>
     </Tr>
