@@ -8,6 +8,7 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import React, { useCallback, useContext } from "react";
+import { moveFolderContents } from "../../api/files";
 import FolderContext from "../../context/FolderContext";
 import { isSubfolderOrEqual } from "../../misc/fileutils";
 import { FileRef, FolderRef, FOLDER_TYPE } from "../../types/Files";
@@ -19,13 +20,22 @@ import "./styles.sass";
 type MoveItemsModalProps = {
   movingItems: (FileRef | FolderRef)[];
   onClose: () => void;
+  onMove: () => void;
 };
 
 const MoveItemsModal: React.FC<MoveItemsModalProps> = ({
   movingItems,
   onClose,
+  onMove,
 }) => {
-  const { contents, pwd, setPwd } = useContext(FolderContext);
+  const { contents, pwd, setPwd, selectedItems } = useContext(FolderContext);
+
+  const moveTargetFolder =
+    selectedItems.length > 0 ? (selectedItems[0] as FolderRef) : pwd.current;
+
+  const canSubmit =
+    movingItems.length > 0 &&
+    movingItems[0].parentFolder !== moveTargetFolder.id;
 
   const onItemOpen = useCallback(
     (item: FileRef | FolderRef) => {
@@ -64,6 +74,16 @@ const MoveItemsModal: React.FC<MoveItemsModalProps> = ({
     [pwd, movingItems]
   );
 
+  const onSubmit = () => {
+    if (!canSubmit) {
+      return;
+    }
+    moveFolderContents(movingItems, moveTargetFolder.id).then(() => {
+      onMove();
+      onClose();
+    });
+  };
+
   return (
     <Modal isOpen={true} onClose={onClose} size="2xl" isCentered>
       <ModalOverlay />
@@ -79,7 +99,9 @@ const MoveItemsModal: React.FC<MoveItemsModalProps> = ({
           />
         </ModalBody>
         <ModalFooter>
-          <Button>Move here</Button>
+          <Button onClick={onSubmit} disabled={!canSubmit}>
+            Move here
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

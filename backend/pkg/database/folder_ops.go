@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
@@ -131,4 +132,44 @@ func (a *Database) deleteFolders(folderIDs []int) error {
 	q = fmt.Sprintf(q, utils.Placeholders(len(folderIDs)))
 	_, err := a.conn.Exec(q, utils.AnyArray(folderIDs)...)
 	return err
+}
+
+func (a *Database) updateFoldersParentFolder(folderIDs []int, parentFolderID sql.NullInt32) error {
+	q := `UPDATE folders
+		  SET parent_folder_id = ?
+		  WHERE id IN (%s)`
+	q = fmt.Sprintf(q, utils.Placeholders(len(folderIDs)))
+	args := append([]any{parentFolderID}, utils.AnyArray(folderIDs)...)
+	_, err := a.conn.Exec(q, args...)
+	return err
+}
+
+func (a *Database) getAncestors(folderID int) (map[int]int, error) {
+	q := `WITH RECURSIVE folder_tree AS (
+			SELECT parent_folder_id, id
+			FROM folders
+			WHERE id = ?
+			UNION
+			SELECT folders.parent_folder_id, folders.id
+			FROM folders
+				JOIN folder_tree
+				ON (folders.id = folder_tree.parent_folder_id)
+		  )
+		  SELECT parent_folder_id, id
+		  FROM folder_tree
+		  WHERE parent_folder_id IS NOT NULL`
+	rows, err := a.conn.Query(q, folderID)
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[int]int)
+	for rows.Next() {
+		var parentID int
+		var childID int
+		if err := rows.Scan(&parentID, &childID); err != nil {
+			return nil, err
+		}
+		res[parentID] = childID
+	}
+	return res, nil
 }

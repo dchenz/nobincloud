@@ -139,6 +139,71 @@ func TestListingFilesAndFolders(t *testing.T) {
 	assert.ErrorIs(t, err, errors.ErrNotAuthorized)
 	_, err = db.GetFoldersInFolder(unknownUserID, videosFolder.ID, false)
 	assert.ErrorIs(t, err, errors.ErrNotAuthorized)
+
+	// Move /videos/hello.mp4 into root folder
+	err = db.MoveFiles(userID, []uuid.UUID{helloFile.ID}, uuid.Nil, true)
+	assert.NoError(t, err)
+	helloFile.ParentFolder = model.JSON[uuid.UUID]{Valid: false}
+	// Verify files inside root folder
+	files, err = db.GetFilesInFolder(userID, uuid.Nil, true)
+	assert.NoError(t, err)
+	assert.Contains(t, files, imageFile)
+	assert.Contains(t, files, helloFile)
+	assert.Len(t, files, 2)
+	// Verify files inside /videos folder
+	files, err = db.GetFilesInFolder(userID, videosFolder.ID, false)
+	assert.NoError(t, err)
+	assert.Contains(t, files, worldFile)
+	assert.Len(t, files, 1)
+
+	// Move /videos into /my_files
+	err = db.MoveFolders(userID, []uuid.UUID{videosFolder.ID}, myFolder.ID, false)
+	assert.NoError(t, err)
+	videosFolder.ParentFolder = model.JSON[uuid.UUID]{
+		Valid: true,
+		Value: myFolder.ID,
+	}
+	// Verify folders inside root folder
+	folders, err = db.GetFoldersInFolder(userID, uuid.Nil, true)
+	assert.NoError(t, err)
+	assert.Contains(t, folders, myFolder)
+	assert.Len(t, folders, 1)
+	// Verify folders inside /my_files folder
+	folders, err = db.GetFoldersInFolder(userID, myFolder.ID, false)
+	assert.NoError(t, err)
+	assert.Contains(t, folders, videosFolder)
+	assert.Len(t, folders, 1)
+
+	// Move /hello.mp4, /image.png into /my_files/videos
+	err = db.MoveFiles(userID, []uuid.UUID{helloFile.ID, imageFile.ID}, videosFolder.ID, false)
+	assert.NoError(t, err)
+	helloFile.ParentFolder = model.JSON[uuid.UUID]{
+		Valid: true,
+		Value: videosFolder.ID,
+	}
+	imageFile.ParentFolder = model.JSON[uuid.UUID]{
+		Valid: true,
+		Value: videosFolder.ID,
+	}
+	// Verify files inside root folder
+	files, err = db.GetFilesInFolder(userID, uuid.Nil, true)
+	assert.NoError(t, err)
+	assert.Len(t, files, 0)
+	// Verify files inside /videos folder
+	files, err = db.GetFilesInFolder(userID, videosFolder.ID, false)
+	assert.NoError(t, err)
+	assert.Contains(t, files, worldFile)
+	assert.Contains(t, files, imageFile)
+	assert.Contains(t, files, helloFile)
+	assert.Len(t, files, 3)
+
+	// Try to move folder into itself
+	err = db.MoveFolders(userID, []uuid.UUID{videosFolder.ID}, videosFolder.ID, false)
+	assert.EqualError(t, err, "cannot perform this move action")
+
+	// Try to move folder (/my_files) into a subfolder (/my_files/videos)
+	err = db.MoveFolders(userID, []uuid.UUID{myFolder.ID}, videosFolder.ID, false)
+	assert.EqualError(t, err, "cannot perform this move action")
 }
 
 func TestJSONFilesAndFolders(t *testing.T) {

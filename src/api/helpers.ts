@@ -3,7 +3,7 @@ import { UUID_NIL } from "../const";
 import { decrypt } from "../crypto/cipher";
 import { arrayBufferToString } from "../crypto/utils";
 import { FileResponse, FolderResponse, Response } from "../types/API";
-import { FileRef, FolderRef, UUID } from "../types/Files";
+import { FileRef, FILE_TYPE, FolderRef, UUID } from "../types/Files";
 import { createFolder, encryptAndUploadFile } from "./files";
 
 export async function jsonFetch<T>(
@@ -109,3 +109,22 @@ export const uploadFileList = async (
     onItemUpload(newFile);
   }
 };
+
+export function getFileAndFolderIDs(items: (FileRef | FolderRef)[]): {
+  files: UUID[];
+  folders: UUID[];
+} {
+  const files = [];
+  const folders = [];
+  for (const f of items) {
+    if (f.type === FILE_TYPE) {
+      files.push(f.id);
+    } else {
+      folders.push(f.id);
+    }
+  }
+  return {
+    files,
+    folders,
+  };
+}

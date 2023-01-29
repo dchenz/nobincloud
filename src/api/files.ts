@@ -6,14 +6,13 @@ import { arrayBufferToString } from "../crypto/utils";
 import { isRootFolder } from "../misc/fileutils";
 import { createCustomFileThumbnail } from "../misc/thumbnails";
 import { FolderContentsResponse, Response } from "../types/API";
+import { FileRef, FolderContents, FolderRef, UUID } from "../types/Files";
 import {
-  FileRef,
-  FILE_TYPE,
-  FolderContents,
-  FolderRef,
-  UUID,
-} from "../types/Files";
-import { decryptFileObject, decryptFolderObject, jsonFetch } from "./helpers";
+  decryptFileObject,
+  decryptFolderObject,
+  getFileAndFolderIDs,
+  jsonFetch,
+} from "./helpers";
 
 export async function encryptAndUploadFile(
   file: File,
@@ -93,21 +92,9 @@ export async function getFileDownload(file: FileRef): Promise<ArrayBuffer> {
 export async function deleteFolderContents(
   items: (FileRef | FolderRef)[]
 ): Promise<null> {
-  const files = [];
-  const folders = [];
-  for (const f of items) {
-    if (f.type === FILE_TYPE) {
-      files.push(f.id);
-    } else {
-      folders.push(f.id);
-    }
-  }
-  return await jsonFetch<null>(SERVER_ROUTES.batch, {
+  return await jsonFetch<null>(SERVER_ROUTES.batchDelete, {
     method: "DELETE",
-    body: JSON.stringify({
-      files,
-      folders,
-    }),
+    body: JSON.stringify(getFileAndFolderIDs(items)),
   });
 }
 
@@ -140,4 +127,17 @@ export async function createFolder(
     parentFolder,
     metadata: folderMetadata,
   };
+}
+
+export async function moveFolderContents(
+  items: (FileRef | FolderRef)[],
+  targetFolder: UUID
+): Promise<null> {
+  return await jsonFetch<null>(SERVER_ROUTES.batchMove, {
+    method: "PATCH",
+    body: JSON.stringify({
+      into: isRootFolder(targetFolder) ? null : targetFolder,
+      items: getFileAndFolderIDs(items),
+    }),
+  });
 }

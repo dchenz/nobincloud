@@ -24,17 +24,15 @@ export default function Header(): JSX.Element {
     throw new Error();
   }
 
+  const removeSelectedFromView = () => {
+    selectedItems.forEach((item) =>
+      item.type === FILE_TYPE ? deleteFile(item) : deleteFolder(item)
+    );
+    setSelectedItems([]);
+  };
+
   const onDeleteSelected = () => {
-    deleteFolderContents(selectedItems).then(() => {
-      for (const f of selectedItems) {
-        if (f.type === FILE_TYPE) {
-          deleteFile(f);
-        } else {
-          deleteFolder(f);
-        }
-      }
-      setSelectedItems([]);
-    });
+    deleteFolderContents(selectedItems).then(removeSelectedFromView);
   };
 
   return (
@@ -86,6 +84,7 @@ export default function Header(): JSX.Element {
         <MoveItemsModal
           movingItems={selectedItems}
           onClose={() => setMoving(false)}
+          onMove={removeSelectedFromView}
         />
       ) : null}
     </Box>

@@ -51,5 +51,6 @@ func (a *CloudRouter) registerFolderRouter(r *mux.Router) {
 
 func (a *CloudRouter) registerBatchRouter(r *mux.Router) {
 	r.Use(a.authRequired)
-	r.HandleFunc("", a.DeleteFilesAndFolders).Methods("DELETE")
+	r.HandleFunc("/delete", a.DeleteFilesAndFolders).Methods("DELETE")
+	r.HandleFunc("/move", a.MoveFilesAndFolders).Methods("PATCH")
 }

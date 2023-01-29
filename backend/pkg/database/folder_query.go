@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/dchenz/nobincloud/pkg/errors"
 	"github.com/dchenz/nobincloud/pkg/model"
@@ -118,4 +119,41 @@ func (a *Database) DeleteFolders(userID int, folderUUIDs []uuid.UUID) error {
 		folderIDs = append(folderIDs, folderID)
 	}
 	return a.deleteFolders(folderIDs)
+}
+
+func (a *Database) MoveFolders(userID int, folderUUIDs []uuid.UUID, intoFolder uuid.UUID, root bool) error {
+	var intoFolderID sql.NullInt32
+	if !root {
+		folderID, err := a.ResolveFolderID(userID, intoFolder)
+		if err != nil {
+			return err
+		}
+		intoFolderID.Valid = true
+		intoFolderID.Int32 = int32(folderID)
+	}
+	folderIDs := make([]int, 0)
+	for _, folderUUID := range folderUUIDs {
+		folderID, err := a.ResolveFolderID(userID, folderUUID)
+		if err != nil {
+			return err
+		}
+		folderIDs = append(folderIDs, folderID)
+	}
+	if intoFolderID.Valid {
+		ancestorContains, err := a.getAncestors(int(intoFolderID.Int32))
+		if err != nil {
+			return err
+		}
+		for _, folderID := range folderIDs {
+			// Moving folder into itself is not allowed.
+			if folderID == int(intoFolderID.Int32) {
+				return fmt.Errorf("cannot perform this move action")
+			}
+			// Moving folder into a subfolder is not allowed.
+			if _, exists := ancestorContains[folderID]; exists {
+				return fmt.Errorf("cannot perform this move action")
+			}
+		}
+	}
+	return a.updateFoldersParentFolder(folderIDs, intoFolderID)
 }

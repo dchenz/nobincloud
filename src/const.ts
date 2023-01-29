@@ -13,7 +13,8 @@ export const SERVER_ROUTES = {
   whoami: "/api/user/whoami",
   file: "/api/file",
   folder: "/api/folder",
-  batch: "/api/batch",
+  batchDelete: "/api/batch/delete",
+  batchMove: "/api/batch/move",
 };
 
 export const MAX_UPLOAD_SIZE = 32 << 20; // 32MB

@@ -29,3 +29,8 @@ type FolderContentsRequest struct {
 	Files   []uuid.UUID `json:"files"`
 	Folders []uuid.UUID `json:"folders"`
 }
+
+type MoveFolderContentsRequest struct {
+	Into  JSON[uuid.UUID]       `json:"into"`
+	Items FolderContentsRequest `json:"items"`
+}

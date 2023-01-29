@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/dchenz/nobincloud/pkg/model/dbmodel"
@@ -114,4 +115,14 @@ func (a *Database) getFileOwner(fileID int) (int, error) {
 	var ownerID int
 	err := row.Scan(&ownerID)
 	return ownerID, err
+}
+
+func (a *Database) updateFilesParentFolder(fileIDs []int, parentFolderID sql.NullInt32) error {
+	q := `UPDATE files
+		  SET parent_folder_id = ?
+		  WHERE id IN (%s)`
+	q = fmt.Sprintf(q, utils.Placeholders(len(fileIDs)))
+	args := append([]any{parentFolderID}, utils.AnyArray(fileIDs)...)
+	_, err := a.conn.Exec(q, args...)
+	return err
 }

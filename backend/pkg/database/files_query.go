@@ -103,3 +103,24 @@ func (a *Database) GetFileOwner(fileUUID uuid.UUID) (int, error) {
 	}
 	return a.getFileOwner(fileID)
 }
+
+func (a *Database) MoveFiles(userID int, fileUUIDs []uuid.UUID, intoFolder uuid.UUID, root bool) error {
+	var intoFolderID sql.NullInt32
+	if !root {
+		folderID, err := a.ResolveFolderID(userID, intoFolder)
+		if err != nil {
+			return err
+		}
+		intoFolderID.Valid = true
+		intoFolderID.Int32 = int32(folderID)
+	}
+	fileIDs := make([]int, 0)
+	for _, fileUUID := range fileUUIDs {
+		fileID, err := a.ResolveFileID(userID, fileUUID)
+		if err != nil {
+			return err
+		}
+		fileIDs = append(fileIDs, fileID)
+	}
+	return a.updateFilesParentFolder(fileIDs, intoFolderID)
+}
