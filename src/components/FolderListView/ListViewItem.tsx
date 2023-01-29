@@ -10,22 +10,36 @@ import "./styles.sass";
 type ListViewItemProps = {
   item: FileRef | FolderRef;
   onItemOpen: () => void;
+  selectSingleItem?: boolean;
 };
 
-const ListViewItem: React.FC<ListViewItemProps> = ({ item, onItemOpen }) => {
-  const { selectedItems, toggleSelectedItem } = useContext(FolderContext);
+const ListViewItem: React.FC<ListViewItemProps> = ({
+  item,
+  onItemOpen,
+  selectSingleItem,
+}) => {
+  const { selectedItems, toggleSelectedItem, setSelectedItems } =
+    useContext(FolderContext);
 
   const selected = useMemo(() => {
     const s = selectedItems.find((f) => f.id === item.id);
     return s !== undefined;
   }, [item, selectedItems]);
 
+  const onSelect = () => {
+    if (selectSingleItem && !selected) {
+      setSelectedItems([item]);
+    } else {
+      toggleSelectedItem(item);
+    }
+  };
+
   return (
     <Tr className="file-list-item" data-test-id={`${item.type}_${item.id}`}>
       <Td>
         <FileSelectCheckbox
           selected={selected}
-          onSelect={() => toggleSelectedItem(item)}
+          onSelect={onSelect}
           permanent={selectedItems.length > 0}
         />
       </Td>

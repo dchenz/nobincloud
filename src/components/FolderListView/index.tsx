@@ -9,15 +9,17 @@ import "./styles.sass";
 type ListViewProps = {
   items: (FileRef | FolderRef)[];
   onItemOpen: (_: FileRef | FolderRef) => void;
+  selectSingleItem?: boolean;
 };
 
-const ListView: React.FC<ListViewProps> = ({ items, onItemOpen }) => {
-  const { selectedItems, setSelectedItems, contents } =
-    useContext(FolderContext);
+const ListView: React.FC<ListViewProps> = ({
+  items,
+  onItemOpen,
+  selectSingleItem,
+}) => {
+  const { selectedItems, setSelectedItems } = useContext(FolderContext);
 
-  const allSelected =
-    contents.files.length + contents.folders.length > 0 &&
-    selectedItems.length === contents.files.length + contents.folders.length;
+  const allSelected = items.length > 0 && selectedItems.length === items.length;
 
   return (
     <TableContainer className="file-list-container">
@@ -25,16 +27,18 @@ const ListView: React.FC<ListViewProps> = ({ items, onItemOpen }) => {
         <Thead>
           <Tr className="file-list-header">
             <Th width="70px">
-              <FileSelectCheckbox
-                selected={allSelected}
-                onSelect={() =>
-                  allSelected
-                    ? setSelectedItems([])
-                    : setSelectedItems([...contents.folders, ...contents.files])
-                }
-                title={allSelected ? "Deselect all" : "Select all"}
-                permanent
-              />
+              {selectSingleItem ? null : (
+                <FileSelectCheckbox
+                  selected={allSelected}
+                  onSelect={() =>
+                    allSelected
+                      ? setSelectedItems([])
+                      : setSelectedItems([...items])
+                  }
+                  title={allSelected ? "Deselect all" : "Select all"}
+                  permanent
+                />
+              )}
             </Th>
             <Th width="70px"></Th>
             <Th>Name</Th>
@@ -50,6 +54,7 @@ const ListView: React.FC<ListViewProps> = ({ items, onItemOpen }) => {
               key={item.id}
               item={item}
               onItemOpen={() => onItemOpen(item)}
+              selectSingleItem={selectSingleItem}
             />
           ))}
         </Tbody>

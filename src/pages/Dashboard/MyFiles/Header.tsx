@@ -1,8 +1,9 @@
 import { Box, HStack } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
-import { Folder2, Trash } from "react-bootstrap-icons";
+import { ArrowsMove, Folder2, Trash } from "react-bootstrap-icons";
 import { deleteFolderContents } from "../../../api/files";
 import ConfirmPopup from "../../../components/ConfirmPopup";
+import MoveItemsModal from "../../../components/MoveItemsModal";
 import NewFolderModal from "../../../components/NewFolderModal";
 import ResponsiveIconButton from "../../../components/ResponsiveIconButton";
 import UploadMenuButton from "../../../components/UploadMenuButton";
@@ -14,6 +15,7 @@ import "./styles.sass";
 
 export default function Header(): JSX.Element {
   const [isCreatingFolder, setCreatingFolder] = useState(false);
+  const [isMoving, setMoving] = useState(false);
   const { accountKey } = useContext(AuthContext);
   const { pwd, selectedItems, setSelectedItems, deleteFile, deleteFolder } =
     useContext(FolderContext);
@@ -39,14 +41,26 @@ export default function Header(): JSX.Element {
     <Box className="file-browser-header">
       <HStack gap={2} width="100%">
         {selectedItems.length > 0 ? (
-          <ConfirmPopup prompt="Delete selected?" onConfirm={onDeleteSelected}>
+          <>
+            <ConfirmPopup
+              prompt="Delete selected?"
+              onConfirm={onDeleteSelected}
+            >
+              <ResponsiveIconButton
+                icon={<Trash />}
+                ariaLabel="delete-selected"
+                text="Delete"
+                title="Delete selected items"
+              />
+            </ConfirmPopup>
             <ResponsiveIconButton
-              icon={<Trash />}
-              ariaLabel="delete-selected"
-              text="Delete"
-              title="Delete selected items"
+              icon={<ArrowsMove />}
+              ariaLabel="move-selected"
+              text="Move"
+              title="Move selected items"
+              onClick={() => setMoving(true)}
             />
-          </ConfirmPopup>
+          </>
         ) : (
           <>
             <UploadMenuButton />
@@ -68,6 +82,7 @@ export default function Header(): JSX.Element {
           parentFolder={pwd.current.id}
         />
       ) : null}
+      {isMoving ? <MoveItemsModal onClose={() => setMoving(false)} /> : null}
     </Box>
   );
 }
