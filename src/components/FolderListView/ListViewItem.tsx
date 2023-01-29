@@ -1,4 +1,5 @@
 import { Image, Td, Tr } from "@chakra-ui/react";
+import classNames from "classnames";
 import React, { useContext, useMemo } from "react";
 import FolderContext from "../../context/FolderContext";
 import { formatBinarySize, formatRelativeTime } from "../../misc/fileutils";
@@ -40,7 +41,11 @@ const ListViewItem: React.FC<ListViewItemProps> = ({
 
   return (
     <Tr
-      className={"file-list-item" + (disabled ? " disabled" : " hoverable")}
+      className={classNames({
+        "file-list-item": true,
+        hoverable: !disabled,
+        disabled,
+      })}
       data-test-id={`${item.type}_${item.id}`}
     >
       <Td>

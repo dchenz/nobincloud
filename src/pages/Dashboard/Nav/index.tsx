@@ -1,4 +1,5 @@
 import { Box, Stack } from "@chakra-ui/react";
+import classNames from "classnames";
 import React, { useContext } from "react";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import ProfileMenu from "../../../components/ProfileMenu";
@@ -15,7 +16,10 @@ export default function DashboardPage(): JSX.Element {
 
   return (
     <div
-      className={"nav-drawer" + (showNav ? "" : " collapsed")}
+      className={classNames({
+        "nav-drawer": true,
+        collapsed: !showNav,
+      })}
       style={{ position: isMobileView ? "absolute" : "relative" }}
     >
       <Stack as="nav" gap={2} flexGrow={1}>
@@ -28,7 +32,10 @@ export default function DashboardPage(): JSX.Element {
         <ProfileMenu />
       </Box>
       <button
-        className={"toggle-nav-collapse" + (showNav ? "" : " collapsed")}
+        className={classNames({
+          "toggle-nav-collapse": true,
+          collapsed: !showNav,
+        })}
         tabIndex={-1}
         onClick={() => setShowNav(!showNav)}
       >

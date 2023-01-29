@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import { Check } from "react-bootstrap-icons";
 import "./styles.sass";
@@ -16,11 +17,11 @@ const FileSelectCheckbox: React.FC<FileSelectCheckboxProps> = ({
   title,
 }) => (
   <button
-    className={
-      "file-item-checkbox" +
-      (selected ? " selected" : "") +
-      (permanent ? " permanent" : "")
-    }
+    className={classNames({
+      "file-item-checkbox": true,
+      selected,
+      permanent,
+    })}
     title={title}
     onClick={onSelect}
     role="checkbox"

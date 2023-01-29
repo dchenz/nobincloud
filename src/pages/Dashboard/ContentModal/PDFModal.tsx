@@ -1,4 +1,5 @@
 import { Box, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
+import classNames from "classnames";
 import React, { useMemo, useRef, useState } from "react";
 import {
   ChevronLeft,
@@ -64,7 +65,10 @@ const PDFModal: React.FC<PDFModalProps> = ({ bytes }) => {
         />
       </Document>
       <Box
-        className={"react-pdf-nav-container " + (showControls ? "" : "hidden")}
+        className={classNames({
+          "react-pdf-nav-container": true,
+          hidden: !showControls,
+        })}
         ref={navRef}
       >
         <ButtonGroup className="react-pdf-btn-group">
